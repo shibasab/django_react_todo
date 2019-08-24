@@ -13,3 +13,12 @@ class TodoViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    def put(self, request, pk):
+
+        todo = self.get_queryset(pk)
+
+        serializer = TodoSerializer(todo, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+        return serializer
