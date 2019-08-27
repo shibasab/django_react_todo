@@ -1,1 +1,1 @@
-web: gunicorn todomanager.wsgi --log-file - 
+web: gunicorn --env DJANGO_SETTINGS_MODULE=todomanager.settings todomanager.wsgi --log-file -
