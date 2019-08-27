@@ -18,23 +18,21 @@ try:
 except ImportError:
     pass
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
 if not DEBUG:
     SECRET_KEY = os.environ["SECRET_KEY"]
     import django_heroku
 
     django_heroku.settings(locals())
-    
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
 
 ALLOWED_HOSTS = ["localhost", ".herokuapp.com"]
 
