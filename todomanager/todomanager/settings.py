@@ -84,11 +84,11 @@ WSGI_APPLICATION = "todomanager.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": 'name',
-        'USER': 'user',
-        'PASSWORD': '',
-        'HOST': 'host',
-        'PORT': ''
+        "NAME": "name",
+        "USER": "user",
+        "PASSWORD": "",
+        "HOST": "host",
+        "PORT": "",
     }
 }
 
@@ -133,9 +133,11 @@ except ImportError:
 if not DEBUG:
     SECRET_KEY = os.environ["SECRET_KEY"]
     import django_heroku
+
     django_heroku.settings(locals())
 
 db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
-DATABASES['default'].update(db_from_env)
+DATABASES["default"].update(db_from_env)
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
