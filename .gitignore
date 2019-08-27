@@ -7,7 +7,7 @@ node_modules
 *.pyc
 __pycache__/
 db.sqlite3
-
+local_settings.py
 *.py[cod]
 *$py.class
 
