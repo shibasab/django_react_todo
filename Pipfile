@@ -11,6 +11,9 @@ django = "*"
 djangorestframework = "*"
 django-rest-knox = "*"
 autopep8 = "*"
+gunicorn = "*"
+django-heroku = "*"
+dj-database-url = "*"
 
 [requires]
 python_version = "3.6"
