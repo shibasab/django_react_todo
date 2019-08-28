@@ -14,7 +14,6 @@ export class Alerts extends Component {
     if (error !== prevProps.error) {
       if (error.msg.todo_task)
         alert.error(`Task: ${error.msg.todo_tast.join()}`);
-      if (error.msg.detail) alert.error(`Detail: ${error.msg.detail.join()}`);
       if (error.msg.non_field_errors)
         alert.error(error.msg.non_field_errors.join());
       if (error.msg.username)

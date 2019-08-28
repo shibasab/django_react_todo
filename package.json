@@ -5,12 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "webpack --mode development --watch ./todomanager/frontend/src/index.js --output ./todomanager/frontend/static/frontend/main.js",
-    "build": "webpack --mode production ./todomanager/frontend/src/index.js --output ./todomanager/frontend/static/frontend/main.js",
-    "postinstall": "npm run build"
-  },
-  "engines": {
-    "node": "11.14.0",
-    "npm": "6.7.0"
+    "build": "webpack --mode production ./todomanager/frontend/src/index.js --output ./todomanager/frontend/static/frontend/main.js"
   },
   "keywords": [],
   "author": "",
