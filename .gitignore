@@ -8,10 +8,6 @@ node_modules
 __pycache__/
 db.sqlite3
 local_settings.py
-<<<<<<< HEAD
-=======
-
->>>>>>> 401ee6440b04c7f7894f30c07bdee564c0dbcebc
 *.py[cod]
 *$py.class
 
