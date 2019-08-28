@@ -13,7 +13,7 @@ export class Alerts extends Component {
     const { error, alert, message } = this.props;
     if (error !== prevProps.error) {
       if (error.msg.todo_task)
-        alert.error(`Task: ${error.msg.todo_tast.join()}`);
+        alert.error(`Task: ${error.msg.todo_task.join()}`);
       if (error.msg.non_field_errors)
         alert.error(error.msg.non_field_errors.join());
       if (error.msg.username)

@@ -45,7 +45,10 @@ export class Header extends Component {
     );
 
     return (
-      <nav className="navbar navbar-expand-sm navbar-light bg-light">
+      <nav
+        className="navbar navbar-expand-sm navbar-light"
+        style={{ background: '#1A535C' }}
+      >
         <div className="container">
           <button
             className="navbar-toggler"
