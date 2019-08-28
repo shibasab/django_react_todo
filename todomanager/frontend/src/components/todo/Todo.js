@@ -21,7 +21,6 @@ export class Todo extends Component {
         <table className="table table-striped">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Task</th>
               <th>Detail</th>
               <th />
@@ -30,7 +29,6 @@ export class Todo extends Component {
           <tbody>
             {this.props.todo.map(todo => (
               <tr key={todo.id}>
-                <td>{todo.id}</td>
                 <td>{todo.todo_task}</td>
                 <td>{todo.detail}</td>
                 <td>
