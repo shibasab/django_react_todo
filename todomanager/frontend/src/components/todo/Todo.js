@@ -17,7 +17,8 @@ export class Todo extends Component {
   render() {
     return (
       <Fragment>
-        <h2>Todo List</h2>
+        <br></br>
+        <h4>Todo List</h4>
         <table className="table table-striped">
           <thead>
             <tr>
