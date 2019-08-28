@@ -1,1 +1,0 @@
-web: gunicorn --pythonpath todomanager todomanager.wsgi --log-file -
