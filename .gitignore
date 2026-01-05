@@ -9,5 +9,6 @@ __pycache__/
 db.sqlite3
 local_settings.py
 *.py[cod]
-*$py.class
+
+backend/frontend/static/frontend/main.js
 
