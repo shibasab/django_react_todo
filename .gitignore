@@ -11,4 +11,4 @@ local_settings.py
 *.py[cod]
 
 backend/frontend/static/frontend/main.js
-
+backend/frontend/static/frontend/index.html
