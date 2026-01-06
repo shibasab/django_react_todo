@@ -1,5 +1,5 @@
-import React, { Component, Fragment } from 'react';
-import { withAlert } from 'react-alert';
+import { Component, Fragment } from 'react';
+import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -10,22 +10,22 @@ export class Alerts extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { error, alert, message } = this.props;
+    const { error, message } = this.props;
     if (error !== prevProps.error) {
       if (error.msg.todo_task)
-        alert.error(`Task: ${error.msg.todo_task.join()}`);
+        toast.error(`Task: ${error.msg.todo_task.join()}`);
       if (error.msg.non_field_errors)
-        alert.error(error.msg.non_field_errors.join());
+        toast.error(error.msg.non_field_errors.join());
       if (error.msg.username)
-        alert.error(`Username: ${error.msg.username.join()}`);
+        toast.error(`Username: ${error.msg.username.join()}`);
       if (error.msg.password)
-        alert.error(`Password: ${error.msg.password.join()}`);
+        toast.error(`Password: ${error.msg.password.join()}`);
     }
 
     if (message !== prevProps.message) {
-      if (message.deleteTodo) alert.success(message.deleteTodo);
-      if (message.addTodo) alert.success(message.addTodo);
-      if (message.passwordNotMatch) alert.error(message.passwordNotMatch);
+      if (message.deleteTodo) toast.success(message.deleteTodo);
+      if (message.addTodo) toast.success(message.addTodo);
+      if (message.passwordNotMatch) toast.error(message.passwordNotMatch);
     }
   }
 
@@ -39,4 +39,4 @@ const mapStateToProps = state => ({
   message: state.messages
 });
 
-export default connect(mapStateToProps)(withAlert()(Alerts));
+export default connect(mapStateToProps)(Alerts);
