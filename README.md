@@ -15,8 +15,6 @@ Django REST Framework と React を使用した Todo アプリケーション
 - React
 - Redux
 - React Router
-- Webpack
-- Babel
 - Axios
 
 ## 必要な環境
@@ -30,7 +28,7 @@ Django REST Framework と React を使用した Todo アプリケーション
 
 ```bash
 git clone <repository-url>
-cd django_react_todo
+cd todoapp
 ```
 
 ### 2. バックエンドのセットアップ
