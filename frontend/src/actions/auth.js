@@ -94,7 +94,7 @@ export const register =
 // LOGOUT USER
 export const logout = () => (dispatch, getState) => {
   axios
-    .post('/api/auth/logout/', null, tokenConfig(getState))
+    .post('/api/auth/logout', null, tokenConfig(getState))
     .then((res) => {
       dispatch({
         type: LOGOUT_SUCCESS,
@@ -120,7 +120,7 @@ export const tokenConfig = (getState) => {
 
   // If token, add to headers config
   if (token) {
-    config.headers['Authorization'] = `Token ${token}`;
+    config.headers['Authorization'] = `Bearer ${token}`;
   }
 
   return config;
