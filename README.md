@@ -99,6 +99,15 @@ npm run dev
 - **SECRET_KEY エラー**: `.env` ファイルに `SECRET_KEY` を設定してください
 - **ポート競合**: 別のポート番号を指定してください（例: `--port 8001`）
 
+## テスト
+
+### バックエンドの自動テスト
+
+```bash
+cd backend
+uv run pytest
+```
+
 ## その他のコマンド
 
 ```bash
