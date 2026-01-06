@@ -1,4 +1,4 @@
-# django_react_todo
+# todoapp
 
 Django REST Framework と React を使用した Todo アプリケーション
 
