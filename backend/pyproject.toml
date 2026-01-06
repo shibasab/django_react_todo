@@ -24,5 +24,9 @@ dev = [
     "pyyaml>=6.0.3",
     "uritemplate>=4.2.0",
 ]
+test = [
+    "pytest>=8.0.0",
+    "httpx>=0.28.0",
+]
 
 [tool.uv.sources]
