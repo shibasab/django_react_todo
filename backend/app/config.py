@@ -1,7 +1,10 @@
 import os
+from dotenv import load_dotenv
 
-# 環境変数から設定を読み込み
+load_dotenv()
+
 SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key-for-jwt")
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./todo.db")
 
 # JWT設定
 JWT_SECRET_KEY = SECRET_KEY

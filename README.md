@@ -39,7 +39,14 @@ cd backend
 
 # uvで仮想環境を作成し、依存関係をインストール
 uv sync
+
+# 環境変数ファイルを作成
+cp .env.example .env
+# .envファイルを編集してSECRET_KEYを設定してください
 ```
+
+> [!IMPORTANT]
+> `SECRET_KEY` は本番環境では強力なランダム値を使用してください。
 
 ### 3. フロントエンドのセットアップ
 
@@ -60,13 +67,10 @@ npm install
 
 ```bash
 cd backend
-SECRET_KEY="your-secret-key-here" uv run uvicorn app.main:app --reload --port 8000
+uv run uvicorn app.main:app --reload --port 8000
 ```
 
 バックエンドサーバーは `http://localhost:8000` で起動します。
-
-> [!IMPORTANT]
-> `SECRET_KEY` 環境変数の設定は必須です。本番環境では安全な値を使用してください。
 
 #### ターミナル2: フロントエンド開発サーバーの起動
 
@@ -92,7 +96,7 @@ npm run dev
 
 ## トラブルシューティング
 
-- **SECRET_KEY エラー**: 環境変数 `SECRET_KEY` を設定してください
+- **SECRET_KEY エラー**: `.env` ファイルに `SECRET_KEY` を設定してください
 - **ポート競合**: 別のポート番号を指定してください（例: `--port 8001`）
 
 ## その他のコマンド
@@ -102,5 +106,5 @@ npm run dev
 uv run black .
 
 # サーバー起動（本番モード）
-SECRET_KEY="your-secret-key" uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
