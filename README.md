@@ -109,4 +109,6 @@ npm run dev
 - Django管理画面: `http://localhost:8000/admin`
 - テスト実行: `uv run python manage.py test`
 - コードフォーマット: `uv run black .`
+- OpenAPI スキーマ生成: `uv run python manage.py generateschema --format openapi > schema.yml`
+
 
