@@ -1,0 +1,8 @@
+{
+  "oxc.enable": true,
+  "oxc.path.oxfmt": "${workspaceFolder}/frontend/node_modules/.bin/oxfmt",
+  "[json][jsonc][typescript][typescriptreact][javascript][javascriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode",
+    "editor.formatOnSave": true
+  },
+}
