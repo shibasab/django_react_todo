@@ -21,9 +21,8 @@ Django REST Framework と React を使用した Todo アプリケーション
 
 ## 必要な環境
 
-- Python
-- Pipenv
-- Node.js & npm
+- バックエンド: Python & uv
+- フロントエンド: Node.js & npm
 
 ## セットアップ手順
 
@@ -39,21 +38,18 @@ cd django_react_todo
 ```bash
 cd backend
 
-# Pipenvで仮想環境を作成し、依存関係をインストール
-pipenv install
-
-# 仮想環境をアクティベート
-pipenv shell
+# uvで仮想環境を作成し、依存関係をインストール
+uv sync
 
 # 環境変数を設定（重要）
 # Windows (Git Bash)
 export SECRET_KEY="your-secret-key-here"
 
 # データベースマイグレーションを実行
-python manage.py migrate
+uv run python manage.py migrate
 
 # スーパーユーザーを作成（オプション）
-python manage.py createsuperuser
+uv run python manage.py createsuperuser
 ```
 
 > [!IMPORTANT]
@@ -78,9 +74,8 @@ npm install
 
 ```bash
 cd backend
-pipenv shell  # 仮想環境がアクティブでない場合
 export SECRET_KEY="your-secret-key-here"  # 環境変数を設定
-python manage.py runserver
+uv run python manage.py runserver
 ```
 
 バックエンドサーバーは `http://localhost:8000` で起動します。
@@ -100,18 +95,18 @@ npm run dev
 
 ## 開発ワークフロー
 
-- **バックエンド**: モデル変更後は `python manage.py makemigrations` と `python manage.py migrate` を実行
+- **バックエンド**: モデル変更後は `uv run python manage.py makemigrations` と `uv run python manage.py migrate` を実行
 - **フロントエンド**: `npm run dev` 実行中は保存時に自動的に再バンドル
 - **本番ビルド**: `npm run build`
 
 ## トラブルシューティング
 
 - **SECRET_KEY エラー**: 環境変数 `SECRET_KEY` を設定してください
-- **マイグレーションエラー**: `python manage.py migrate --run-syncdb`
+- **マイグレーションエラー**: `uv run python manage.py migrate --run-syncdb`
 
 ## その他のコマンド
 
 - Django管理画面: `http://localhost:8000/admin`
-- テスト実行: `python manage.py test`
-- コードフォーマット: `black .`
+- テスト実行: `uv run python manage.py test`
+- コードフォーマット: `uv run black .`
 
