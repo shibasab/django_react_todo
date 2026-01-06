@@ -13,6 +13,7 @@ export default defineConfig({
 		// ビルド時に outDir をクリアしない（Django の他のファイルを保護）
 		emptyOutDir: true,
 		rollupOptions: {
+			input: 'src/index.jsx',
 			output: {
 				entryFileNames: 'main.js',
 				chunkFileNames: 'chunks/[name]-[hash].js',
