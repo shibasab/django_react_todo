@@ -3,29 +3,14 @@ from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
-# Django ORMを使用するためのセットアップ
-import app.django_setup  # noqa: F401
-from django.contrib.auth.models import User
-
+from app.database import get_db
+from app.models.user import User
 from app.config import JWT_SECRET_KEY, JWT_ALGORITHM, JWT_ACCESS_TOKEN_EXPIRE_MINUTES
-
-# パスワードハッシュ化
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Bearer認証スキーム
 security = HTTPBearer()
-
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """パスワードを検証"""
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def get_password_hash(password: str) -> str:
-    """パスワードをハッシュ化"""
-    return pwd_context.hash(password)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
@@ -40,18 +25,18 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return encoded_jwt
 
 
-def authenticate_user(username: str, password: str) -> Optional[User]:
+def authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
     """ユーザーを認証"""
-    try:
-        user = User.objects.get(username=username)
-        if user.check_password(password):
-            return user
-        return None
-    except User.DoesNotExist:
-        return None
+    user = db.query(User).filter(User.username == username).first()
+    if user and user.check_password(password):
+        return user
+    return None
 
 
-def get_current_user_sync(credentials: HTTPAuthorizationCredentials = Depends(security)) -> User:
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+) -> User:
     """現在のユーザーを取得（トークンから）"""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -67,10 +52,7 @@ def get_current_user_sync(credentials: HTTPAuthorizationCredentials = Depends(se
     except JWTError:
         raise credentials_exception
 
-    try:
-        user = User.objects.get(id=int(user_id))
-        if not user.is_active:
-            raise credentials_exception
-        return user
-    except User.DoesNotExist:
+    user = db.query(User).filter(User.id == int(user_id)).first()
+    if user is None or not user.is_active:
         raise credentials_exception
+    return user

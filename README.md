@@ -1,25 +1,26 @@
 # todoapp
 
-Django REST Framework と React を使用した Todo アプリケーション
+FastAPI と React を使用した Todo アプリケーション
 
 ## 技術スタック
 
 ### バックエンド
-- Python
-- Django
-- Django REST Framework
-- Django REST Knox（トークン認証）
-- SQLite3
+- Python 3.13+
+- FastAPI
+- SQLAlchemy
+- JWT認証（python-jose）
+- SQLite
 
 ### フロントエンド
 - React
 - Redux
 - React Router
 - Axios
+- Vite
 
 ## 必要な環境
 
-- バックエンド: Python & uv
+- バックエンド: Python 3.13+ & uv
 - フロントエンド: Node.js & npm
 
 ## セットアップ手順
@@ -38,20 +39,7 @@ cd backend
 
 # uvで仮想環境を作成し、依存関係をインストール
 uv sync
-
-# 環境変数を設定（重要）
-# Windows (Git Bash)
-export SECRET_KEY="your-secret-key-here"
-
-# データベースマイグレーションを実行
-uv run python manage.py migrate
-
-# スーパーユーザーを作成（オプション）
-uv run python manage.py createsuperuser
 ```
-
-> [!IMPORTANT]
-> `SECRET_KEY` 環境変数の設定は必須です。本番環境では安全な値を使用してください。
 
 ### 3. フロントエンドのセットアップ
 
@@ -72,11 +60,13 @@ npm install
 
 ```bash
 cd backend
-export SECRET_KEY="your-secret-key-here"  # 環境変数を設定
-uv run python manage.py runserver
+SECRET_KEY="your-secret-key-here" uv run uvicorn app.main:app --reload --port 8000
 ```
 
 バックエンドサーバーは `http://localhost:8000` で起動します。
+
+> [!IMPORTANT]
+> `SECRET_KEY` 環境変数の設定は必須です。本番環境では安全な値を使用してください。
 
 #### ターミナル2: フロントエンド開発サーバーの起動
 
@@ -85,28 +75,32 @@ cd frontend
 npm run dev
 ```
 
-このコマンドはWebpackをウォッチモードで起動し、ソースコードの変更を自動的にバンドルします。
+フロントエンド開発サーバーは `http://localhost:3000` で起動します。
 
 ### アプリケーションへのアクセス
 
-ブラウザで `http://localhost:8000` にアクセスしてアプリケーションを使用できます。
+- **フロントエンド**: `http://localhost:3000`
+- **APIドキュメント（Swagger UI）**: `http://localhost:8000/docs`
+- **APIドキュメント（ReDoc）**: `http://localhost:8000/redoc`
+
 
 ## 開発ワークフロー
 
-- **バックエンド**: モデル変更後は `uv run python manage.py makemigrations` と `uv run python manage.py migrate` を実行
-- **フロントエンド**: `npm run dev` 実行中は保存時に自動的に再バンドル
+- **バックエンド**: ソースコード変更時は `--reload` オプションで自動リロード
+- **フロントエンド**: `npm run dev` 実行中は保存時に自動的にホットリロード
 - **本番ビルド**: `npm run build`
 
 ## トラブルシューティング
 
 - **SECRET_KEY エラー**: 環境変数 `SECRET_KEY` を設定してください
-- **マイグレーションエラー**: `uv run python manage.py migrate --run-syncdb`
+- **ポート競合**: 別のポート番号を指定してください（例: `--port 8001`）
 
 ## その他のコマンド
 
-- Django管理画面: `http://localhost:8000/admin`
-- テスト実行: `uv run python manage.py test`
-- コードフォーマット: `uv run black .`
-- OpenAPI スキーマ生成: `uv run python manage.py generateschema --format openapi > schema.yml`
+```bash
+# コードフォーマット
+uv run black .
 
-
+# サーバー起動（本番モード）
+SECRET_KEY="your-secret-key" uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
