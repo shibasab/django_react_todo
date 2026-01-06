@@ -1,12 +1,13 @@
 import { combineReducers } from 'redux';
-import todo from './todo';
+
+import auth from './auth';
 import errors from './errors';
 import messages from './messages';
-import auth from './auth';
+import todo from './todo';
 
 export default combineReducers({
   todo,
   errors,
   messages,
-  auth
+  auth,
 });

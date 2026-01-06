@@ -1,26 +1,17 @@
 import { Component, Fragment } from 'react';
-
-import {
-  HashRouter as Router,
-  Route,
-  Switch
-} from 'react-router-dom';
-
-import { ToastContainer } from 'react-toastify';
+import { Provider } from 'react-redux';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
-import Header from './layout/Header';
-import Dashboard from './todo/Dashboard';
-import Alerts from './layout/Alerts';
+import { loadUser } from '../actions/auth';
+import store from '../store';
 import Login from './accounts/Login';
 import Register from './accounts/Register';
 import PrivateRoute from './common/PrivateRoute';
-
-import { Provider } from 'react-redux';
-import store from '../store';
-import { loadUser } from '../actions/auth';
-
-
+import Alerts from './layout/Alerts';
+import Header from './layout/Header';
+import Dashboard from './todo/Dashboard';
 
 class App extends Component {
   componentDidMount() {
