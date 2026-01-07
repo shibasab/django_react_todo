@@ -1,15 +1,26 @@
-import PropTypes from 'prop-types';
 import { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 
-export class Alerts extends Component {
-  static propTypes = {
-    error: PropTypes.object.isRequired,
-    message: PropTypes.object.isRequired,
+interface AlertsProps {
+  error: {
+    msg: {
+      todo_task?: string[];
+      non_field_errors?: string[];
+      username?: string[];
+      password?: string[];
+    };
+    status: number | null;
   };
+  message: {
+    deleteTodo?: string;
+    addTodo?: string;
+    passwordNotMatch?: string;
+  };
+}
 
-  componentDidUpdate(prevProps) {
+export class Alerts extends Component<AlertsProps> {
+  componentDidUpdate(prevProps: AlertsProps) {
     const { error, message } = this.props;
     if (error !== prevProps.error) {
       if (error.msg.todo_task) toast.error(`Task: ${error.msg.todo_task.join()}`);
@@ -30,7 +41,7 @@ export class Alerts extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: { errors: AlertsProps['error']; messages: AlertsProps['message'] }) => ({
   error: state.errors,
   message: state.messages,
 });

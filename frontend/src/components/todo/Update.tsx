@@ -1,26 +1,33 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { addTodo } from '../../actions/todo';
+// TODO: updateTodo関数が未実装のためコメントアウト
+// import { updateTodo } from '../../actions/todo';
 
-export class Form extends Component {
-  state = {
+interface UpdateState {
+  todo_task: string;
+  detail: string;
+}
+
+// TODO: updateTodo実装後に型を追加
+interface UpdateProps {}
+
+export class Update extends Component<UpdateProps, UpdateState> {
+  state: UpdateState = {
     todo_task: '',
     detail: '',
   };
 
-  static propTypes = {
-    addTodo: PropTypes.func.isRequired,
-  };
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    this.setState({ [e.target.name]: e.target.value } as Pick<UpdateState, keyof UpdateState>);
 
-  onChange = (e) => this.setState({ [e.target.name]: e.target.value });
-
-  onSubmit = (e) => {
+  onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const { todo_task, detail } = this.state;
     const todo = { todo_task, detail };
-    this.props.addTodo(todo);
+    // TODO: updateTodo関数実装後に有効化
+    // this.props.updateTodo(todo);
+    console.log('Update todo:', todo);
     this.setState({
       todo_task: '',
       detail: '',
@@ -44,7 +51,7 @@ export class Form extends Component {
 
           <div className="form-group">
             <button type="submit" className="btn btn-primary">
-              Submit
+              Update
             </button>
           </div>
         </form>
@@ -53,4 +60,5 @@ export class Form extends Component {
   }
 }
 
-export default connect(null, { addTodo })(Form);
+// TODO: updateTodo関数実装後に有効化
+export default connect(null, {})(Update);

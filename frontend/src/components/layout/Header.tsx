@@ -1,16 +1,20 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { logout } from '../../actions/auth';
 
-export class Header extends Component {
-  static propTypes = {
-    auth: PropTypes.object.isRequired,
-    logout: PropTypes.func.isRequired,
+interface HeaderProps {
+  auth: {
+    isAuthenticated: boolean;
+    user: {
+      username: string;
+    } | null;
   };
+  logout: () => void;
+}
 
+export class Header extends Component<HeaderProps> {
   render() {
     const { isAuthenticated, user } = this.props.auth;
 
@@ -68,7 +72,7 @@ export class Header extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: { auth: HeaderProps['auth'] }) => ({
   auth: state.auth,
 });
 

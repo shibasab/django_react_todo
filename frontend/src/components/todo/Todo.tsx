@@ -1,16 +1,21 @@
-import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 
 import { getTodos, deleteTodo } from '../../actions/todo';
 
-export class Todo extends Component {
-  static propTypes = {
-    todo: PropTypes.array.isRequired,
-    getTodos: PropTypes.func.isRequired,
-    deleteTodo: PropTypes.func.isRequired,
-  };
+interface TodoItem {
+  id: number;
+  todo_task: string;
+  detail: string;
+}
 
+interface TodoProps {
+  todo: TodoItem[];
+  getTodos: () => void;
+  deleteTodo: (id: number) => void;
+}
+
+export class Todo extends Component<TodoProps> {
   componentDidMount() {
     this.props.getTodos();
   }
@@ -47,7 +52,7 @@ export class Todo extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: { todo: { todo: TodoItem[] } }) => ({
   todo: state.todo.todo,
 });
 

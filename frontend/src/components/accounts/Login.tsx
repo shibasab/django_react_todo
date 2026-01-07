@@ -1,27 +1,32 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 
 import { login } from '../../actions/auth';
 
-export class Login extends Component {
-  state = {
+interface LoginState {
+  username: string;
+  password: string;
+}
+
+interface LoginProps {
+  login: (username: string, password: string) => void;
+  isAuthenticated: boolean;
+}
+
+export class Login extends Component<LoginProps, LoginState> {
+  state: LoginState = {
     username: '',
     password: '',
   };
 
-  static propTypes = {
-    login: PropTypes.func.isRequired,
-    isAuthenticated: PropTypes.bool,
-  };
-
-  onSubmit = (e) => {
+  onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     this.props.login(this.state.username, this.state.password);
   };
 
-  onChange = (e) => this.setState({ [e.target.name]: e.target.value });
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    this.setState({ [e.target.name]: e.target.value } as Pick<LoginState, keyof LoginState>);
 
   render() {
     if (this.props.isAuthenticated) {
@@ -64,7 +69,7 @@ export class Login extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: { auth: { isAuthenticated: boolean } }) => ({
   isAuthenticated: state.auth.isAuthenticated,
 });
 

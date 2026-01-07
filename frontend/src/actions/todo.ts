@@ -23,7 +23,7 @@ export const getTodos =
   };
 
 //DELETE TODO
-export const deleteTodo = (id: string) => (dispatch: Function, getState: () => { auth: { token: string } }) => {
+export const deleteTodo = (id: number) => (dispatch: Function, getState: () => { auth: { token: string } }) => {
   axios
     .delete(`/api/todo/${id}/`, tokenConfig(getState))
     .then((res) => {

@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
 import { loadUser } from '../actions/auth';
-import store from '../store';
+import store, { AppDispatch } from '../store';
 import Login from './accounts/Login';
 import Register from './accounts/Register';
 import PrivateRoute from './common/PrivateRoute';
@@ -15,6 +15,8 @@ import Dashboard from './todo/Dashboard';
 
 class App extends Component {
   componentDidMount() {
+    // @ts-expect-error - Redux thunk型の問題を回避
+    // TODO: 脱Reduxする
     store.dispatch(loadUser());
   }
 

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
@@ -6,20 +5,28 @@ import { Link, Redirect } from 'react-router-dom';
 import { register } from '../../actions/auth';
 import { createMessage } from '../../actions/messages';
 
-export class Register extends Component {
-  state = {
+interface RegisterState {
+  username: string;
+  email: string;
+  password: string;
+  password2: string;
+}
+
+interface RegisterProps {
+  register: (user: { username: string; password: string; email: string }) => void;
+  createMessage: (msg: {}) => void;
+  isAuthenticated: boolean;
+}
+
+export class Register extends Component<RegisterProps, RegisterState> {
+  state: RegisterState = {
     username: '',
     email: '',
     password: '',
     password2: '',
   };
 
-  static propTypes = {
-    register: PropTypes.func.isRequired,
-    isAuthenticated: PropTypes.bool,
-  };
-
-  onSubmit = (e) => {
+  onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const { username, email, password, password2 } = this.state;
     if (password !== password2) {
@@ -34,7 +41,8 @@ export class Register extends Component {
     }
   };
 
-  onChange = (e) => this.setState({ [e.target.name]: e.target.value });
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    this.setState({ [e.target.name]: e.target.value } as Pick<RegisterState, keyof RegisterState>);
 
   render() {
     if (this.props.isAuthenticated) {
@@ -89,7 +97,7 @@ export class Register extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: { auth: { isAuthenticated: boolean } }) => ({
   isAuthenticated: state.auth.isAuthenticated,
 });
 

@@ -1,9 +1,16 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { Route, Redirect } from 'react-router-dom';
+import { Route, Redirect, RouteProps } from 'react-router-dom';
 
-const PrivateRoute = ({ component: Component, auth, ...rest }) => (
+interface PrivateRouteProps extends RouteProps {
+  component: React.ComponentType<any>;
+  auth: {
+    isLoading: boolean;
+    isAuthenticated: boolean;
+  };
+}
+
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ component: Component, auth, ...rest }) => (
   <Route
     {...rest}
     render={(props) => {
@@ -18,7 +25,7 @@ const PrivateRoute = ({ component: Component, auth, ...rest }) => (
   />
 );
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: { auth: { isLoading: boolean; isAuthenticated: boolean } }) => ({
   auth: state.auth,
 });
 

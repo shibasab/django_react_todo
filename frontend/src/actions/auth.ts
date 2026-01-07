@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+import { AppDispatch } from '../store';
 import { returnErrors } from './messages';
 import {
   USER_LOADED,
@@ -13,30 +14,25 @@ import {
 } from './types';
 
 // CHECK TOKEN & LOAD USER
-export const loadUser =
-  () =>
-  (
-    dispatch: (arg: { type: string; payload?: Record<string, unknown> }) => void,
-    getState: () => { auth: { token: string } },
-  ) => {
-    // User Loading
-    dispatch({ type: USER_LOADING });
+export const loadUser = () => (dispatch: AppDispatch, getState: () => { auth: { token: string } }) => {
+  // User Loading
+  dispatch({ type: USER_LOADING });
 
-    axios
-      .get('/api/auth/user', tokenConfig(getState))
-      .then((res) => {
-        dispatch({
-          type: USER_LOADED,
-          payload: res.data,
-        });
-      })
-      .catch((err) => {
-        dispatch(returnErrors(err.response.data, err.response.status));
-        dispatch({
-          type: AUTH_ERROR,
-        });
+  axios
+    .get('/api/auth/user', tokenConfig(getState))
+    .then((res) => {
+      dispatch({
+        type: USER_LOADED,
+        payload: res.data,
       });
-  };
+    })
+    .catch((err) => {
+      dispatch(returnErrors(err.response.data, err.response.status));
+      dispatch({
+        type: AUTH_ERROR,
+      });
+    });
+};
 
 // LOGIN USER
 export const login =

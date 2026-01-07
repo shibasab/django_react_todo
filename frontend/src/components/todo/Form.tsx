@@ -1,26 +1,31 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { updateTodo } from '../../actions/todo';
+import { addTodo } from '../../actions/todo';
 
-export class Form extends Component {
-  state = {
+interface FormState {
+  todo_task: string;
+  detail: string;
+}
+
+interface FormProps {
+  addTodo: (todo: { todo_task: string; detail: string }) => void;
+}
+
+export class Form extends Component<FormProps, FormState> {
+  state: FormState = {
     todo_task: '',
     detail: '',
   };
 
-  static propTypes = {
-    updateTodo: PropTypes.func.isRequired,
-  };
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    this.setState({ [e.target.name]: e.target.value } as Pick<FormState, keyof FormState>);
 
-  onChange = (e) => this.setState({ [e.target.name]: e.target.value });
-
-  onSubmit = (e) => {
+  onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const { todo_task, detail } = this.state;
     const todo = { todo_task, detail };
-    this.props.updateTodo(todo);
+    this.props.addTodo(todo);
     this.setState({
       todo_task: '',
       detail: '',
@@ -44,7 +49,7 @@ export class Form extends Component {
 
           <div className="form-group">
             <button type="submit" className="btn btn-primary">
-              Update
+              Submit
             </button>
           </div>
         </form>
@@ -53,4 +58,4 @@ export class Form extends Component {
   }
 }
 
-export default connect(null, { updateTodo })(Form);
+export default connect(null, { addTodo })(Form);
