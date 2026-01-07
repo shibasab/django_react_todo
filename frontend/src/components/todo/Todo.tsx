@@ -1,23 +1,23 @@
-import React, { Component, Fragment } from 'react';
-import { connect } from 'react-redux';
+import React, { Component, Fragment } from 'react'
+import { connect } from 'react-redux'
 
-import { getTodos, deleteTodo } from '../../actions/todo';
+import { getTodos, deleteTodo } from '../../actions/todo'
 
 interface TodoItem {
-  id: number;
-  todo_task: string;
-  detail: string;
+  id: number
+  todo_task: string
+  detail: string
 }
 
 interface TodoProps {
-  todo: TodoItem[];
-  getTodos: () => void;
-  deleteTodo: (id: number) => void;
+  todo: TodoItem[]
+  getTodos: () => void
+  deleteTodo: (id: number) => void
 }
 
 export class Todo extends Component<TodoProps> {
   componentDidMount() {
-    this.props.getTodos();
+    this.props.getTodos()
   }
 
   render() {
@@ -48,12 +48,12 @@ export class Todo extends Component<TodoProps> {
           </tbody>
         </table>
       </Fragment>
-    );
+    )
   }
 }
 
 const mapStateToProps = (state: { todo: { todo: TodoItem[] } }) => ({
   todo: state.todo.todo,
-});
+})
 
-export default connect(mapStateToProps, { getTodos, deleteTodo })(Todo);
+export default connect(mapStateToProps, { getTodos, deleteTodo })(Todo)

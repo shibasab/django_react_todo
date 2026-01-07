@@ -1,9 +1,9 @@
-import { GET_ERRORS } from '../actions/types';
+import { GET_ERRORS } from '../actions/types'
 
 const initialState = {
   msg: {},
   status: null,
-};
+}
 
 export default function (state = initialState, action: { type: string; payload: { msg: string; status: number } }) {
   switch (action.type) {
@@ -11,8 +11,8 @@ export default function (state = initialState, action: { type: string; payload: 
       return {
         msg: action.payload.msg,
         status: action.payload.status,
-      };
+      }
     default:
-      return state;
+      return state
   }
 }

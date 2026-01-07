@@ -1,39 +1,39 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
-import { addTodo } from '../../actions/todo';
+import { addTodo } from '../../actions/todo'
 
 interface FormState {
-  todo_task: string;
-  detail: string;
+  todo_task: string
+  detail: string
 }
 
 interface FormProps {
-  addTodo: (todo: { todo_task: string; detail: string }) => void;
+  addTodo: (todo: { todo_task: string; detail: string }) => void
 }
 
 export class Form extends Component<FormProps, FormState> {
   state: FormState = {
     todo_task: '',
     detail: '',
-  };
+  }
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    this.setState({ [e.target.name]: e.target.value } as Pick<FormState, keyof FormState>);
+    this.setState({ [e.target.name]: e.target.value } as Pick<FormState, keyof FormState>)
 
   onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const { todo_task, detail } = this.state;
-    const todo = { todo_task, detail };
-    this.props.addTodo(todo);
+    e.preventDefault()
+    const { todo_task, detail } = this.state
+    const todo = { todo_task, detail }
+    this.props.addTodo(todo)
     this.setState({
       todo_task: '',
       detail: '',
-    });
-  };
+    })
+  }
 
   render() {
-    const { todo_task, detail } = this.state;
+    const { todo_task, detail } = this.state
     return (
       <div className="card card-body mt-4 mb-4">
         <h2>Add Todo</h2>
@@ -54,8 +54,8 @@ export class Form extends Component<FormProps, FormState> {
           </div>
         </form>
       </div>
-    );
+    )
   }
 }
 
-export default connect(null, { addTodo })(Form);
+export default connect(null, { addTodo })(Form)

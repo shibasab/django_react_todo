@@ -1,23 +1,23 @@
-import { Component, Fragment } from 'react';
-import { Provider } from 'react-redux';
-import { HashRouter as Router, Route, Switch } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify';
+import { Component, Fragment } from 'react'
+import { Provider } from 'react-redux'
+import { HashRouter as Router, Route, Switch } from 'react-router-dom'
+import 'react-toastify/dist/ReactToastify.css'
+import { ToastContainer } from 'react-toastify'
 
-import { loadUser } from '../actions/auth';
-import store, { AppDispatch } from '../store';
-import Login from './accounts/Login';
-import Register from './accounts/Register';
-import PrivateRoute from './common/PrivateRoute';
-import Alerts from './layout/Alerts';
-import Header from './layout/Header';
-import Dashboard from './todo/Dashboard';
+import { loadUser } from '../actions/auth'
+import store, { AppDispatch } from '../store'
+import Login from './accounts/Login'
+import Register from './accounts/Register'
+import PrivateRoute from './common/PrivateRoute'
+import Alerts from './layout/Alerts'
+import Header from './layout/Header'
+import Dashboard from './todo/Dashboard'
 
 class App extends Component {
   componentDidMount() {
     // @ts-expect-error - Redux thunk型の問題を回避
     // TODO: 脱Reduxする
-    store.dispatch(loadUser());
+    store.dispatch(loadUser())
   }
 
   render() {
@@ -40,8 +40,8 @@ class App extends Component {
           </Router>
         </Fragment>
       </Provider>
-    );
+    )
   }
 }
 
-export default App;
+export default App

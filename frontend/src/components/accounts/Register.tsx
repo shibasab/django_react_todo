@@ -1,21 +1,21 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Link, Redirect } from 'react-router-dom';
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { Link, Redirect } from 'react-router-dom'
 
-import { register } from '../../actions/auth';
-import { createMessage } from '../../actions/messages';
+import { register } from '../../actions/auth'
+import { createMessage } from '../../actions/messages'
 
 interface RegisterState {
-  username: string;
-  email: string;
-  password: string;
-  password2: string;
+  username: string
+  email: string
+  password: string
+  password2: string
 }
 
 interface RegisterProps {
-  register: (user: { username: string; password: string; email: string }) => void;
-  createMessage: (msg: {}) => void;
-  isAuthenticated: boolean;
+  register: (user: { username: string; password: string; email: string }) => void
+  createMessage: (msg: {}) => void
+  isAuthenticated: boolean
 }
 
 export class Register extends Component<RegisterProps, RegisterState> {
@@ -24,31 +24,31 @@ export class Register extends Component<RegisterProps, RegisterState> {
     email: '',
     password: '',
     password2: '',
-  };
+  }
 
   onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const { username, email, password, password2 } = this.state;
+    e.preventDefault()
+    const { username, email, password, password2 } = this.state
     if (password !== password2) {
-      this.props.createMessage({ passwordNotMatch: 'Passwords do not match' });
+      this.props.createMessage({ passwordNotMatch: 'Passwords do not match' })
     } else {
       const newUser = {
         username,
         password,
         email,
-      };
-      this.props.register(newUser);
+      }
+      this.props.register(newUser)
     }
-  };
+  }
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    this.setState({ [e.target.name]: e.target.value } as Pick<RegisterState, keyof RegisterState>);
+    this.setState({ [e.target.name]: e.target.value } as Pick<RegisterState, keyof RegisterState>)
 
   render() {
     if (this.props.isAuthenticated) {
-      return <Redirect to="/" />;
+      return <Redirect to="/" />
     }
-    const { username, email, password, password2 } = this.state;
+    const { username, email, password, password2 } = this.state
     return (
       <div className="col-md-6 m-auto">
         <div className="card card-body mt-5">
@@ -93,12 +93,12 @@ export class Register extends Component<RegisterProps, RegisterState> {
           </form>
         </div>
       </div>
-    );
+    )
   }
 }
 
 const mapStateToProps = (state: { auth: { isAuthenticated: boolean } }) => ({
   isAuthenticated: state.auth.isAuthenticated,
-});
+})
 
-export default connect(mapStateToProps, { register, createMessage })(Register);
+export default connect(mapStateToProps, { register, createMessage })(Register)

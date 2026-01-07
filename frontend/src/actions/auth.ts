@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios from 'axios'
 
-import { AppDispatch } from '../store';
-import { returnErrors } from './messages';
+import { AppDispatch } from '../store'
+import { returnErrors } from './messages'
 import {
   USER_LOADED,
   USER_LOADING,
@@ -11,12 +11,12 @@ import {
   LOGOUT_SUCCESS,
   REGISTER_SUCCESS,
   REGISTER_FAIL,
-} from './types';
+} from './types'
 
 // CHECK TOKEN & LOAD USER
 export const loadUser = () => (dispatch: AppDispatch, getState: () => { auth: { token: string } }) => {
   // User Loading
-  dispatch({ type: USER_LOADING });
+  dispatch({ type: USER_LOADING })
 
   axios
     .get('/api/auth/user', tokenConfig(getState))
@@ -24,15 +24,15 @@ export const loadUser = () => (dispatch: AppDispatch, getState: () => { auth: { 
       dispatch({
         type: USER_LOADED,
         payload: res.data,
-      });
+      })
     })
     .catch((err) => {
-      dispatch(returnErrors(err.response.data, err.response.status));
+      dispatch(returnErrors(err.response.data, err.response.status))
       dispatch({
         type: AUTH_ERROR,
-      });
-    });
-};
+      })
+    })
+}
 
 // LOGIN USER
 export const login =
@@ -43,10 +43,10 @@ export const login =
       headers: {
         'Content-Type': 'application/json',
       },
-    };
+    }
 
     // Request Body
-    const body = JSON.stringify({ username, password });
+    const body = JSON.stringify({ username, password })
 
     axios
       .post('/api/auth/login', body, config)
@@ -54,15 +54,15 @@ export const login =
         dispatch({
           type: LOGIN_SUCCESS,
           payload: res.data,
-        });
+        })
       })
       .catch((err) => {
-        dispatch(returnErrors(err.response.data, err.response.status));
+        dispatch(returnErrors(err.response.data, err.response.status))
         dispatch({
           type: LOGIN_FAIL,
-        });
-      });
-  };
+        })
+      })
+  }
 
 // REGISTER USER
 export const register =
@@ -73,10 +73,10 @@ export const register =
       headers: {
         'Content-Type': 'application/json',
       },
-    };
+    }
 
     // Request Body
-    const body = JSON.stringify({ username, email, password });
+    const body = JSON.stringify({ username, email, password })
 
     axios
       .post('/api/auth/register', body, config)
@@ -84,15 +84,15 @@ export const register =
         dispatch({
           type: REGISTER_SUCCESS,
           payload: res.data,
-        });
+        })
       })
       .catch((err) => {
-        dispatch(returnErrors(err.response.data, err.response.status));
+        dispatch(returnErrors(err.response.data, err.response.status))
         dispatch({
           type: REGISTER_FAIL,
-        });
-      });
-  };
+        })
+      })
+  }
 
 // LOGOUT USER
 export const logout =
@@ -107,29 +107,29 @@ export const logout =
         dispatch({
           type: LOGOUT_SUCCESS,
           payload: res.data,
-        });
+        })
       })
       .catch((err) => {
-        dispatch(returnErrors(err.response.data, err.response.status));
-      });
-  };
+        dispatch(returnErrors(err.response.data, err.response.status))
+      })
+  }
 
 // Setup config with token -helper function
 export const tokenConfig = (getState: () => { auth: { token: string } }) => {
   // Get token from state
-  const token = getState().auth.token;
+  const token = getState().auth.token
 
   // Headers
   const config: { headers: { 'Content-Type': string; Authorization?: string } } = {
     headers: {
       'Content-Type': 'application/json',
     },
-  };
+  }
 
   // If token, add to headers config
   if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`;
+    config.headers['Authorization'] = `Bearer ${token}`
   }
 
-  return config;
-};
+  return config
+}

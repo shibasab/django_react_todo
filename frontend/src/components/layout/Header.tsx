@@ -1,22 +1,22 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
-import { logout } from '../../actions/auth';
+import { logout } from '../../actions/auth'
 
 interface HeaderProps {
   auth: {
-    isAuthenticated: boolean;
+    isAuthenticated: boolean
     user: {
-      username: string;
-    } | null;
-  };
-  logout: () => void;
+      username: string
+    } | null
+  }
+  logout: () => void
 }
 
 export class Header extends Component<HeaderProps> {
   render() {
-    const { isAuthenticated, user } = this.props.auth;
+    const { isAuthenticated, user } = this.props.auth
 
     const authLinks = (
       <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
@@ -29,7 +29,7 @@ export class Header extends Component<HeaderProps> {
           </button>
         </li>
       </ul>
-    );
+    )
 
     const guestLinks = (
       <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
@@ -44,7 +44,7 @@ export class Header extends Component<HeaderProps> {
           </Link>
         </li>
       </ul>
-    );
+    )
 
     return (
       <nav className="navbar navbar-expand-sm navbar-dark" style={{ background: '#1A535C' }}>
@@ -68,12 +68,12 @@ export class Header extends Component<HeaderProps> {
           {isAuthenticated ? authLinks : guestLinks}
         </div>
       </nav>
-    );
+    )
   }
 }
 
 const mapStateToProps = (state: { auth: HeaderProps['auth'] }) => ({
   auth: state.auth,
-});
+})
 
-export default connect(mapStateToProps, { logout })(Header);
+export default connect(mapStateToProps, { logout })(Header)

@@ -1,12 +1,12 @@
-import { CREATE_MESSAGE } from '../actions/types';
+import { CREATE_MESSAGE } from '../actions/types'
 
-const initialState = {};
+const initialState = {}
 
 export default function (state = initialState, action: { type: string; payload: Record<string, unknown> }) {
   switch (action.type) {
     case CREATE_MESSAGE:
-      return (state = action.payload);
+      return (state = action.payload)
     default:
-      return state;
+      return state
   }
 }

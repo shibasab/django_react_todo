@@ -1,8 +1,8 @@
-import { GET_TODOS, DELETE_TODO, ADD_TODO } from '../actions/types.js';
+import { GET_TODOS, DELETE_TODO, ADD_TODO } from '../actions/types.js'
 
 const initialState = {
   todo: [],
-};
+}
 
 export default function (state: { todo: { id: string }[] } = initialState, action: { type: string; payload: string }) {
   switch (action.type) {
@@ -10,18 +10,18 @@ export default function (state: { todo: { id: string }[] } = initialState, actio
       return {
         ...state,
         todo: action.payload,
-      };
+      }
     case DELETE_TODO:
       return {
         ...state,
         todo: state.todo.filter((todo) => todo.id !== action.payload),
-      };
+      }
     case ADD_TODO:
       return {
         ...state,
         todo: [...state.todo, action.payload],
-      };
+      }
     default:
-      return state;
+      return state
   }
 }
