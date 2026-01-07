@@ -5,7 +5,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    extensions: ['.js', '.jsx', '.json'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
   },
   build: {
     // Django の静的ファイルディレクトリに出力
@@ -13,7 +13,7 @@ export default defineConfig({
     // ビルド時に outDir をクリアしない（Django の他のファイルを保護）
     emptyOutDir: true,
     rollupOptions: {
-      input: 'src/index.jsx',
+      input: 'src/index.tsx',
       output: {
         entryFileNames: 'main.js',
         chunkFileNames: 'chunks/[name]-[hash].js',
