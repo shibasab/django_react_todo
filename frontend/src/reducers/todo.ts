@@ -4,7 +4,7 @@ const initialState = {
   todo: [],
 };
 
-export default function (state = initialState, action) {
+export default function (state: { todo: { id: string }[] } = initialState, action: { type: string; payload: string }) {
   switch (action.type) {
     case GET_TODOS:
       return {

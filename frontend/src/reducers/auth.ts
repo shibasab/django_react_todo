@@ -16,7 +16,10 @@ const initialState = {
   user: null,
 };
 
-export default function (state = initialState, action) {
+export default function (
+  state: Record<string, unknown> = initialState,
+  action: { type: string; payload: { token: string } },
+) {
   switch (action.type) {
     case USER_LOADING:
       return {
