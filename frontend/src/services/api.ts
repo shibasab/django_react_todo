@@ -11,7 +11,6 @@ type ApiClient = Readonly<{
   delete: <T>(url: string, config?: RequestConfig) => Promise<T>
 }>
 
-
 /**
  * トークンストレージ
  */
@@ -26,7 +25,7 @@ export const tokenStorage = {
  */
 const createAxiosInstance = (): AxiosInstance => {
   const instance = axios.create({
-    baseURL:  config.API_BASE_URL,
+    baseURL: config.API_BASE_URL,
     headers: {
       'Content-Type': 'application/json',
     },
