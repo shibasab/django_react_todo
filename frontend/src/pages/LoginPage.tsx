@@ -1,9 +1,7 @@
 import { useState, type FormEvent, type ChangeEvent } from 'react'
-import { Link, Redirect } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { useAuth } from '../services/auth'
-
-// TODO: Phase 4でlayouts/PublicLayout.tsxに認証チェックを移動し、以下の認証関連処理を削除する
 
 type LoginFormState = Readonly<{
   username: string
@@ -11,7 +9,7 @@ type LoginFormState = Readonly<{
 }>
 
 export const LoginPage = () => {
-  const { isAuthenticated, login } = useAuth()
+  const { login } = useAuth()
   const [formState, setFormState] = useState<LoginFormState>({
     username: '',
     password: '',
@@ -25,10 +23,6 @@ export const LoginPage = () => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormState((prev) => ({ ...prev, [name]: value }))
-  }
-
-  if (isAuthenticated) {
-    return <Redirect to="/" />
   }
 
   return (
