@@ -1,5 +1,5 @@
 export type User = Readonly<{
   id: number
-  name: string
+  username: string
   email: string
 }>
