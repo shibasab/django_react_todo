@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 
 import { Navigate } from 'react-router'
 
-import { useAuth } from '../services/auth'
+import { useAuth } from '../hooks/useAuth'
 
 type PublicLayoutProps = Readonly<{
   children: ReactNode

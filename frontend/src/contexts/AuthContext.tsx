@@ -1,12 +1,24 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { createContext, useState, useEffect, type ReactNode } from 'react'
 
 import type { User } from '../models/user'
 
-import { useApiClient } from '../contexts/ApiContext'
-import { Auth, AuthState } from '../models/auth'
-import { tokenStorage } from './api'
+import { type Auth } from '../models/auth'
+import { tokenStorage } from '../services/api'
+import { useApiClient } from './ApiContext'
 
-type AuthContextValue = Readonly<{
+/**
+ * 認証状態（Context内部用）
+ */
+type AuthState = Readonly<{
+  user: User | null
+  isAuthenticated: boolean
+  isLoading: boolean
+}>
+
+/**
+ * 認証Context の公開API
+ */
+export type AuthContextValue = Readonly<{
   user: User | null
   isAuthenticated: boolean
   isLoading: boolean
@@ -22,10 +34,8 @@ const initialState: AuthState = {
   isLoading: true,
 }
 
-// Context作成
-const AuthContext = createContext<AuthContextValue | null>(null)
+export const AuthContext = createContext<AuthContextValue | null>(null)
 
-// Provider コンポーネント
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const apiClient = useApiClient()
   const [state, setState] = useState<AuthState>(initialState)
@@ -34,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const loadUser = async () => {
       const token = tokenStorage.get()
-      if (!token) {
+      if (token == null || token === '') {
         setState({ user: null, isAuthenticated: false, isLoading: false })
         return
       }
@@ -82,12 +92,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   } as const satisfies AuthContextValue
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export const useAuth = (): AuthContextValue => {
-  const context = useContext(AuthContext)
-  if (context === null) {
-    throw new Error('useAuth must be used within an AuthProvider')
-  }
-  return context
 }

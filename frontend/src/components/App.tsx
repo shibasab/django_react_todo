@@ -3,12 +3,12 @@ import { HashRouter, Routes, Route } from 'react-router'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { ApiProvider } from '../contexts/ApiContext'
+import { AuthProvider } from '../contexts/AuthContext'
 import { PrivateLayout } from '../layouts/PrivateLayout'
 import { PublicLayout } from '../layouts/PublicLayout'
 import { DashboardPage } from '../pages/DashboardPage'
 import { LoginPage } from '../pages/LoginPage'
 import { RegisterPage } from '../pages/RegisterPage'
-import { AuthProvider } from '../services/auth'
 import { Header } from './layout/Header'
 
 export const App = () => {

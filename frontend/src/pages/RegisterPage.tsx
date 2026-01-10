@@ -1,7 +1,7 @@
 import { useState, type FormEvent, type ChangeEvent } from 'react'
 import { Link } from 'react-router'
 
-import { useAuth } from '../services/auth'
+import { useAuth } from '../hooks/useAuth'
 
 type RegisterFormState = Readonly<{
   username: string

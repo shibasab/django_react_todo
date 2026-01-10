@@ -6,7 +6,7 @@ import { MemoryRouter } from 'react-router'
 import type { ApiClient } from '../../src/services/api'
 
 import { ApiProvider } from '../../src/contexts/ApiContext'
-import { AuthProvider } from '../../src/services/auth'
+import { AuthProvider } from '../../src/contexts/AuthContext'
 
 type RenderPageOptions = Readonly<{
   apiClient: ApiClient
