@@ -26,5 +26,12 @@ export default defineConfig({
     port: 3000,
     // Django サーバーとの連携のため
     cors: true,
+    // APIリクエストをバックエンドにプロキシ
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    },
   },
 })
