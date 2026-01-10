@@ -1,10 +1,10 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios'
+import axios, { type AxiosInstance } from 'axios'
 
 import config from '../config'
 
 type RequestConfig = Readonly<{}>
 
-type ApiClient = Readonly<{
+export type ApiClient = Readonly<{
   get: <T>(url: string, config?: RequestConfig) => Promise<T>
   post: <T>(url: string, data?: unknown, config?: RequestConfig) => Promise<T>
   put: <T>(url: string, data?: unknown, config?: RequestConfig) => Promise<T>
@@ -43,7 +43,7 @@ const createAxiosInstance = (): AxiosInstance => {
   return instance
 }
 
-const createApiClient = (axiosInstance: AxiosInstance): ApiClient => ({
+export const createApiClient = (axiosInstance: AxiosInstance = createAxiosInstance()): ApiClient => ({
   get: async <T>(url: string, config?: RequestConfig): Promise<T> => {
     const response = await axiosInstance.get<T>(url, config)
     return response.data
@@ -64,5 +64,3 @@ const createApiClient = (axiosInstance: AxiosInstance): ApiClient => ({
     return response.data
   },
 })
-
-export const apiClient = createApiClient(createAxiosInstance())
