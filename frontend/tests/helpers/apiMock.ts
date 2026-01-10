@@ -23,26 +23,26 @@ export const createMockApiClient = (options: MockApiClientOptions = {}) => {
   const requests: ApiRequest[] = []
 
   const mockClient = {
-    get: vi.fn(async (url: string) => {
+    get: vi.fn(async <T>(url: string): Promise<T> => {
       requests.push({ method: 'GET', url })
-      return options.getResponse ?? []
+      return (options.getResponse ?? []) as T
     }),
 
-    post: vi.fn(async (url: string, data?: unknown) => {
+    post: vi.fn(async <T>(url: string, data?: unknown): Promise<T> => {
       requests.push({ method: 'POST', url, data })
-      return options.postResponse ?? {}
+      return (options.postResponse ?? {}) as T
     }),
 
-    put: vi.fn(async (url: string, data?: unknown) => {
+    put: vi.fn(async <T>(url: string, data?: unknown): Promise<T> => {
       requests.push({ method: 'PUT', url, data })
-      return options.putResponse ?? {}
+      return (options.putResponse ?? {}) as T
     }),
 
-    delete: vi.fn(async (url: string) => {
+    delete: vi.fn(async <T>(url: string): Promise<T> => {
       requests.push({ method: 'DELETE', url })
-      return options.deleteResponse ?? undefined
+      return (options.deleteResponse ?? undefined) as T
     }),
-  }
+  } as ApiClient
 
   return {
     client: mockClient,
