@@ -1,4 +1,3 @@
-import { Fragment } from 'react'
 import { HashRouter, Routes, Route } from 'react-router'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -15,42 +14,38 @@ export const App = () => {
   return (
     <ApiProvider>
       <AuthProvider>
-        <Fragment>
-          <ToastContainer />
-          <HashRouter>
-            <Fragment>
-              <Header />
-              <div className="container" style={{ background: '#F7FFF7' }}>
-                <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      <PrivateLayout>
-                        <DashboardPage />
-                      </PrivateLayout>
-                    }
-                  />
-                  <Route
-                    path="/login"
-                    element={
-                      <PublicLayout>
-                        <LoginPage />
-                      </PublicLayout>
-                    }
-                  />
-                  <Route
-                    path="/register"
-                    element={
-                      <PublicLayout>
-                        <RegisterPage />
-                      </PublicLayout>
-                    }
-                  />
-                </Routes>
-              </div>
-            </Fragment>
-          </HashRouter>
-        </Fragment>
+        <ToastContainer />
+        <HashRouter>
+          <Header />
+          <div className="container" style={{ background: '#F7FFF7' }}>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <PrivateLayout>
+                    <DashboardPage />
+                  </PrivateLayout>
+                }
+              />
+              <Route
+                path="/login"
+                element={
+                  <PublicLayout>
+                    <LoginPage />
+                  </PublicLayout>
+                }
+              />
+              <Route
+                path="/register"
+                element={
+                  <PublicLayout>
+                    <RegisterPage />
+                  </PublicLayout>
+                }
+              />
+            </Routes>
+          </div>
+        </HashRouter>
       </AuthProvider>
     </ApiProvider>
   )
