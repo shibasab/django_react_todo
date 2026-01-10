@@ -31,12 +31,26 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
       <h2>Add Todo</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Task</label>
-          <input className="form-control" type="text" name="name" onChange={handleChange} value={formState.name} />
+          <label htmlFor="todo-name">Task</label>
+          <input
+            id="todo-name"
+            className="form-control"
+            type="text"
+            name="name"
+            onChange={handleChange}
+            value={formState.name}
+          />
         </div>
         <div className="form-group">
-          <label>Detail</label>
-          <input className="form-control" type="text" name="detail" onChange={handleChange} value={formState.detail} />
+          <label htmlFor="todo-detail">Detail</label>
+          <input
+            id="todo-detail"
+            className="form-control"
+            type="text"
+            name="detail"
+            onChange={handleChange}
+            value={formState.detail}
+          />
         </div>
 
         <div className="form-group">
