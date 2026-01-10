@@ -1,0 +1,141 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DashboardPage > TODO削除 > 削除ボタンクリックでDELETE APIが呼ばれる > api-requests-delete 1`] = `
+[
+  {
+    "method": "DELETE",
+    "url": "/todo/1/",
+  },
+]
+`;
+
+exports[`DashboardPage > TODO追加 > タスク名入力→追加ボタンでPOST APIが呼ばれる > api-requests-add 1`] = `
+[
+  {
+    "data": {
+      "detail": "New Detail",
+      "name": "New Todo",
+    },
+    "method": "POST",
+    "url": "/todo/",
+  },
+]
+`;
+
+exports[`DashboardPage > 初期表示 > ページレンダリング時にGET APIが呼ばれ、TODOリストが表示される > api-requests 1`] = `
+[
+  {
+    "method": "GET",
+    "url": "/todo/",
+  },
+]
+`;
+
+exports[`DashboardPage > 初期表示 > ページレンダリング時にGET APIが呼ばれ、TODOリストが表示される > dom 1`] = `
+<body>
+  <div>
+    <br />
+    <h4>
+      Todo List
+    </h4>
+    <table
+      class="table table-striped"
+    >
+      <thead>
+        <tr>
+          <th>
+            Task
+          </th>
+          <th>
+            Detail
+          </th>
+          <th />
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            Test Todo 1
+          </td>
+          <td>
+            Detail 1
+          </td>
+          <td>
+            <button
+              class="btn btn-danger btn-sm"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Test Todo 2
+          </td>
+          <td>
+            Detail 2
+          </td>
+          <td>
+            <button
+              class="btn btn-danger btn-sm"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div
+      class="card card-body mt-4 mb-4"
+    >
+      <h2>
+        Add Todo
+      </h2>
+      <form>
+        <div
+          class="form-group"
+        >
+          <label
+            for="todo-name"
+          >
+            Task
+          </label>
+          <input
+            class="form-control"
+            id="todo-name"
+            name="name"
+            type="text"
+            value=""
+          />
+        </div>
+        <div
+          class="form-group"
+        >
+          <label
+            for="todo-detail"
+          >
+            Detail
+          </label>
+          <input
+            class="form-control"
+            id="todo-detail"
+            name="detail"
+            type="text"
+            value=""
+          />
+        </div>
+        <div
+          class="form-group"
+        >
+          <button
+            class="btn btn-primary"
+            type="submit"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+`;
