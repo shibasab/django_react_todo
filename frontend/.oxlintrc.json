@@ -1,11 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "react",
-    "typescript",
-    "import",
-    "promise"
-  ],
+  "plugins": ["react", "typescript", "import", "promise"],
   "categories": {
     "correctness": "deny",
     "perf": "warn",
@@ -197,10 +192,5 @@
     "es2024": true
   },
   "globals": {},
-  "ignorePatterns": [
-    "node_modules",
-    "dist",
-    "*.config.ts",
-    "*.config.js"
-  ]
+  "ignorePatterns": ["node_modules", "dist", "*.config.ts", "*.config.js"]
 }
