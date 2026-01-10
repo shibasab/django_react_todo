@@ -42,7 +42,7 @@ export const createMockApiClient = (options: MockApiClientOptions = {}) => {
       requests.push({ method: 'DELETE', url })
       return options.deleteResponse ?? undefined
     }),
-  } as ApiClient
+  }
 
   return {
     client: mockClient,
