@@ -1,47 +1,56 @@
-import { Component, Fragment } from 'react'
-import { Provider } from 'react-redux'
-import { HashRouter as Router, Route, Switch } from 'react-router-dom'
-import 'react-toastify/dist/ReactToastify.css'
+import { Fragment } from 'react'
+import { HashRouter, Routes, Route } from 'react-router'
 import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { PrivateLayout } from '../layouts/PrivateLayout'
+import { PublicLayout } from '../layouts/PublicLayout'
+import { DashboardPage } from '../pages/DashboardPage'
+import { LoginPage } from '../pages/LoginPage'
+import { RegisterPage } from '../pages/RegisterPage'
+import { AuthProvider } from '../services/auth'
+import { Header } from './layout/Header'
 
-import { loadUser } from '../actions/auth'
-import store, { AppDispatch } from '../store'
-import Login from './accounts/Login'
-import Register from './accounts/Register'
-import PrivateRoute from './common/PrivateRoute'
-import Alerts from './layout/Alerts'
-import Header from './layout/Header'
-import Dashboard from './todo/Dashboard'
-
-class App extends Component {
-  componentDidMount() {
-    // @ts-expect-error - Redux thunk型の問題を回避
-    // TODO: 脱Reduxする
-    store.dispatch(loadUser())
-  }
-
-  render() {
-    return (
-      <Provider store={store}>
-        <Fragment>
-          <ToastContainer />
-          <Router>
-            <Fragment>
-              <Header />
-              <Alerts />
-              <div className="container" style={{ background: '#F7FFF7' }}>
-                <Switch>
-                  <PrivateRoute exact path="/" component={Dashboard} />
-                  <Route exact path="/register" component={Register} />
-                  <Route exact path="/login" component={Login} />
-                </Switch>
-              </div>
-            </Fragment>
-          </Router>
-        </Fragment>
-      </Provider>
-    )
-  }
+export const App = () => {
+  return (
+    <AuthProvider>
+      <Fragment>
+        <ToastContainer />
+        <HashRouter>
+          <Fragment>
+            <Header />
+            <div className="container" style={{ background: '#F7FFF7' }}>
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <PrivateLayout>
+                      <DashboardPage />
+                    </PrivateLayout>
+                  }
+                />
+                <Route
+                  path="/login"
+                  element={
+                    <PublicLayout>
+                      <LoginPage />
+                    </PublicLayout>
+                  }
+                />
+                <Route
+                  path="/register"
+                  element={
+                    <PublicLayout>
+                      <RegisterPage />
+                    </PublicLayout>
+                  }
+                />
+              </Routes>
+            </div>
+          </Fragment>
+        </HashRouter>
+      </Fragment>
+    </AuthProvider>
+  )
 }
 
 export default App
