@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import { Redirect } from 'react-router-dom'
+import { Navigate } from 'react-router'
 
 import { useAuth } from '../services/auth'
 
@@ -21,7 +21,7 @@ export const PrivateLayout = ({ children }: PrivateLayoutProps) => {
   }
 
   if (!isAuthenticated) {
-    return <Redirect to="/login" />
+    return <Navigate to="/login" replace />
   }
 
   return <>{children}</>
