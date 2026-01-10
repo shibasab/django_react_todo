@@ -2,8 +2,9 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 
 import type { User } from '../models/user'
 
+import { useApiClient } from '../contexts/ApiContext'
 import { Auth, AuthState } from '../models/auth'
-import { apiClient, tokenStorage } from './api'
+import { tokenStorage } from './api'
 
 type AuthContextValue = Readonly<{
   user: User | null
@@ -26,6 +27,7 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 
 // Provider コンポーネント
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const apiClient = useApiClient()
   const [state, setState] = useState<AuthState>(initialState)
 
   // 初回マウント時にユーザー情報を読み込む

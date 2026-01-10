@@ -2,11 +2,7 @@ import { useState } from 'react'
 
 import type { Todo } from '../models/todo'
 
-import { apiClient } from '../services/api'
-
-const fetchTodosApi = () => apiClient.get<readonly Todo[]>('/todo/')
-const createTodoApi = (name: string, detail: string) => apiClient.post<Todo>('/todo/', { name, detail })
-const deleteTodoApi = (id: number) => apiClient.delete(`/todo/${id}/`)
+import { useApiClient } from '../contexts/ApiContext'
 
 type TodoService = Readonly<{
   todos: readonly Todo[]
@@ -17,13 +13,14 @@ type TodoService = Readonly<{
 }>
 
 export const useTodo = (): TodoService => {
+  const apiClient = useApiClient()
   const [todos, setTodos] = useState<readonly Todo[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchTodos = async () => {
     setIsLoading(true)
     try {
-      const data = await fetchTodosApi()
+      const data = await apiClient.get<readonly Todo[]>('/todo/')
       setTodos(data)
     } finally {
       setIsLoading(false)
@@ -31,12 +28,12 @@ export const useTodo = (): TodoService => {
   }
 
   const addTodo = async (name: string, detail: string) => {
-    await createTodoApi(name, detail)
+    await apiClient.post<Todo>('/todo/', { name, detail })
     fetchTodos()
   }
 
   const removeTodo = async (id: number) => {
-    await deleteTodoApi(id)
+    await apiClient.delete(`/todo/${id}/`)
     fetchTodos()
   }
 
