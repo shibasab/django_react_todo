@@ -3,7 +3,7 @@ import { createContext, useState, useEffect, type ReactNode } from 'react'
 import type { User } from '../models/user'
 
 import { type Auth } from '../models/auth'
-import { tokenStorage } from '../services/api'
+import { authToken } from '../services/authToken'
 import { useApiClient } from './ApiContext'
 
 /**
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // 初回マウント時にユーザー情報を読み込む
   useEffect(() => {
     const loadUser = async () => {
-      const token = tokenStorage.get()
+      const token = authToken.get()
       if (token == null || token === '') {
         setState({ user: null, isAuthenticated: false, isLoading: false })
         return
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const user = await apiClient.get<User>('/auth/user')
         setState({ user, isAuthenticated: true, isLoading: false })
       } catch {
-        tokenStorage.remove()
+        authToken.remove()
         setState({ user: null, isAuthenticated: false, isLoading: false })
       }
     }
@@ -63,13 +63,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (username: string, password: string): Promise<void> => {
     const response = await apiClient.post<Auth>('/auth/login', { username, password })
-    tokenStorage.set(response.token)
+    authToken.set(response.token)
     setState({ user: response.user, isAuthenticated: true, isLoading: false })
   }
 
   const register = async (username: string, email: string, password: string): Promise<void> => {
     const response = await apiClient.post<Auth>('/auth/register', { username, email, password })
-    tokenStorage.set(response.token)
+    authToken.set(response.token)
     setState({ user: response.user, isAuthenticated: true, isLoading: false })
   }
 
@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await apiClient.post('/auth/logout', null)
     } finally {
-      tokenStorage.remove()
+      authToken.remove()
       setState({ user: null, isAuthenticated: false, isLoading: false })
     }
   }

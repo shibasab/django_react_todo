@@ -1,6 +1,7 @@
 import axios, { type AxiosInstance } from 'axios'
 
 import config from '../config'
+import { authToken } from './authToken'
 
 type RequestConfig = Readonly<{}>
 
@@ -10,15 +11,6 @@ export type ApiClient = Readonly<{
   put: <T>(url: string, data?: unknown, config?: RequestConfig) => Promise<T>
   delete: <T>(url: string, config?: RequestConfig) => Promise<T>
 }>
-
-/**
- * トークンストレージ
- */
-export const tokenStorage = {
-  get: (): string | null => localStorage.getItem('token'),
-  set: (token: string): void => localStorage.setItem('token', token),
-  remove: (): void => localStorage.removeItem('token'),
-}
 
 /**
  * Axios インスタンス作成
@@ -33,7 +25,7 @@ const createAxiosInstance = (): AxiosInstance => {
 
   // リクエストインターセプター: トークン自動付与
   instance.interceptors.request.use((config) => {
-    const token = tokenStorage.get()
+    const token = authToken.get()
     if (token != null) {
       config.headers.Authorization = `Bearer ${token}`
     }
