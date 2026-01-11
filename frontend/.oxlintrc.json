@@ -165,13 +165,10 @@
       "components": {},
       "attributes": {}
     },
-    "next": {
-      "rootDir": []
-    },
     "react": {
       "formComponents": [],
       "linkComponents": [],
-      "version": null
+      "version": "18.2"
     },
     "jsdoc": {
       "ignorePrivate": false,
