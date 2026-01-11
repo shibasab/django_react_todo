@@ -117,7 +117,7 @@
     "react/no-unescaped-entities": "warn",
     "react/no-unsafe": "deny",
     "react/no-will-update-set-state": "deny",
-    "react/react-in-jsx-scope": "warn",
+    "react/react-in-jsx-scope": "off",
     "react/require-render-return": "deny",
     "react/rules-of-hooks": "deny",
     "react/style-prop-object": "warn",
