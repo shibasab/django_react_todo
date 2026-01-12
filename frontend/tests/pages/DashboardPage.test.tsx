@@ -1,8 +1,7 @@
 import { waitFor, fireEvent, within } from '@testing-library/react'
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 
 import { createMockApiClient } from '../helpers/apiMock'
-import { localStorageMock } from '../helpers/localStorageMock'
 import { renderApp } from '../helpers/renderPage'
 
 describe('DashboardPage', () => {
@@ -11,18 +10,13 @@ describe('DashboardPage', () => {
     { id: 2, name: 'Test Todo 2', detail: 'Detail 2' },
   ]
 
-  beforeEach(() => {
-    // ログイン状態をシミュレート
-    localStorageMock.setItem('token', 'mock-token')
-  })
-
   describe('初期表示', () => {
     it('ページレンダリング時にGET APIが呼ばれ、TODOリストが表示される', async () => {
       const { client, requests } = createMockApiClient({
         getResponse: mockTodos,
       })
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/' })
+      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
 
       // APIリクエストを検証
       await waitFor(() => {
@@ -47,7 +41,7 @@ describe('DashboardPage', () => {
         postResponse: { id: 3, name: 'New Todo', detail: 'New Detail' },
       })
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/' })
+      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
 
       // 初期表示完了を待機（TODOリストが表示されるまで）
       await waitFor(() => {
@@ -77,7 +71,7 @@ describe('DashboardPage', () => {
         getResponse: mockTodos,
       })
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/' })
+      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
 
       // 初期表示完了を待機
       await waitFor(() => {

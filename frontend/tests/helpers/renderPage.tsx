@@ -21,7 +21,8 @@ type RenderPageOptions = Readonly<{
 
 type RenderAppOptions = Readonly<{
   apiClient: ApiClient
-  initialRoute?: string
+  initialRoute: string | null
+  isAuthenticated?: boolean
 }>
 
 const contextInjectedNode = (ui: ReactNode, apiClient: ApiClient) => (
@@ -39,12 +40,21 @@ export const renderPage = (ui: ReactNode, { apiClient, route = '/' }: RenderPage
 
 /**
  * App全体をテスト用にレンダリング（ルーティング・認証ガード含む）
+ * @param isAuthenticated - trueの場合、認証済み状態でレンダリング
  */
-export const renderApp = ({ apiClient, initialRoute = '/' }: RenderAppOptions): RenderResult => {
+export const renderApp = ({
+  apiClient,
+  initialRoute = '/',
+  isAuthenticated = false,
+}: RenderAppOptions): RenderResult => {
+  // 認証済み状態をシミュレート
+  if (isAuthenticated) {
+    localStorage.setItem('token', 'mock-token')
+  }
   const renderResult = render(
     <ApiProvider client={apiClient}>
       <AuthProvider>
-        <MemoryRouter initialEntries={[initialRoute]}>
+        <MemoryRouter initialEntries={[initialRoute ?? '/']}>
           <Header />
           <div className="container">
             <Routes>
