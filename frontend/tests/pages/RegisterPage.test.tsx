@@ -1,35 +1,16 @@
-import { screen, waitFor, fireEvent, within } from '@testing-library/react'
+import { waitFor, fireEvent, within } from '@testing-library/react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 import { createMockApiClient } from '../helpers/apiMock'
+import { localStorageMock, resetLocalStorageMock } from '../helpers/localStorageMock'
 import { renderApp } from '../helpers/renderPage'
-
-// localStorage のモック
-const localStorageMock = (() => {
-  let store: Record<string, string> = {}
-  return {
-    getItem: vi.fn((key: string) => store[key] ?? null),
-    setItem: vi.fn((key: string, value: string) => {
-      store[key] = value
-    }),
-    removeItem: vi.fn((key: string) => {
-      delete store[key]
-    }),
-    clear: vi.fn(() => {
-      store = {}
-    }),
-  }
-})()
-
-Object.defineProperty(window, 'localStorage', { value: localStorageMock })
 
 describe('新規登録フロー', () => {
   const mockUser = { id: 1, username: 'newuser', email: 'new@example.com' }
   const mockAuthResponse = { user: mockUser, token: 'new-user-token' }
 
   beforeEach(() => {
-    localStorageMock.clear()
-    vi.clearAllMocks()
+    resetLocalStorageMock()
   })
 
   describe('RegisterPage 初期表示', () => {
