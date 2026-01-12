@@ -1,0 +1,152 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ログインフロー > LoginPage 初期表示 > ログインフォームが正しく表示される > login-page-initial 1`] = `
+<div>
+  <nav
+    class="navbar navbar-expand-sm navbar-dark"
+    style="background: #1A535C;"
+  >
+    <div
+      class="container"
+    >
+      <button
+        aria-controls="navbarTogglerDemo01"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+        class="navbar-toggler"
+        data-target="#navbarTogglerDemo01"
+        data-toggle="collapse"
+        type="button"
+      >
+        <span
+          class="navbar-toggler-icon"
+        />
+      </button>
+      <div
+        class="collapse navbar-collapse"
+        id="navbarTogglerDemo01"
+      >
+        <a
+          class="navbar-brand"
+          href="#"
+        >
+          Todo App
+        </a>
+      </div>
+      <ul
+        class="navbar-nav mr-auto mt-2 mt-lg-0"
+      >
+        <li
+          class="nav-item"
+        >
+          <a
+            class="nav-link"
+            data-discover="true"
+            href="/register"
+          >
+            Register
+          </a>
+        </li>
+        <li
+          class="nav-item"
+        >
+          <a
+            class="nav-link"
+            data-discover="true"
+            href="/login"
+          >
+            Login
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div
+    class="container"
+  >
+    <div
+      class="col-md-6 m-auto"
+    >
+      <div
+        class="card card-body mt-5"
+      >
+        <h2
+          class="text-center"
+        >
+          Login
+        </h2>
+        <form>
+          <div
+            class="form-group"
+          >
+            <label
+              for="username"
+            >
+              Username
+            </label>
+            <input
+              class="form-control"
+              id="username"
+              name="username"
+              type="text"
+              value=""
+            />
+          </div>
+          <div
+            class="form-group"
+          >
+            <label
+              for="password"
+            >
+              Password
+            </label>
+            <input
+              class="form-control"
+              id="password"
+              name="password"
+              type="password"
+              value=""
+            />
+          </div>
+          <div
+            class="form-group"
+          >
+            <button
+              class="btn btn-primary"
+              type="submit"
+            >
+              Login
+            </button>
+          </div>
+          <p>
+            Don't have an account? 
+            <a
+              data-discover="true"
+              href="/register"
+            >
+              Register
+            </a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ログインフロー > ログイン成功 > 正しい認証情報でログイン → API呼び出し → ダッシュボードへリダイレクト > login-api-requests 1`] = `
+[
+  {
+    "data": {
+      "password": "password123",
+      "username": "testuser",
+    },
+    "method": "POST",
+    "url": "/auth/login",
+  },
+  {
+    "method": "GET",
+    "url": "/todo/",
+  },
+]
+`;

@@ -31,10 +31,11 @@ export const LoginPage = () => {
         <h2 className="text-center">Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Username</label>
+            <label htmlFor="username">Username</label>
             <input
               type="text"
               className="form-control"
+              id="username"
               name="username"
               onChange={handleChange}
               value={formState.username}
@@ -42,10 +43,11 @@ export const LoginPage = () => {
           </div>
 
           <div className="form-group">
-            <label>Password</label>
+            <label htmlFor="password">Password</label>
             <input
               type="password"
               className="form-control"
+              id="password"
               name="password"
               onChange={handleChange}
               value={formState.password}
