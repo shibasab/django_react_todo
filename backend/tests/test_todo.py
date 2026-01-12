@@ -14,14 +14,14 @@ class TestCreateTodo:
             "/api/todo/",
             headers=auth_headers,
             json={
-                "todo_task": "Test Task",
+                "name": "Test Task",
                 "detail": "Test Detail"
             }
         )
         
         assert response.status_code == 201
         data = response.json()
-        assert data["todo_task"] == "Test Task"
+        assert data["name"] == "Test Task"
         assert data["detail"] == "Test Detail"
         assert "id" in data
         assert "created_at" in data
@@ -31,7 +31,7 @@ class TestCreateTodo:
         response = client.post(
             "/api/todo/",
             json={
-                "todo_task": "Test Task",
+                "name": "Test Task",
                 "detail": "Test Detail"
             }
         )
@@ -46,7 +46,7 @@ class TestListTodos:
         """自分のTodoのみが一覧に表示される"""
         # テストユーザーのTodoを作成
         todo = Todo(
-            todo_task="My Task",
+            name="My Task",
             detail="My Detail",
             owner_id=test_user.id
         )
@@ -58,7 +58,7 @@ class TestListTodos:
         assert response.status_code == 200
         data = response.json()
         assert len(data) == 1
-        assert data[0]["todo_task"] == "My Task"
+        assert data[0]["name"] == "My Task"
     
     def test_cannot_see_others_todos(self, client, auth_headers, test_user, test_db):
         """他人のTodoは一覧に表示されない"""
@@ -71,7 +71,7 @@ class TestListTodos:
         
         # 別のユーザーのTodoを作成
         other_todo = Todo(
-            todo_task="Other's Task",
+            name="Other's Task",
             detail="Other's Detail",
             owner_id=other_user.id
         )
@@ -100,7 +100,7 @@ class TestAccessOthersTodo:
         
         # 別のユーザーのTodoを作成
         other_todo = Todo(
-            todo_task="Other's Task",
+            name="Other's Task",
             detail="Other's Detail",
             owner_id=other_user.id
         )
@@ -121,7 +121,7 @@ class TestUpdateTodo:
         """Todoの更新が正しく動作"""
         # Todoを作成
         todo = Todo(
-            todo_task="Original Task",
+            name="Original Task",
             detail="Original Detail",
             owner_id=test_user.id
         )
@@ -134,14 +134,14 @@ class TestUpdateTodo:
             f"/api/todo/{todo.id}/",
             headers=auth_headers,
             json={
-                "todo_task": "Updated Task",
+                "name": "Updated Task",
                 "detail": "Updated Detail"
             }
         )
         
         assert response.status_code == 200
         data = response.json()
-        assert data["todo_task"] == "Updated Task"
+        assert data["name"] == "Updated Task"
         assert data["detail"] == "Updated Detail"
 
 
@@ -152,7 +152,7 @@ class TestDeleteTodo:
         """Todoの削除が正しく動作"""
         # Todoを作成
         todo = Todo(
-            todo_task="To Delete",
+            name="To Delete",
             detail="Will be deleted",
             owner_id=test_user.id
         )

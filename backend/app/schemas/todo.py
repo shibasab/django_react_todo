@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 class TodoBase(BaseModel):
-    todo_task: str
+    name: str
     detail: Optional[str] = ""
 
 
@@ -13,7 +13,7 @@ class TodoCreate(TodoBase):
 
 
 class TodoUpdate(BaseModel):
-    todo_task: Optional[str] = None
+    name: Optional[str] = None
     detail: Optional[str] = None
 
 

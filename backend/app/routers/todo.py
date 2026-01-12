@@ -21,7 +21,7 @@ def list_todos(
     return [
         TodoResponse(
             id=todo.id,
-            todo_task=todo.todo_task,
+            name=todo.name,
             detail=todo.detail or "",
             owner=todo.owner_id,
             created_at=todo.created_at
@@ -38,7 +38,7 @@ def create_todo(
 ):
     """Todoを作成"""
     todo = Todo(
-        todo_task=todo_data.todo_task,
+        name=todo_data.name,
         detail=todo_data.detail or "",
         owner_id=current_user.id
     )
@@ -48,7 +48,7 @@ def create_todo(
 
     return TodoResponse(
         id=todo.id,
-        todo_task=todo.todo_task,
+        name=todo.name,
         detail=todo.detail or "",
         owner=todo.owner_id,
         created_at=todo.created_at
@@ -70,7 +70,7 @@ def get_todo(
         )
     return TodoResponse(
         id=todo.id,
-        todo_task=todo.todo_task,
+        name=todo.name,
         detail=todo.detail or "",
         owner=todo.owner_id,
         created_at=todo.created_at
@@ -92,14 +92,14 @@ def update_todo(
             detail="Todo not found"
         )
 
-    todo.todo_task = todo_data.todo_task
+    todo.name = todo_data.name
     todo.detail = todo_data.detail or ""
     db.commit()
     db.refresh(todo)
 
     return TodoResponse(
         id=todo.id,
-        todo_task=todo.todo_task,
+        name=todo.name,
         detail=todo.detail or "",
         owner=todo.owner_id,
         created_at=todo.created_at
@@ -121,8 +121,8 @@ def partial_update_todo(
             detail="Todo not found"
         )
 
-    if todo_data.todo_task is not None:
-        todo.todo_task = todo_data.todo_task
+    if todo_data.name is not None:
+        todo.name = todo_data.name
     if todo_data.detail is not None:
         todo.detail = todo_data.detail
     db.commit()
@@ -130,7 +130,7 @@ def partial_update_todo(
 
     return TodoResponse(
         id=todo.id,
-        todo_task=todo.todo_task,
+        name=todo.name,
         detail=todo.detail or "",
         owner=todo.owner_id,
         created_at=todo.created_at

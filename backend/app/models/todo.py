@@ -8,7 +8,7 @@ class Todo(Base):
     __tablename__ = "todos"
 
     id = Column(Integer, primary_key=True, index=True)
-    todo_task = Column(String(100), nullable=False)
+    name = Column(String(100), nullable=False)
     detail = Column(Text, default="")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
