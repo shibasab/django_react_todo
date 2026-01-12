@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ログアウトフロー > Header ログアウトボタン > ログアウトボタンクリック → API呼び出し → ログインページへ遷移 > logout-api-requests 1`] = `
+[
+  {
+    "data": null,
+    "method": "POST",
+    "url": "/auth/logout",
+  },
+]
+`;
