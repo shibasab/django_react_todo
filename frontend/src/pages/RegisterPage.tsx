@@ -43,34 +43,44 @@ export const RegisterPage = () => {
         <h2 className="text-center">Register</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Username</label>
+            <label htmlFor="username">Username</label>
             <input
               type="text"
               className="form-control"
+              id="username"
               name="username"
               onChange={handleChange}
               value={formState.username}
             />
           </div>
           <div className="form-group">
-            <label>Email</label>
-            <input type="email" className="form-control" name="email" onChange={handleChange} value={formState.email} />
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              className="form-control"
+              id="email"
+              name="email"
+              onChange={handleChange}
+              value={formState.email}
+            />
           </div>
           <div className="form-group">
-            <label>Password</label>
+            <label htmlFor="password">Password</label>
             <input
               type="password"
               className="form-control"
+              id="password"
               name="password"
               onChange={handleChange}
               value={formState.password}
             />
           </div>
           <div className="form-group">
-            <label>Confirm Password</label>
+            <label htmlFor="password2">Confirm Password</label>
             <input
               type="password"
               className="form-control"
+              id="password2"
               name="password2"
               onChange={handleChange}
               value={formState.password2}
