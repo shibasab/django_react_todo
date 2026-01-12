@@ -10,6 +10,7 @@ type ApiRequest = Readonly<{
 
 type MockApiClientOptions = Readonly<{
   getResponse?: unknown
+  getResponses?: Record<string, unknown> // URL別のGETレスポンス
   postResponse?: unknown
   putResponse?: unknown
   deleteResponse?: unknown
@@ -25,6 +26,10 @@ export const createMockApiClient = (options: MockApiClientOptions = {}) => {
   const mockClient = {
     get: vi.fn(async <T>(url: string): Promise<T> => {
       requests.push({ method: 'GET', url })
+      // URL別レスポンスがあればそれを優先
+      if (options.getResponses && url in options.getResponses) {
+        return options.getResponses[url] as T
+      }
       return (options.getResponse ?? []) as T
     }),
 
