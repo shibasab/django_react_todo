@@ -6,7 +6,7 @@ from app.config import DATABASE_URL
 
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False}  # SQLite用
+    connect_args={"check_same_thread": False},  # SQLite用
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

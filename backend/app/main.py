@@ -10,7 +10,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="Todo API",
     description="FastAPI + SQLAlchemy を使用したTodo API",
-    version="2.0.0"
+    version="2.0.0",
 )
 
 # CORS設定

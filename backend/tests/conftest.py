@@ -1,6 +1,7 @@
 """
 テスト用の共通フィクスチャ
 """
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -28,7 +29,7 @@ def test_db():
     """テスト用データベースセッション（各テストでリセット）"""
     # テーブル作成
     Base.metadata.create_all(bind=engine)
-    
+
     db = TestingSessionLocal()
     try:
         yield db
@@ -41,14 +42,15 @@ def test_db():
 @pytest.fixture(scope="function")
 def client(test_db):
     """FastAPI TestClient（テスト用DBを使用）"""
+
     def override_get_db():
         yield test_db
-    
+
     app.dependency_overrides[get_db] = override_get_db
-    
+
     with TestClient(app) as test_client:
         yield test_client
-    
+
     app.dependency_overrides.clear()
 
 

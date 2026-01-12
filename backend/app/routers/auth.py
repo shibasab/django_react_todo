@@ -21,7 +21,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already registered"
+            detail="Username already registered",
         )
 
     # ユーザー作成
@@ -39,7 +39,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
 
     return TokenResponse(
         user=UserResponse(id=user.id, username=user.username, email=user.email),
-        token=token
+        token=token,
     )
 
 
@@ -49,8 +49,7 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
     user = authenticate_user(db, credentials.username, credentials.password)
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Incorrect Credentials"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Incorrect Credentials"
         )
 
     # トークン生成
@@ -58,7 +57,7 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
 
     return TokenResponse(
         user=UserResponse(id=user.id, username=user.username, email=user.email),
-        token=token
+        token=token,
     )
 
 
@@ -72,7 +71,5 @@ def logout(current_user: User = Depends(get_current_user)):
 def get_user(current_user: User = Depends(get_current_user)):
     """ユーザー情報を取得"""
     return UserResponse(
-        id=current_user.id,
-        username=current_user.username,
-        email=current_user.email
+        id=current_user.id, username=current_user.username, email=current_user.email
     )
