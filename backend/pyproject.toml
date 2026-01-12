@@ -37,7 +37,9 @@ select = [
     "F",   # pyflakes
     "B",   # flake8-bugbear
 ]
-ignore = []
+ignore = [
+    "B008",  # FastAPIのDependsパターンを許可
+]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # unused imports OK in __init__.py
