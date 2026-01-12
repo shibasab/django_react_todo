@@ -21,4 +21,4 @@ class User(Base):
 
     def check_password(self, password: str) -> bool:
         """パスワードを検証"""
-        return pwd_context.verify(password, self.hashed_password)
+        return pwd_context.verify(password, self.hashed_password)  # pyrefly: ignore
