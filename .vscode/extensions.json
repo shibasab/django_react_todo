@@ -1,6 +1,8 @@
 {
     "recommendations": [
         "oxc.oxc-vscode",
-        "typescriptteam.native-preview"
+        "typescriptteam.native-preview",
+        "charliermarsh.ruff",
+        "meta.pyrefly"
     ]
 }
