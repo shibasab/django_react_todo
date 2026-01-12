@@ -22,16 +22,7 @@ def list_todos(
         .order_by(Todo.created_at.desc())
         .all()
     )
-    return [
-        TodoResponse(
-            id=todo.id,
-            name=todo.name,
-            detail=todo.detail or "",
-            owner=todo.owner_id,
-            created_at=todo.created_at,
-        )
-        for todo in todos
-    ]
+    return [TodoResponse.model_validate(todo) for todo in todos]
 
 
 @router.post("/", response_model=TodoResponse, status_code=status.HTTP_201_CREATED)
@@ -48,13 +39,7 @@ def create_todo(
     db.commit()
     db.refresh(todo)
 
-    return TodoResponse(
-        id=todo.id,
-        name=todo.name,
-        detail=todo.detail or "",
-        owner=todo.owner_id,
-        created_at=todo.created_at,
-    )
+    return TodoResponse.model_validate(todo)
 
 
 @router.get("/{todo_id}/", response_model=TodoResponse)
@@ -73,13 +58,7 @@ def get_todo(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found"
         )
-    return TodoResponse(
-        id=todo.id,
-        name=todo.name,
-        detail=todo.detail or "",
-        owner=todo.owner_id,
-        created_at=todo.created_at,
-    )
+    return TodoResponse.model_validate(todo)
 
 
 @router.put("/{todo_id}/", response_model=TodoResponse)
@@ -105,13 +84,7 @@ def update_todo(
     db.commit()
     db.refresh(todo)
 
-    return TodoResponse(
-        id=todo.id,
-        name=todo.name,
-        detail=todo.detail or "",
-        owner=todo.owner_id,
-        created_at=todo.created_at,
-    )
+    return TodoResponse.model_validate(todo)
 
 
 @router.patch("/{todo_id}/", response_model=TodoResponse)
@@ -139,13 +112,7 @@ def partial_update_todo(
     db.commit()
     db.refresh(todo)
 
-    return TodoResponse(
-        id=todo.id,
-        name=todo.name,
-        detail=todo.detail or "",
-        owner=todo.owner_id,
-        created_at=todo.created_at,
-    )
+    return TodoResponse.model_validate(todo)
 
 
 @router.delete("/{todo_id}/", status_code=status.HTTP_204_NO_CONTENT)

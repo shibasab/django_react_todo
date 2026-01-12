@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 
@@ -19,7 +19,7 @@ class TodoUpdate(BaseModel):
 
 class TodoResponse(TodoBase):
     id: int
-    owner: Optional[int] = None
+    owner: Optional[int] = Field(default=None, validation_alias="owner_id")
     created_at: datetime
 
     class Config:
