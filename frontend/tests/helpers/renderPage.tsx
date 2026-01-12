@@ -41,7 +41,7 @@ export const renderPage = (ui: ReactNode, { apiClient, route = '/' }: RenderPage
  * App全体をテスト用にレンダリング（ルーティング・認証ガード含む）
  */
 export const renderApp = ({ apiClient, initialRoute = '/' }: RenderAppOptions): RenderResult => {
-  return render(
+  const renderResult = render(
     <ApiProvider client={apiClient}>
       <AuthProvider>
         <MemoryRouter initialEntries={[initialRoute]}>
@@ -78,4 +78,8 @@ export const renderApp = ({ apiClient, initialRoute = '/' }: RenderAppOptions): 
       </AuthProvider>
     </ApiProvider>
   )
+
+  return {
+    ...renderResult,
+  }
 }
