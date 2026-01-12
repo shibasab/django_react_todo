@@ -20,6 +20,7 @@ dependencies = [
 dev = [
     "ruff>=0.14.11",
     "pre-commit>=4.0.0",
+    "ty>=0.0.11",
 ]
 test = [
     "pytest>=8.0.0",
@@ -44,3 +45,6 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # unused imports OK in __init__.py
+
+# ty設定
+[tool.ty]
