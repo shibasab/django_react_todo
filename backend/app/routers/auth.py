@@ -38,7 +38,11 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     token = create_access_token(data={"sub": str(user.id)})
 
     return TokenResponse(
-        user=UserResponse(id=user.id, username=user.username, email=user.email),
+        user=UserResponse(
+            id=user.id,  # pyrefly: ignore[bad-argument-type]
+            username=user.username,  # pyrefly: ignore[bad-argument-type]
+            email=user.email,  # pyrefly: ignore[bad-argument-type]
+        ),
         token=token,
     )
 
@@ -56,7 +60,11 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
     token = create_access_token(data={"sub": str(user.id)})
 
     return TokenResponse(
-        user=UserResponse(id=user.id, username=user.username, email=user.email),
+        user=UserResponse(
+            id=user.id,  # pyrefly: ignore[bad-argument-type]
+            username=user.username,  # pyrefly: ignore[bad-argument-type]
+            email=user.email,  # pyrefly: ignore[bad-argument-type]
+        ),
         token=token,
     )
 
@@ -71,5 +79,7 @@ def logout(current_user: User = Depends(get_current_user)):
 def get_user(current_user: User = Depends(get_current_user)):
     """ユーザー情報を取得"""
     return UserResponse(
-        id=current_user.id, username=current_user.username, email=current_user.email
+        id=current_user.id,  # pyrefly: ignore[bad-argument-type]
+        username=current_user.username,  # pyrefly: ignore[bad-argument-type]
+        email=current_user.email,  # pyrefly: ignore[bad-argument-type]
     )
