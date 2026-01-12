@@ -76,7 +76,7 @@ export const renderApp = ({ apiClient, initialRoute = '/' }: RenderAppOptions): 
           </div>
         </MemoryRouter>
       </AuthProvider>
-    </ApiProvider>
+    </ApiProvider>,
   )
 
   return {

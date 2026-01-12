@@ -1,4 +1,4 @@
-import { screen, waitFor, fireEvent,within } from '@testing-library/react'
+import { screen, waitFor, fireEvent, within } from '@testing-library/react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 import { createMockApiClient } from '../helpers/apiMock'
@@ -111,7 +111,7 @@ describe('ログインフロー', () => {
         },
       })
 
-      const   { container } = renderApp({ apiClient: client, initialRoute: '/login' })
+      const { container } = renderApp({ apiClient: client, initialRoute: '/login' })
 
       // ダッシュボードへリダイレクトされることを確認
       await waitFor(() => {

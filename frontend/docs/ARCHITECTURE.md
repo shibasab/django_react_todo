@@ -21,6 +21,7 @@ src/
 ## レイヤーの役割と責務
 
 ### models/
+
 **役割**: ドメインモデルの型定義とビジネスロジック
 
 - ドメインモデル型、APIレスポンス型の定義
@@ -29,6 +30,7 @@ src/
 - 他のレイヤーに依存しない
 
 ### services/
+
 **役割**: 外部リソースとの連携とアプリケーションロジック
 
 - 外部システムとの連携（APIクライアント、ストレージなど）
@@ -37,10 +39,12 @@ src/
 - テスト時にモック可能な設計
 
 > **ビジネスロジック vs アプリケーションロジック**
+>
 > - **ビジネスロジック (models)**: ドメイン固有のルール。技術に依存せず、要件から導かれる（例: 「Todoの名前は必須」）
 > - **アプリケーションロジック (services)**: システムを動かすための処理。技術的な実装を含む（例: 「APIを呼んでTodoを取得する」）
 
 ### contexts/
+
 **役割**: React Context によるグローバル状態管理
 
 - Provider コンポーネントと Context の定義
@@ -48,6 +52,7 @@ src/
 - React に依存
 
 ### hooks/
+
 **役割**: 再利用可能なカスタムフック
 
 - Context からの値取得（useAuth, useApiClient など）
@@ -55,6 +60,7 @@ src/
 - React に依存
 
 ### layouts/
+
 **役割**: ページのレイアウト構造
 
 - 認証ガード（PrivateLayout, PublicLayout）
@@ -62,6 +68,7 @@ src/
 - ページ間で共通のUI構造
 
 ### pages/
+
 **役割**: ルーティングに対応するページコンポーネント
 
 - 各URLに対応するトップレベルコンポーネント
@@ -69,6 +76,7 @@ src/
 - App.tsx のルーティングから参照される
 
 ### components/
+
 **役割**: 再利用可能なUIコンポーネント
 
 - 機能単位でグループ化（todo/, auth/ など）
@@ -79,16 +87,16 @@ src/
 
 ## 依存関係ルール
 
-| レイヤー | 依存可能 |
-|----------|----------|
-| **models** | なし |
-| **services** | models |
-| **contexts** | models, services, contexts |
-| **hooks** | models, services, contexts |
-| **layouts** | models, hooks, contexts, components |
-| **pages** | models, hooks, contexts, components |
+| レイヤー       | 依存可能                            |
+| -------------- | ----------------------------------- |
+| **models**     | なし                                |
+| **services**   | models                              |
+| **contexts**   | models, services, contexts          |
+| **hooks**      | models, services, contexts          |
+| **layouts**    | models, hooks, contexts, components |
+| **pages**      | models, hooks, contexts, components |
 | **components** | models, hooks, contexts, components |
-| **App.tsx** | すべて可能 |
+| **App.tsx**    | すべて可能                          |
 
 ---
 
