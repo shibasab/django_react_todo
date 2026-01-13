@@ -11,7 +11,7 @@ from sqlalchemy.pool import StaticPool
 from app.database import Base, get_db
 from app.main import app
 from app.models.user import User
-from app.dependencies.auth import create_access_token
+from app.services.auth import create_access_token
 
 
 # テスト用インメモリDB
