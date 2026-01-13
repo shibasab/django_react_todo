@@ -1,27 +1,22 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, status
 
-from app.database import get_db
 from app.models.user import User
-from app.models.todo import Todo
 from app.schemas.todo import TodoCreate, TodoUpdate, TodoResponse
 from app.dependencies.auth import get_current_user
+from app.dependencies.container import get_todo_service
+from app.services.todo import TodoService
 
 router = APIRouter()
 
 
 @router.get("/", response_model=List[TodoResponse])
 def list_todos(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_user),
+    service: TodoService = Depends(get_todo_service),
 ):
     """現在のユーザーのTodo一覧を取得"""
-    todos = (
-        db.query(Todo)
-        .filter(Todo.owner_id == current_user.id)
-        .order_by(Todo.created_at.desc())
-        .all()
-    )
+    todos = service.get_todos(current_user.id)  # pyrefly: ignore[bad-argument-type]
     return [TodoResponse.model_validate(todo) for todo in todos]
 
 
@@ -29,16 +24,13 @@ def list_todos(
 def create_todo(
     todo_data: TodoCreate,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    service: TodoService = Depends(get_todo_service),
 ):
     """Todoを作成"""
-    todo = Todo(
-        name=todo_data.name, detail=todo_data.detail or "", owner_id=current_user.id
+    todo = service.create_todo(
+        todo_data,
+        current_user.id,  # pyrefly: ignore[bad-argument-type]
     )
-    db.add(todo)
-    db.commit()
-    db.refresh(todo)
-
     return TodoResponse.model_validate(todo)
 
 
@@ -46,18 +38,13 @@ def create_todo(
 def get_todo(
     todo_id: int,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    service: TodoService = Depends(get_todo_service),
 ):
     """Todoを取得"""
-    todo = (
-        db.query(Todo)
-        .filter(Todo.id == todo_id, Todo.owner_id == current_user.id)
-        .first()
+    todo = service.get_todo(
+        todo_id,
+        current_user.id,  # pyrefly: ignore[bad-argument-type]
     )
-    if not todo:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found"
-        )
     return TodoResponse.model_validate(todo)
 
 
@@ -66,24 +53,14 @@ def update_todo(
     todo_id: int,
     todo_data: TodoCreate,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    service: TodoService = Depends(get_todo_service),
 ):
     """Todoを更新（全置換）"""
-    todo = (
-        db.query(Todo)
-        .filter(Todo.id == todo_id, Todo.owner_id == current_user.id)
-        .first()
+    todo = service.update_todo(
+        todo_id,
+        todo_data,
+        current_user.id,  # pyrefly: ignore[bad-argument-type]
     )
-    if not todo:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found"
-        )
-
-    todo.name = todo_data.name
-    todo.detail = todo_data.detail or ""
-    db.commit()
-    db.refresh(todo)
-
     return TodoResponse.model_validate(todo)
 
 
@@ -92,26 +69,14 @@ def partial_update_todo(
     todo_id: int,
     todo_data: TodoUpdate,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    service: TodoService = Depends(get_todo_service),
 ):
     """Todoを部分更新"""
-    todo = (
-        db.query(Todo)
-        .filter(Todo.id == todo_id, Todo.owner_id == current_user.id)
-        .first()
+    todo = service.partial_update_todo(
+        todo_id,
+        todo_data,
+        current_user.id,  # pyrefly: ignore[bad-argument-type]
     )
-    if not todo:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found"
-        )
-
-    if todo_data.name is not None:
-        todo.name = todo_data.name
-    if todo_data.detail is not None:
-        todo.detail = todo_data.detail
-    db.commit()
-    db.refresh(todo)
-
     return TodoResponse.model_validate(todo)
 
 
@@ -119,19 +84,8 @@ def partial_update_todo(
 def delete_todo(
     todo_id: int,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    service: TodoService = Depends(get_todo_service),
 ):
     """Todoを削除"""
-    todo = (
-        db.query(Todo)
-        .filter(Todo.id == todo_id, Todo.owner_id == current_user.id)
-        .first()
-    )
-    if not todo:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found"
-        )
-
-    db.delete(todo)
-    db.commit()
+    service.delete_todo(todo_id, current_user.id)  # pyrefly: ignore[bad-argument-type]
     return None
