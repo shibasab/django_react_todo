@@ -4,7 +4,7 @@
 
 ## [refactor] アーキテクチャ改善
 
-### HTTPException のレイヤー分離
+### HTTPException のレイヤー分離 [DONE]
 
 **現状**: Services層 (`services/todo.py`, `services/auth.py`) でFastAPI固有の `HTTPException` を直接投げている。
 

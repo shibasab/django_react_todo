@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Tuple
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
 from jose import jwt
 
 from app.models.user import User
 from app.schemas.user import UserCreate
 from app.repositories.user import UserRepository
 from app.config import JWT_SECRET_KEY, JWT_ALGORITHM, JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+from app.exceptions import DuplicateError, AuthenticationError, NotFoundError
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
@@ -34,10 +34,7 @@ class AuthService:
         # ユーザー名の重複チェック
         existing_user = self.repo.get_by_username(data.username)
         if existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Username already registered",
-            )
+            raise DuplicateError("Username already registered")
 
         # ユーザー作成
         user = User(
@@ -58,10 +55,7 @@ class AuthService:
         """ログインを行い、トークンを生成する"""
         user = self.repo.get_by_username(username)
         if not user or not user.check_password(password):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Incorrect Credentials",
-            )
+            raise AuthenticationError("Incorrect Credentials")
 
         # トークン生成
         token = create_access_token(data={"sub": str(user.id)})
@@ -72,8 +66,5 @@ class AuthService:
         """ユーザー情報を取得する"""
         user = self.repo.get_by_id(user_id)
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found",
-            )
+            raise NotFoundError("User not found")
         return user

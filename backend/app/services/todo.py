@@ -1,10 +1,10 @@
 from typing import List
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
 
 from app.models.todo import Todo
 from app.schemas.todo import TodoCreate, TodoUpdate
 from app.repositories.todo import TodoRepository
+from app.exceptions import NotFoundError
 
 
 class TodoService:
@@ -25,9 +25,7 @@ class TodoService:
     def get_todo(self, todo_id: int, owner_id: int) -> Todo:
         todo = self.repo.get(todo_id, owner_id)
         if not todo:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found"
-            )
+            raise NotFoundError("Todo not found")
         return todo
 
     def update_todo(self, todo_id: int, data: TodoCreate, owner_id: int) -> Todo:

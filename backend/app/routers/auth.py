@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.models.user import User
 from app.schemas.user import UserCreate, UserLogin, UserResponse, TokenResponse
 from app.dependencies.auth import get_current_user
 from app.dependencies.container import get_auth_service
 from app.services.auth import AuthService
+from app.exceptions import DuplicateError, AuthenticationError
 
 router = APIRouter()
 
@@ -15,16 +16,21 @@ def register(
     service: AuthService = Depends(get_auth_service),
 ):
     """ユーザー登録"""
-    user, token = service.register(user_data)
+    try:
+        user, token = service.register(user_data)
 
-    return TokenResponse(
-        user=UserResponse(
-            id=user.id,  # pyrefly: ignore[bad-argument-type]
-            username=user.username,  # pyrefly: ignore[bad-argument-type]
-            email=user.email,  # pyrefly: ignore[bad-argument-type]
-        ),
-        token=token,
-    )
+        return TokenResponse(
+            user=UserResponse(
+                id=user.id,  # pyrefly: ignore[bad-argument-type]
+                username=user.username,  # pyrefly: ignore[bad-argument-type]
+                email=user.email,  # pyrefly: ignore[bad-argument-type]
+            ),
+            token=token,
+        )
+    except DuplicateError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        ) from None
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -33,16 +39,21 @@ def login(
     service: AuthService = Depends(get_auth_service),
 ):
     """ログイン"""
-    user, token = service.login(credentials.username, credentials.password)
+    try:
+        user, token = service.login(credentials.username, credentials.password)
 
-    return TokenResponse(
-        user=UserResponse(
-            id=user.id,  # pyrefly: ignore[bad-argument-type]
-            username=user.username,  # pyrefly: ignore[bad-argument-type]
-            email=user.email,  # pyrefly: ignore[bad-argument-type]
-        ),
-        token=token,
-    )
+        return TokenResponse(
+            user=UserResponse(
+                id=user.id,  # pyrefly: ignore[bad-argument-type]
+                username=user.username,  # pyrefly: ignore[bad-argument-type]
+                email=user.email,  # pyrefly: ignore[bad-argument-type]
+            ),
+            token=token,
+        )
+    except AuthenticationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        ) from None
 
 
 @router.post("/logout")

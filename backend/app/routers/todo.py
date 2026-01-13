@@ -1,11 +1,12 @@
 from typing import List
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.models.user import User
 from app.schemas.todo import TodoCreate, TodoUpdate, TodoResponse
 from app.dependencies.auth import get_current_user
 from app.dependencies.container import get_todo_service
 from app.services.todo import TodoService
+from app.exceptions import NotFoundError
 
 router = APIRouter()
 
@@ -41,11 +42,14 @@ def get_todo(
     service: TodoService = Depends(get_todo_service),
 ):
     """Todoを取得"""
-    todo = service.get_todo(
-        todo_id,
-        current_user.id,  # pyrefly: ignore[bad-argument-type]
-    )
-    return TodoResponse.model_validate(todo)
+    try:
+        todo = service.get_todo(
+            todo_id,
+            current_user.id,  # pyrefly: ignore[bad-argument-type]
+        )
+        return TodoResponse.model_validate(todo)
+    except NotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
 
 
 @router.put("/{todo_id}/", response_model=TodoResponse)
@@ -56,12 +60,15 @@ def update_todo(
     service: TodoService = Depends(get_todo_service),
 ):
     """Todoを更新（全置換）"""
-    todo = service.update_todo(
-        todo_id,
-        todo_data,
-        current_user.id,  # pyrefly: ignore[bad-argument-type]
-    )
-    return TodoResponse.model_validate(todo)
+    try:
+        todo = service.update_todo(
+            todo_id,
+            todo_data,
+            current_user.id,  # pyrefly: ignore[bad-argument-type]
+        )
+        return TodoResponse.model_validate(todo)
+    except NotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
 
 
 @router.patch("/{todo_id}/", response_model=TodoResponse)
@@ -72,12 +79,15 @@ def partial_update_todo(
     service: TodoService = Depends(get_todo_service),
 ):
     """Todoを部分更新"""
-    todo = service.partial_update_todo(
-        todo_id,
-        todo_data,
-        current_user.id,  # pyrefly: ignore[bad-argument-type]
-    )
-    return TodoResponse.model_validate(todo)
+    try:
+        todo = service.partial_update_todo(
+            todo_id,
+            todo_data,
+            current_user.id,  # pyrefly: ignore[bad-argument-type]
+        )
+        return TodoResponse.model_validate(todo)
+    except NotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
 
 
 @router.delete("/{todo_id}/", status_code=status.HTTP_204_NO_CONTENT)
@@ -87,5 +97,11 @@ def delete_todo(
     service: TodoService = Depends(get_todo_service),
 ):
     """Todoを削除"""
-    service.delete_todo(todo_id, current_user.id)  # pyrefly: ignore[bad-argument-type]
-    return None
+    try:
+        service.delete_todo(
+            todo_id,
+            current_user.id,  # pyrefly: ignore[bad-argument-type]
+        )
+        return None
+    except NotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
