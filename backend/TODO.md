@@ -1,10 +1,11 @@
 # Backend TODO
 
 このプロジェクトで今後実施予定のタスク一覧。
+完了したものは `[DONE]`のラベルを付ける。
 
-## [refactor] アーキテクチャ改善
+## アーキテクチャ改善
 
-### HTTPException のレイヤー分離 [DONE]
+### [DONE] HTTPException のレイヤー分離
 
 **現状**: Services層 (`services/todo.py`, `services/auth.py`) でFastAPI固有の `HTTPException` を直接投げている。
 
