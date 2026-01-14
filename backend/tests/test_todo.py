@@ -32,6 +32,25 @@ class TestCreateTodo:
 
         assert response.status_code == 401
 
+    def test_create_duplicate_todo_name_fails(
+        self, client, auth_headers, test_user, test_db
+    ):
+        """同じ名前のタスク作成で409エラー"""
+        # 最初のTodoを作成
+        todo = Todo(name="Duplicate Task", detail="First one", owner_id=test_user.id)
+        test_db.add(todo)
+        test_db.commit()
+
+        # 同じ名前で作成しようとする
+        response = client.post(
+            "/api/todo/",
+            headers=auth_headers,
+            json={"name": "Duplicate Task", "detail": "Second one"},
+        )
+
+        assert response.status_code == 409
+        assert "already exists" in response.json()["detail"]
+
 
 class TestListTodos:
     """Todo一覧取得のテスト"""
@@ -124,6 +143,73 @@ class TestUpdateTodo:
         data = response.json()
         assert data["name"] == "Updated Task"
         assert data["detail"] == "Updated Detail"
+
+    def test_update_to_duplicate_name_fails(
+        self, client, auth_headers, test_user, test_db
+    ):
+        """他のタスクと重複する名前への更新で409エラー"""
+        # 2つのTodoを作成
+        todo1 = Todo(name="Task One", detail="First task", owner_id=test_user.id)
+        todo2 = Todo(name="Task Two", detail="Second task", owner_id=test_user.id)
+        test_db.add(todo1)
+        test_db.add(todo2)
+        test_db.commit()
+        test_db.refresh(todo1)
+        test_db.refresh(todo2)
+
+        # todo2をtodo1と同じ名前に更新しようとする
+        response = client.put(
+            f"/api/todo/{todo2.id}/",
+            headers=auth_headers,
+            json={"name": "Task One", "detail": "Trying to duplicate"},
+        )
+
+        assert response.status_code == 409
+        assert "already exists" in response.json()["detail"]
+
+    def test_update_same_name_succeeds(self, client, auth_headers, test_user, test_db):
+        """同じ名前のまま他フィールドを更新して成功"""
+        # Todoを作成
+        todo = Todo(name="Keep Name", detail="Original detail", owner_id=test_user.id)
+        test_db.add(todo)
+        test_db.commit()
+        test_db.refresh(todo)
+
+        # 名前はそのままで詳細だけ更新
+        response = client.put(
+            f"/api/todo/{todo.id}/",
+            headers=auth_headers,
+            json={"name": "Keep Name", "detail": "Updated detail"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["name"] == "Keep Name"
+        assert data["detail"] == "Updated detail"
+
+    def test_different_users_can_have_same_task_name(
+        self, client, auth_headers, test_user, test_db
+    ):
+        """異なるユーザーは同じ名前のタスクを作成可能"""
+        # テストユーザーのTodoを作成
+        todo1 = Todo(name="Same Name", detail="User 1 task", owner_id=test_user.id)
+        test_db.add(todo1)
+        test_db.commit()
+
+        # 別のユーザーを作成
+        other_user = User(username="otheruser", email="other@example.com")
+        other_user.set_password("otherpassword")
+        test_db.add(other_user)
+        test_db.commit()
+        test_db.refresh(other_user)
+
+        # 別のユーザーで同じ名前のTodoを作成
+        todo2 = Todo(name="Same Name", detail="User 2 task", owner_id=other_user.id)
+        test_db.add(todo2)
+        test_db.commit()  # これがエラーなく成功することを確認
+
+        # 両方のTodoが存在することを確認
+        assert test_db.query(Todo).filter(Todo.name == "Same Name").count() == 2
 
 
 class TestDeleteTodo:

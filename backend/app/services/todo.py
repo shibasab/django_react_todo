@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.models.todo import Todo
 from app.schemas.todo import TodoCreate, TodoUpdate
 from app.repositories.todo import TodoRepository
-from app.exceptions import NotFoundError
+from app.exceptions import NotFoundError, DuplicateError
 
 
 class TodoService:
@@ -16,6 +16,10 @@ class TodoService:
         return self.repo.get_by_owner(owner_id)
 
     def create_todo(self, data: TodoCreate, owner_id: int) -> Todo:
+        # 重複チェック
+        if self.repo.check_name_exists(owner_id, data.name):
+            raise DuplicateError(f"Task with name '{data.name}' already exists")
+
         todo = Todo(name=data.name, detail=data.detail or "", owner_id=owner_id)
         self.repo.create(todo)
         self.db.commit()
@@ -30,6 +34,11 @@ class TodoService:
 
     def update_todo(self, todo_id: int, data: TodoCreate, owner_id: int) -> Todo:
         todo = self.get_todo(todo_id, owner_id)
+
+        # 重複チェック（自分自身は除外）
+        if self.repo.check_name_exists(owner_id, data.name, exclude_id=todo_id):
+            raise DuplicateError(f"Task with name '{data.name}' already exists")
+
         todo.name = data.name
         todo.detail = data.detail or ""
         self.db.commit()
@@ -40,8 +49,13 @@ class TodoService:
         self, todo_id: int, data: TodoUpdate, owner_id: int
     ) -> Todo:
         todo = self.get_todo(todo_id, owner_id)
+
+        # 名前が変更される場合のみ重複チェック
         if data.name is not None:
+            if self.repo.check_name_exists(owner_id, data.name, exclude_id=todo_id):
+                raise DuplicateError(f"Task with name '{data.name}' already exists")
             todo.name = data.name
+
         if data.detail is not None:
             todo.detail = data.detail
         self.db.commit()
