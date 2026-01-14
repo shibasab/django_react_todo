@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from pydantic.config import ConfigDict
 
 
 class UserBase(BaseModel):
@@ -23,8 +24,7 @@ class UserResponse(BaseModel):
     username: str
     email: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TokenResponse(BaseModel):
