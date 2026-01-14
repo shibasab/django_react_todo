@@ -6,53 +6,39 @@ export const Header = () => {
   const { isAuthenticated, user, logout } = useAuth()
 
   const authLinks = (
-    <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
-      <span className="navbar-text mr-3">
-        <strong>{user ? `Welcome ${user.username}` : ''}</strong>
+    <div className="flex items-center space-x-4">
+      <span className="text-white font-semibold">
+        {user ? `Welcome ${user.username}` : ''}
       </span>
-      <li className="nav-item">
-        <button onClick={logout} className="nav-link btn btn-info btn-sm text-light">
-          Logout
-        </button>
-      </li>
-    </ul>
+      <button
+        onClick={logout}
+        className="px-3 py-1 bg-cyan-600 text-white rounded-md hover:bg-cyan-700 transition-colors text-sm"
+      >
+        Logout
+      </button>
+    </div>
   )
 
   const guestLinks = (
-    <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
-      <li className="nav-item">
-        <Link to="/register" className="nav-link">
-          Register
-        </Link>
-      </li>
-      <li className="nav-item">
-        <Link to="/login" className="nav-link">
-          Login
-        </Link>
-      </li>
-    </ul>
+    <div className="flex items-center space-x-4">
+      <Link to="/register" className="text-white hover:text-gray-200 transition-colors">
+        Register
+      </Link>
+      <Link to="/login" className="text-white hover:text-gray-200 transition-colors">
+        Login
+      </Link>
+    </div>
   )
 
   return (
-    <nav className="navbar navbar-expand-sm navbar-dark" style={{ background: '#1A535C' }}>
-      <div className="container">
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarTogglerDemo01"
-          aria-controls="navbarTogglerDemo01"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon" />
-        </button>
-        <div className="collapse navbar-collapse" id="navbarTogglerDemo01">
-          <a className="navbar-brand" href="#">
+    <nav className="bg-[#1A535C] text-white">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          <a href="#" className="text-xl font-bold text-white hover:text-gray-200">
             Todo App
           </a>
+          {isAuthenticated ? authLinks : guestLinks}
         </div>
-        {isAuthenticated ? authLinks : guestLinks}
       </div>
     </nav>
   )

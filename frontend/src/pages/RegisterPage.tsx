@@ -38,61 +38,72 @@ export const RegisterPage = () => {
   }
 
   return (
-    <div className="col-md-6 m-auto">
-      <div className="card card-body mt-5">
-        <h2 className="text-center">Register</h2>
+    <div className="max-w-md mx-auto mt-8">
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
+          <div className="mb-4">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+              Username
+            </label>
             <input
               type="text"
-              className="form-control"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               id="username"
               name="username"
               onChange={handleChange}
               value={formState.username}
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              Email
+            </label>
             <input
               type="email"
-              className="form-control"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               id="email"
               name="email"
               onChange={handleChange}
               value={formState.email}
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+          <div className="mb-4">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              Password
+            </label>
             <input
               type="password"
-              className="form-control"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               id="password"
               name="password"
               onChange={handleChange}
               value={formState.password}
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="password2">Confirm Password</label>
+          <div className="mb-4">
+            <label htmlFor="password2" className="block text-sm font-medium text-gray-700 mb-2">
+              Confirm Password
+            </label>
             <input
               type="password"
-              className="form-control"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               id="password2"
               name="password2"
               onChange={handleChange}
               value={formState.password2}
             />
           </div>
-          <div className="form-group">
-            <button type="submit" className="btn btn-primary">
+          <div className="mb-4">
+            <button
+              type="submit"
+              className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
               Register
             </button>
           </div>
-          <p>
-            Already have an account? <Link to="/login">Login</Link>
+          <p className="text-center text-sm text-gray-600">
+            Already have an account? <Link to="/login" className="text-blue-600 hover:text-blue-700">Login</Link>
           </p>
         </form>
       </div>

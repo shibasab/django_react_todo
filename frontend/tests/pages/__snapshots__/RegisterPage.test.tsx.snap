@@ -4,89 +4,67 @@ exports[`新規登録フロー > RegisterPage 初期表示 > 登録フォーム�
 <body>
   <div>
     <nav
-      class="navbar navbar-expand-sm navbar-dark"
-      style="background: #1A535C;"
+      class="bg-[#1A535C] text-white"
     >
       <div
-        class="container"
+        class="container mx-auto px-4"
       >
-        <button
-          aria-controls="navbarTogglerDemo01"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-          class="navbar-toggler"
-          data-target="#navbarTogglerDemo01"
-          data-toggle="collapse"
-          type="button"
-        >
-          <span
-            class="navbar-toggler-icon"
-          />
-        </button>
         <div
-          class="collapse navbar-collapse"
-          id="navbarTogglerDemo01"
+          class="flex items-center justify-between h-16"
         >
           <a
-            class="navbar-brand"
+            class="text-xl font-bold text-white hover:text-gray-200"
             href="#"
           >
             Todo App
           </a>
-        </div>
-        <ul
-          class="navbar-nav mr-auto mt-2 mt-lg-0"
-        >
-          <li
-            class="nav-item"
+          <div
+            class="flex items-center space-x-4"
           >
             <a
-              class="nav-link"
+              class="text-white hover:text-gray-200 transition-colors"
               data-discover="true"
               href="/register"
             >
               Register
             </a>
-          </li>
-          <li
-            class="nav-item"
-          >
             <a
-              class="nav-link"
+              class="text-white hover:text-gray-200 transition-colors"
               data-discover="true"
               href="/login"
             >
               Login
             </a>
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
     </nav>
     <div
       class="container"
     >
       <div
-        class="col-md-6 m-auto"
+        class="max-w-md mx-auto mt-8"
       >
         <div
-          class="card card-body mt-5"
+          class="bg-white rounded-lg shadow-md p-6"
         >
           <h2
-            class="text-center"
+            class="text-2xl font-bold text-center mb-6"
           >
             Register
           </h2>
           <form>
             <div
-              class="form-group"
+              class="mb-4"
             >
               <label
+                class="block text-sm font-medium text-gray-700 mb-2"
                 for="username"
               >
                 Username
               </label>
               <input
-                class="form-control"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 id="username"
                 name="username"
                 type="text"
@@ -94,15 +72,16 @@ exports[`新規登録フロー > RegisterPage 初期表示 > 登録フォーム�
               />
             </div>
             <div
-              class="form-group"
+              class="mb-4"
             >
               <label
+                class="block text-sm font-medium text-gray-700 mb-2"
                 for="email"
               >
                 Email
               </label>
               <input
-                class="form-control"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 id="email"
                 name="email"
                 type="email"
@@ -110,15 +89,16 @@ exports[`新規登録フロー > RegisterPage 初期表示 > 登録フォーム�
               />
             </div>
             <div
-              class="form-group"
+              class="mb-4"
             >
               <label
+                class="block text-sm font-medium text-gray-700 mb-2"
                 for="password"
               >
                 Password
               </label>
               <input
-                class="form-control"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 id="password"
                 name="password"
                 type="password"
@@ -126,15 +106,16 @@ exports[`新規登録フロー > RegisterPage 初期表示 > 登録フォーム�
               />
             </div>
             <div
-              class="form-group"
+              class="mb-4"
             >
               <label
+                class="block text-sm font-medium text-gray-700 mb-2"
                 for="password2"
               >
                 Confirm Password
               </label>
               <input
-                class="form-control"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 id="password2"
                 name="password2"
                 type="password"
@@ -142,18 +123,21 @@ exports[`新規登録フロー > RegisterPage 初期表示 > 登録フォーム�
               />
             </div>
             <div
-              class="form-group"
+              class="mb-4"
             >
               <button
-                class="btn btn-primary"
+                class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 type="submit"
               >
                 Register
               </button>
             </div>
-            <p>
+            <p
+              class="text-center text-sm text-gray-600"
+            >
               Already have an account? 
               <a
+                class="text-blue-600 hover:text-blue-700"
                 data-discover="true"
                 href="/login"
               >

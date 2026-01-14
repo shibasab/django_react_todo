@@ -17,7 +17,7 @@ export const PublicLayout = ({ children }: PublicLayoutProps) => {
   const { isAuthenticated, isLoading } = useAuth()
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <div className="flex items-center justify-center min-h-screen text-gray-600">Loading...</div>
   }
 
   if (isAuthenticated) {

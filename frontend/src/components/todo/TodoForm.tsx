@@ -27,25 +27,29 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
   }
 
   return (
-    <div className="card card-body mt-4 mb-4">
-      <h2>Add Todo</h2>
+    <div className="bg-white rounded-lg shadow-md p-6 my-6">
+      <h2 className="text-xl font-bold mb-4">Add Todo</h2>
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="todo-name">Task</label>
+        <div className="mb-4">
+          <label htmlFor="todo-name" className="block text-sm font-medium text-gray-700 mb-2">
+            Task
+          </label>
           <input
             id="todo-name"
-            className="form-control"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             type="text"
             name="name"
             onChange={handleChange}
             value={formState.name}
           />
         </div>
-        <div className="form-group">
-          <label htmlFor="todo-detail">Detail</label>
+        <div className="mb-4">
+          <label htmlFor="todo-detail" className="block text-sm font-medium text-gray-700 mb-2">
+            Detail
+          </label>
           <input
             id="todo-detail"
-            className="form-control"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             type="text"
             name="detail"
             onChange={handleChange}
@@ -53,8 +57,11 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
           />
         </div>
 
-        <div className="form-group">
-          <button type="submit" className="btn btn-primary">
+        <div className="mb-4">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
             Submit
           </button>
         </div>

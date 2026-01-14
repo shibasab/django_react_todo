@@ -17,7 +17,7 @@ export const App = () => {
         <ToastContainer />
         <HashRouter>
           <Header />
-          <div className="container" style={{ background: '#F7FFF7' }}>
+          <div className="container mx-auto px-4 bg-[#F7FFF7] min-h-screen">
             <Routes>
               <Route
                 path="/"
