@@ -89,4 +89,141 @@ describe('DashboardPage', () => {
       })
     })
   })
+
+  describe('TODO更新', () => {
+    it('編集ボタンクリックで編集フォームが表示される', async () => {
+      const { client } = createMockApiClient({
+        getResponse: mockTodos,
+      })
+
+      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+
+      // 初期表示完了を待機
+      await waitFor(() => {
+        expect(within(container).getByText('Test Todo 1')).toBeInTheDocument()
+      })
+
+      // 編集ボタンをクリック
+      const editButtons = within(container).getAllByRole('button', { name: /edit/i })
+      fireEvent.click(editButtons[0])
+
+      // 編集フォームが表示される
+      await waitFor(() => {
+        expect(within(container).getByLabelText('タスク名')).toBeInTheDocument()
+        expect(within(container).getByLabelText('詳細')).toBeInTheDocument()
+        expect(within(container).getByRole('button', { name: /save/i })).toBeInTheDocument()
+        expect(within(container).getByRole('button', { name: /cancel/i })).toBeInTheDocument()
+      })
+    })
+
+    it('値変更→保存ボタンでPUT APIが呼ばれる', async () => {
+      const { client, requests, clearRequests } = createMockApiClient({
+        getResponse: mockTodos,
+        putResponse: { id: 1, name: 'Updated Todo', detail: 'Updated Detail' },
+      })
+
+      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+
+      // 初期表示完了を待機
+      await waitFor(() => {
+        expect(within(container).getByText('Test Todo 1')).toBeInTheDocument()
+      })
+
+      // 編集ボタンをクリック
+      const editButtons = within(container).getAllByRole('button', { name: /edit/i })
+      fireEvent.click(editButtons[0])
+
+      // 編集フォームが表示されるまで待機
+      await waitFor(() => {
+        expect(within(container).getByLabelText('タスク名')).toBeInTheDocument()
+      })
+      clearRequests()
+
+      // 値を変更
+      const nameInput = within(container).getByLabelText('タスク名')
+      const detailInput = within(container).getByLabelText('詳細')
+      fireEvent.change(nameInput, { target: { value: 'Updated Todo' } })
+      fireEvent.change(detailInput, { target: { value: 'Updated Detail' } })
+
+      // 保存ボタンをクリック
+      const saveButton = within(container).getByRole('button', { name: /save/i })
+      fireEvent.click(saveButton)
+
+      // APIリクエストを検証
+      await waitFor(() => {
+        expect(requests).toMatchSnapshot('api-requests-update')
+      })
+    })
+
+    it('キャンセルボタンで編集モード終了', async () => {
+      const { client } = createMockApiClient({
+        getResponse: mockTodos,
+      })
+
+      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+
+      // 初期表示完了を待機
+      await waitFor(() => {
+        expect(within(container).getByText('Test Todo 1')).toBeInTheDocument()
+      })
+
+      // 編集ボタンをクリック
+      const editButtons = within(container).getAllByRole('button', { name: /edit/i })
+      fireEvent.click(editButtons[0])
+
+      // 編集フォームが表示されるまで待機
+      await waitFor(() => {
+        expect(within(container).getByLabelText('タスク名')).toBeInTheDocument()
+      })
+
+      // キャンセルボタンをクリック
+      const cancelButton = within(container).getByRole('button', { name: /cancel/i })
+      fireEvent.click(cancelButton)
+
+      // 編集フォームが非表示になる
+      await waitFor(() => {
+        expect(within(container).queryByLabelText('タスク名')).not.toBeInTheDocument()
+        expect(within(container).getByText('Test Todo 1')).toBeInTheDocument()
+      })
+    })
+
+    it('タスク名が空の場合はバリデーションエラー', async () => {
+      const { client, requests, clearRequests } = createMockApiClient({
+        getResponse: mockTodos,
+      })
+
+      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+
+      // 初期表示完了を待機
+      await waitFor(() => {
+        expect(within(container).getByText('Test Todo 1')).toBeInTheDocument()
+      })
+
+      // 編集ボタンをクリック
+      const editButtons = within(container).getAllByRole('button', { name: /edit/i })
+      fireEvent.click(editButtons[0])
+
+      // 編集フォームが表示されるまで待機
+      await waitFor(() => {
+        expect(within(container).getByLabelText('タスク名')).toBeInTheDocument()
+      })
+      clearRequests()
+
+      // タスク名を空にする
+      const nameInput = within(container).getByLabelText('タスク名')
+      fireEvent.change(nameInput, { target: { value: '' } })
+
+      // 保存ボタンをクリック
+      const saveButton = within(container).getByRole('button', { name: /save/i })
+      fireEvent.click(saveButton)
+
+      // エラーメッセージが表示される
+      await waitFor(() => {
+        expect(within(container).getByText('タスク名は必須です')).toBeInTheDocument()
+      })
+
+      // API呼び出しがないことを確認
+      expect(requests.length).toBe(0)
+    })
+  })
 })

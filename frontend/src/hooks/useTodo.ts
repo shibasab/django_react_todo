@@ -9,6 +9,7 @@ type TodoService = Readonly<{
   isLoading: boolean
   fetchTodos: () => Promise<void>
   addTodo: (name: string, detail: string) => Promise<void>
+  updateTodo: (id: number, name: string, detail: string) => Promise<void>
   removeTodo: (id: number) => Promise<void>
 }>
 
@@ -32,6 +33,11 @@ export const useTodo = (): TodoService => {
     fetchTodos()
   }
 
+  const updateTodo = async (id: number, name: string, detail: string) => {
+    await apiClient.put<Todo>(`/todo/${id}/`, { name, detail })
+    fetchTodos()
+  }
+
   const removeTodo = async (id: number) => {
     await apiClient.delete(`/todo/${id}/`)
     fetchTodos()
@@ -42,6 +48,7 @@ export const useTodo = (): TodoService => {
     isLoading,
     fetchTodos,
     addTodo,
+    updateTodo,
     removeTodo,
   } as const
 }
