@@ -3,6 +3,7 @@
         "oxc.oxc-vscode",
         "typescriptteam.native-preview",
         "charliermarsh.ruff",
-        "meta.pyrefly"
+        "meta.pyrefly",
+        "bradlc.vscode-tailwindcss"
     ]
 }
