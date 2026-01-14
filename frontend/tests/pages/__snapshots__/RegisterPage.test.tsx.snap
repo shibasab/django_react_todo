@@ -135,7 +135,8 @@ exports[`新規登録フロー > RegisterPage 初期表示 > 登録フォーム�
             <p
               class="text-center text-sm text-gray-600"
             >
-              Already have an account? 
+              Already have an account?
+               
               <a
                 class="text-blue-600 hover:text-blue-700"
                 data-discover="true"
