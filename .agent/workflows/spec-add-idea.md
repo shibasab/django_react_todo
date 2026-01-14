@@ -1,9 +1,9 @@
 ---
-description: Spec: Add Idea (Backlog)
+description: "Spec: Add Idea (Backlog)"
 ---
 
-# 概要
 新しい機能アイデアを軽量Specとして specs/000_backlog に追加し、specs/INDEX.md を更新する。実装はしない。
+
 
 # Goal
 - 将来の機能アイデアを忘れないように、軽量Spec（WHAT/WHY中心）として保存する。

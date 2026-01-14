@@ -1,8 +1,7 @@
 ---
-description: Spec: Promote Idea -> Ready
+description: "Spec: Promote Idea -> Ready"
 ---
 
-# 概要
 BacklogのIdeaを、実装着手可能なSpec（Ready）として specs/NNN_feature/spec.md に昇格し、specs/INDEX.md を更新する。実装はしない。
 
 # Goal
