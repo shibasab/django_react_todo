@@ -7,9 +7,7 @@ export const Header = () => {
 
   const authLinks = (
     <div className="flex items-center space-x-4">
-      <span className="text-white font-semibold">
-        {user ? `Welcome ${user.username}` : ''}
-      </span>
+      <span className="text-white font-semibold">{user ? `Welcome ${user.username}` : ''}</span>
       <button
         onClick={logout}
         className="px-3 py-1 bg-cyan-600 text-white rounded-md hover:bg-cyan-700 transition-colors text-sm"

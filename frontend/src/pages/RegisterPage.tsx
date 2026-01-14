@@ -103,7 +103,10 @@ export const RegisterPage = () => {
             </button>
           </div>
           <p className="text-center text-sm text-gray-600">
-            Already have an account? <Link to="/login" className="text-blue-600 hover:text-blue-700">Login</Link>
+            Already have an account?{' '}
+            <Link to="/login" className="text-blue-600 hover:text-blue-700">
+              Login
+            </Link>
           </p>
         </form>
       </div>
