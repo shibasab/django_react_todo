@@ -46,3 +46,14 @@
 - 依頼文には「読むべきファイル」を明記する
   - 例: `nfr/001_api_response_time/nfr.md`
 - NFRに書いてない仕様は「未決」とみなす（勝手に補完しない）
+
+## 成果物の配置
+- NFRの成果物（ガイドライン、設計書など）は `guidelines/` に配置する
+- 完了時は nfr.md に `Output:` としてリンクを追記する
+  - 例: `- Output: [ガイドライン名](../../guidelines/xxx.md)`
+
+## NFRから派生する機能Spec
+- NFRを実現するために機能Specが必要な場合、`specs/` に通常のSpecとして作成する
+- 機能Specの Requirements セクションで、関連NFRのガイドラインを参照する
+  - 例: `NFR-001: [エラー表示ガイドライン](../../guidelines/error-display.md)に準拠する (MUST)`
+

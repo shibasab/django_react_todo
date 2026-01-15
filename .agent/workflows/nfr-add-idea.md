@@ -2,7 +2,7 @@
 description: "NFR: Add Idea (Backlog)"
 ---
 
-新しい非機能要件アイデアを軽量NFRとして nfr/000_backlog に追加し、nfr/INDEX.md を更新する。実装はしない。
+新しい非機能要件アイデアを軽量NFRとして docs/nfr/000_backlog に追加し、docs/nfr/INDEX.md を更新する。実装はしない。
 
 
 # Goal
@@ -24,11 +24,11 @@ description: "NFR: Add Idea (Backlog)"
 
 # Steps
 ## 1. Ensure files exist
-- `nfr/000_backlog/` がなければ作成する。
-- `nfr/INDEX.md` がなければ作成する（Idea/Ready/In progress/Done/Abandoned の5セクションを作る）。
+- `docs/nfr/000_backlog/` がなければ作成する。
+- `docs/nfr/INDEX.md` がなければ作成する（Idea/Ready/In progress/Done/Abandoned の5セクションを作る）。
 
 ## 2. Create lightweight idea NFR
-- `nfr/000_backlog/<slug>.md` を作成する。
+- `docs/nfr/000_backlog/<slug>.md` を作成する。
 - 先頭にメタ情報（Markdown）を必ず入れる:
   - Title: <Title>
   - Status: Idea
@@ -44,7 +44,7 @@ description: "NFR: Add Idea (Backlog)"
 - Open Questions（任意）
 
 ## 3. Update INDEX
-- `nfr/INDEX.md` の Idea セクションの先頭に1行追加（新しいものが上）。
+- `docs/nfr/INDEX.md` の Idea セクションの先頭に1行追加（新しいものが上）。
 - 例:
   - `- [<Title>](000_backlog/<slug>.md) (Status: Idea, Created: YYYY-MM-DD)`
 

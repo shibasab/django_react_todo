@@ -2,13 +2,13 @@
 description: "NFR: Promote Idea -> Ready"
 ---
 
-BacklogのIdeaを、実装着手可能なNFR（Ready）として nfr/NNN_topic/nfr.md に昇格し、nfr/INDEX.md を更新する。実装はしない。
+BacklogのIdeaを、実装着手可能なNFR（Ready）として docs/nfr/NNN_topic/nfr.md に昇格し、docs/nfr/INDEX.md を更新する。実装はしない。
 
 # Goal
 - 実装前に、要件・仕様（WHAT/WHY）と受け入れ条件を明確化し、エージェントが参照できる形にする。
 
 # Inputs (ユーザーが埋める)
-- Source Idea: nfr/000_backlog/<slug>.md
+- Source Idea: docs/nfr/000_backlog/<slug>.md
 - NFR folder: <NNN>_<topic>（未指定なら提案して。例: 001_api_response_time）
 - 追加で確定させたい仕様: <あれば>
 - 受け入れ条件として必ず入れたい観点: <あれば>
@@ -20,10 +20,10 @@ BacklogのIdeaを、実装着手可能なNFR（Ready）として nfr/NNN_topic/n
 
 # Steps
 ## 1. Choose next NFR number
-- `nfr/` 配下の `NNN_` をスキャンし、次の番号を提案する（欠番は埋めない）。
+- `docs/nfr/` 配下の `NNN_` をスキャンし、次の番号を提案する（欠番は埋めない）。
 
 ## 2. Create NFR folder + nfr.md
-- `nfr/<NNN>_<topic>/nfr.md` を作成する。
+- `docs/nfr/<NNN>_<topic>/nfr.md` を作成する。
 - 先頭にメタ情報（Markdown）を必ず入れる:
   - Title: <Title>
   - Status: Ready
@@ -42,7 +42,7 @@ BacklogのIdeaを、実装着手可能なNFR（Ready）として nfr/NNN_topic/n
 7. Open Questions（任意）
 
 ## 3. Update INDEX
-- `nfr/INDEX.md` の Ready セクションの先頭に `nfr/<NNN>_<topic>/nfr.md` を追加する。
+- `docs/nfr/INDEX.md` の Ready セクションの先頭に `docs/nfr/<NNN>_<topic>/nfr.md` を追加する。
 - 行をReadyへ移動し、Idea側は削除する。
 
 ## 4. Output
