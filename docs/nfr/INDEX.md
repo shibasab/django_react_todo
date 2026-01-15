@@ -6,13 +6,13 @@
 
 ## Ready
 <!-- 追加方法: `- [NNN_topic](./NNN_topic/nfr.md)` -->
-- [エラー表示パターンの定義](./001_error_display_pattern/nfr.md) (Status: Ready, Created: 2026-01-15)
 
 ## In progress
 <!-- 追加方法: `- [NNN_topic](./NNN_topic/nfr.md)` -->
 
 ## Done
 <!-- 追加方法: `- [NNN_topic](./NNN_topic/nfr.md)` -->
+- [エラー表示パターンの定義](./001_error_display_pattern/nfr.md) → [確定ドキュメント](../guidelines/error-display.md) (Completed: 2026-01-15)
 
 ## Abandoned
 <!-- 追加方法: `- [NNN_topic](./NNN_topic/nfr.md)` -->

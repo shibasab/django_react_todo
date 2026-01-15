@@ -1,11 +1,12 @@
 # NFR 001: エラー表示パターンの定義
 
 - Title: エラー表示パターンの定義
-- Status: Ready
+- Status: Done
 - Quality attributes (ISO/IEC 25010): Usability
 - Created: 2026-01-15
 - Last updated: 2026-01-15
 - Source: ../000_backlog/error-display-pattern.md
+- Output: [エラー表示パターンガイドライン](../../guidelines/error-display.md)
 
 ## Goal
 アプリケーション全体で一貫したエラー表示パターンを定義し、ユーザー体験を統一する。
