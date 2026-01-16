@@ -18,7 +18,9 @@ class TodoService:
     def create_todo(self, data: TodoCreate, owner_id: int) -> Todo:
         # 重複チェック
         if self.repo.check_name_exists(owner_id, data.name):
-            raise DuplicateError(f"Task with name '{data.name}' already exists")
+            raise DuplicateError(
+                f"Task with name '{data.name}' already exists", field="name"
+            )
 
         todo = Todo(name=data.name, detail=data.detail or "", owner_id=owner_id)
         self.repo.create(todo)
@@ -37,7 +39,9 @@ class TodoService:
 
         # 重複チェック（自分自身は除外）
         if self.repo.check_name_exists(owner_id, data.name, exclude_id=todo_id):
-            raise DuplicateError(f"Task with name '{data.name}' already exists")
+            raise DuplicateError(
+                f"Task with name '{data.name}' already exists", field="name"
+            )
 
         todo.name = data.name
         todo.detail = data.detail or ""
@@ -53,7 +57,9 @@ class TodoService:
         # 名前が変更される場合のみ重複チェック
         if data.name is not None:
             if self.repo.check_name_exists(owner_id, data.name, exclude_id=todo_id):
-                raise DuplicateError(f"Task with name '{data.name}' already exists")
+                raise DuplicateError(
+                    f"Task with name '{data.name}' already exists", field="name"
+                )
             todo.name = data.name
 
         if data.detail is not None:

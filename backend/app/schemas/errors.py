@@ -1,5 +1,5 @@
 from typing import Literal, List, Optional, Union
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 
 class ValidationErrorItemBase(BaseModel):
@@ -41,7 +41,7 @@ class ErrorResponseBase(BaseModel):
 
 class ValidationErrorResponse(ErrorResponseBase):
     type: Literal["validation_error"] = "validation_error"
-    errors: List[ValidationError] = Field(..., discriminator="reason")
+    errors: List[ValidationError]
 
 
 ErrorResponse = Union[ValidationErrorResponse]

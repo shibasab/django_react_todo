@@ -13,7 +13,11 @@ class NotFoundError(AppError):
 class DuplicateError(AppError):
     """リソースが重複している場合のエラー"""
 
-    pass
+    def __init__(
+        self, message: str = "Resource already exists", field: str = "unknown"
+    ):
+        super().__init__(message)
+        self.field = field
 
 
 class AuthenticationError(AppError):

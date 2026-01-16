@@ -1,8 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
 
 from app.database import engine, Base
 from app.routers import auth, todo
+from app.handlers import validation_exception_handler, duplicate_exception_handler
+from app.exceptions import DuplicateError
 
 # データベーステーブルを作成
 Base.metadata.create_all(bind=engine)
@@ -20,6 +23,16 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+# 例外ハンドラーを登録
+app.add_exception_handler(
+    RequestValidationError,
+    validation_exception_handler,  # pyrefly: ignore[bad-argument-type]
+)
+app.add_exception_handler(
+    DuplicateError,
+    duplicate_exception_handler,  # pyrefly: ignore[bad-argument-type]
 )
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])

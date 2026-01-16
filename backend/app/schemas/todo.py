@@ -1,11 +1,27 @@
-from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional
+from pydantic import BaseModel, Field, ConfigDict, AfterValidator
+from pydantic_core import PydanticCustomError
+from typing import Optional, Annotated
 from datetime import datetime
 
 
+# TODO: バリデーション処理を別ファイルに移動する
+def validate_not_empty(v: str) -> str:
+    """空文字列または空白のみの文字列を拒否するバリデーター"""
+    if not v or not v.strip():
+        raise PydanticCustomError(
+            "required",
+            "Field is required",
+        )
+    return v
+
+
+# 必須文字列型（空文字列を許可しない）
+RequiredStr = Annotated[str, AfterValidator(validate_not_empty)]
+
+
 class TodoBase(BaseModel):
-    name: str
-    detail: Optional[str] = ""
+    name: RequiredStr = Field(..., max_length=100)
+    detail: str = Field(default="", max_length=500)
 
 
 class TodoCreate(TodoBase):
@@ -13,8 +29,8 @@ class TodoCreate(TodoBase):
 
 
 class TodoUpdate(BaseModel):
-    name: Optional[str] = None
-    detail: Optional[str] = None
+    name: Optional[RequiredStr] = Field(default=None, max_length=100)
+    detail: Optional[str] = Field(default=None, max_length=500)
 
 
 class TodoResponse(TodoBase):

@@ -35,7 +35,7 @@ class TestCreateTodo:
     def test_create_duplicate_todo_name_fails(
         self, client, auth_headers, test_user, test_db
     ):
-        """同じ名前のタスク作成で409エラー"""
+        """同じ名前のタスク作成で422エラー（バリデーションエラー）"""
         # 最初のTodoを作成
         todo = Todo(name="Duplicate Task", detail="First one", owner_id=test_user.id)
         test_db.add(todo)
@@ -48,8 +48,76 @@ class TestCreateTodo:
             json={"name": "Duplicate Task", "detail": "Second one"},
         )
 
-        assert response.status_code == 409
-        assert "already exists" in response.json()["detail"]
+        assert response.status_code == 422
+        data = response.json()
+        assert data["type"] == "validation_error"
+        assert len(data["errors"]) == 1
+        assert data["errors"][0]["field"] == "name"
+        assert data["errors"][0]["reason"] == "unique_violation"
+
+    def test_create_todo_name_too_long(self, client, auth_headers):
+        """タスク名が100文字を超える場合は422エラー"""
+        long_name = "a" * 101
+        response = client.post(
+            "/api/todo/",
+            headers=auth_headers,
+            json={"name": long_name, "detail": "Test Detail"},
+        )
+
+        assert response.status_code == 422
+        data = response.json()
+        assert data["type"] == "validation_error"
+        assert len(data["errors"]) == 1
+        assert data["errors"][0]["field"] == "name"
+        assert data["errors"][0]["reason"] == "max_length"
+        assert data["errors"][0]["limit"] == 100
+
+    def test_create_todo_detail_too_long(self, client, auth_headers):
+        """タスク詳細が500文字を超える場合は422エラー"""
+        long_detail = "a" * 501
+        response = client.post(
+            "/api/todo/",
+            headers=auth_headers,
+            json={"name": "Test Task", "detail": long_detail},
+        )
+
+        assert response.status_code == 422
+        data = response.json()
+        assert data["type"] == "validation_error"
+        assert len(data["errors"]) == 1
+        assert data["errors"][0]["field"] == "detail"
+        assert data["errors"][0]["reason"] == "max_length"
+        assert data["errors"][0]["limit"] == 500
+
+    def test_create_todo_name_empty(self, client, auth_headers):
+        """タスク名が空の場合は422エラー"""
+        response = client.post(
+            "/api/todo/",
+            headers=auth_headers,
+            json={"name": "", "detail": "Test Detail"},
+        )
+
+        assert response.status_code == 422
+        data = response.json()
+        assert data["type"] == "validation_error"
+        assert len(data["errors"]) == 1
+        assert data["errors"][0]["field"] == "name"
+        assert data["errors"][0]["reason"] == "required"
+
+    def test_create_todo_name_missing(self, client, auth_headers):
+        """タスク名フィールドが欠落している場合は422エラー"""
+        response = client.post(
+            "/api/todo/",
+            headers=auth_headers,
+            json={"detail": "Test Detail"},  # nameフィールドなし
+        )
+
+        assert response.status_code == 422
+        data = response.json()
+        assert data["type"] == "validation_error"
+        assert len(data["errors"]) == 1
+        assert data["errors"][0]["field"] == "name"
+        assert data["errors"][0]["reason"] == "required"
 
 
 class TestListTodos:
@@ -147,7 +215,7 @@ class TestUpdateTodo:
     def test_update_to_duplicate_name_fails(
         self, client, auth_headers, test_user, test_db
     ):
-        """他のタスクと重複する名前への更新で409エラー"""
+        """他のタスクと重複する名前への更新で422エラー（バリデーションエラー）"""
         # 2つのTodoを作成
         todo1 = Todo(name="Task One", detail="First task", owner_id=test_user.id)
         todo2 = Todo(name="Task Two", detail="Second task", owner_id=test_user.id)
@@ -164,8 +232,12 @@ class TestUpdateTodo:
             json={"name": "Task One", "detail": "Trying to duplicate"},
         )
 
-        assert response.status_code == 409
-        assert "already exists" in response.json()["detail"]
+        assert response.status_code == 422
+        data = response.json()
+        assert data["type"] == "validation_error"
+        assert len(data["errors"]) == 1
+        assert data["errors"][0]["field"] == "name"
+        assert data["errors"][0]["reason"] == "unique_violation"
 
     def test_update_same_name_succeeds(self, client, auth_headers, test_user, test_db):
         """同じ名前のまま他フィールドを更新して成功"""
