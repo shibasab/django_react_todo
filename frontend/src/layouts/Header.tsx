@@ -3,11 +3,11 @@ import { Link } from 'react-router'
 import { useAuth } from '../hooks/useAuth'
 
 export const Header = () => {
-  const { isAuthenticated, user, logout } = useAuth()
+  const { authState, logout } = useAuth()
 
-  const authLinks = (
+  const authLinks = (user: { username: string }) => (
     <div className="flex items-center space-x-4">
-      <span className="text-white font-semibold">{user ? `Welcome ${user.username}` : ''}</span>
+      <span className="text-white font-semibold">Welcome {user.username}</span>
       <button
         onClick={logout}
         className="px-3 py-1 bg-cyan-600 text-white rounded-md hover:bg-cyan-700 transition-colors text-sm"
@@ -35,7 +35,7 @@ export const Header = () => {
           <a href="#" className="text-xl font-bold text-white hover:text-gray-200">
             Todo App
           </a>
-          {isAuthenticated ? authLinks : guestLinks}
+          {authState.status === 'authenticated' ? authLinks(authState.user) : guestLinks}
         </div>
       </div>
     </nav>

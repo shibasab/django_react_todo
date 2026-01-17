@@ -14,15 +14,14 @@ type PrivateLayoutProps = Readonly<{
  * - 認証済み: childrenを表示
  */
 export const PrivateLayout = ({ children }: PrivateLayoutProps) => {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { authState } = useAuth()
 
-  if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen text-gray-600">Loading...</div>
+  switch (authState.status) {
+    case 'loading':
+      return <div className="flex items-center justify-center min-h-screen text-gray-600">Loading...</div>
+    case 'unauthenticated':
+      return <Navigate to="/login" replace />
+    case 'authenticated':
+      return <>{children}</>
   }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
-  }
-
-  return <>{children}</>
 }

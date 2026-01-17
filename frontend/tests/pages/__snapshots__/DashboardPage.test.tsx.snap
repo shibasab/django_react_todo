@@ -44,8 +44,6 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
 ]
 `;
 
-exports[`DashboardPage > 初期表示 > ページレンダリング時にGET APIが呼ばれ、TODOリストが表示される > api-requests 2`] = `[]`;
-
 exports[`DashboardPage > 初期表示 > ページレンダリング時にGET APIが呼ばれ、TODOリストが表示される > dom 1`] = `
 <div>
   <nav
@@ -69,7 +67,7 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
           <span
             class="text-white font-semibold"
           >
-            Welcome undefined
+            Welcome 
           </span>
           <button
             class="px-3 py-1 bg-cyan-600 text-white rounded-md hover:bg-cyan-700 transition-colors text-sm"

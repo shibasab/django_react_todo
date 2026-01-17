@@ -6,54 +6,58 @@ import { authToken } from '../services/authToken'
 import { useApiClient } from './ApiContext'
 
 /**
- * 認証状態（Context内部用）
+ * 認証状態
  */
-type AuthState = Readonly<{
-  user: User | null
-  isAuthenticated: boolean
-  isLoading: boolean
+type AuthStateBase = Readonly<{
+  status: unknown
 }>
+type Loading = AuthStateBase &
+  Readonly<{
+    status: 'loading'
+  }>
+type Authenticated = AuthStateBase &
+  Readonly<{
+    status: 'authenticated'
+    user: User
+  }>
+type Unauthenticated = AuthStateBase &
+  Readonly<{
+    status: 'unauthenticated'
+  }>
+
+export type AuthState = Loading | Authenticated | Unauthenticated
 
 /**
  * 認証Context の公開API
  */
 export type AuthContextValue = Readonly<{
-  user: User | null
-  isAuthenticated: boolean
-  isLoading: boolean
+  authState: AuthState
   login: (username: string, password: string) => Promise<void>
   register: (username: string, email: string, password: string) => Promise<void>
   logout: () => Promise<void>
 }>
 
-// 初期状態
-const initialState: AuthState = {
-  user: null,
-  isAuthenticated: false,
-  isLoading: true,
-}
-
 export const AuthContext = createContext<AuthContextValue | null>(null)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { apiClient } = useApiClient()
-  const [state, setState] = useState<AuthState>(initialState)
+  const [authState, setAuthState] = useState<AuthState>({ status: 'loading' })
 
   // 初回マウント時にユーザー情報を読み込む
   useEffect(() => {
     const loadUser = async () => {
       const token = authToken.get()
       if (token == null || token === '') {
-        setState({ user: null, isAuthenticated: false, isLoading: false })
+        setAuthState({ status: 'unauthenticated' })
         return
       }
 
       try {
         const user = await apiClient.get('/auth/user')
-        setState({ user, isAuthenticated: true, isLoading: false })
+        setAuthState({ status: 'authenticated', user })
       } catch {
         authToken.remove()
-        setState({ user: null, isAuthenticated: false, isLoading: false })
+        setAuthState({ status: 'unauthenticated' })
       }
     }
 
@@ -63,13 +67,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (username: string, password: string): Promise<void> => {
     const response = await apiClient.post('/auth/login', { username, password })
     authToken.set(response.token)
-    setState({ user: response.user, isAuthenticated: true, isLoading: false })
+    setAuthState({ status: 'authenticated', user: response.user })
   }
 
   const register = async (username: string, email: string, password: string): Promise<void> => {
     const response = await apiClient.post('/auth/register', { username, email, password })
     authToken.set(response.token)
-    setState({ user: response.user, isAuthenticated: true, isLoading: false })
+    setAuthState({ status: 'authenticated', user: response.user })
   }
 
   const logout = async (): Promise<void> => {
@@ -77,18 +81,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await apiClient.post('/auth/logout', null)
     } finally {
       authToken.remove()
-      setState({ user: null, isAuthenticated: false, isLoading: false })
+      setAuthState({ status: 'unauthenticated' })
     }
   }
 
-  const value = {
-    user: state.user,
-    isAuthenticated: state.isAuthenticated,
-    isLoading: state.isLoading,
+  const value: AuthContextValue = {
+    authState,
     login,
     register,
     logout,
-  } as const satisfies AuthContextValue
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

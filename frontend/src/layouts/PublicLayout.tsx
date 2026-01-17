@@ -14,15 +14,14 @@ type PublicLayoutProps = Readonly<{
  * - 未認証: childrenを表示
  */
 export const PublicLayout = ({ children }: PublicLayoutProps) => {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { authState } = useAuth()
 
-  if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen text-gray-600">Loading...</div>
+  switch (authState.status) {
+    case 'loading':
+      return <div className="flex items-center justify-center min-h-screen text-gray-600">Loading...</div>
+    case 'authenticated':
+      return <Navigate to="/" replace />
+    case 'unauthenticated':
+      return <>{children}</>
   }
-
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />
-  }
-
-  return <>{children}</>
 }
