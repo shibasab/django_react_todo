@@ -1,15 +1,34 @@
 import axios, { type AxiosInstance } from 'axios'
 
+import type {
+  ApiRequest,
+  ApiResponse,
+  DeleteEndpoints,
+  GetEndpoints,
+  PostEndpoints,
+  PutEndpoints,
+} from './apiEndpoints'
+
 import config from '../config'
 import { authToken } from './authToken'
 
-type RequestConfig = Readonly<{}>
-
 export type ApiClient = Readonly<{
-  get: <T>(url: string, config?: RequestConfig) => Promise<T>
-  post: <T>(url: string, data?: unknown, config?: RequestConfig) => Promise<T>
-  put: <T>(url: string, data?: unknown, config?: RequestConfig) => Promise<T>
-  delete: <T>(url: string, config?: RequestConfig) => Promise<T>
+  get: {
+    <E extends GetEndpoints>(url: E): Promise<ApiResponse<'get', E>>
+    <T>(url: string): Promise<T>
+  }
+  post: {
+    <E extends PostEndpoints>(url: E, data: ApiRequest<'post', E>): Promise<ApiResponse<'post', E>>
+    <T>(url: string, data?: unknown): Promise<T>
+  }
+  put: {
+    <E extends PutEndpoints>(url: E, data: ApiRequest<'put', E>): Promise<ApiResponse<'put', E>>
+    <T>(url: string, data?: unknown): Promise<T>
+  }
+  delete: {
+    <E extends DeleteEndpoints>(url: E): Promise<ApiResponse<'delete', E>>
+    <T = void>(url: string): Promise<T>
+  }
 }>
 
 /**
@@ -36,23 +55,23 @@ const createAxiosInstance = (): AxiosInstance => {
 }
 
 export const createApiClient = (axiosInstance: AxiosInstance = createAxiosInstance()): ApiClient => ({
-  get: async <T>(url: string, config?: RequestConfig): Promise<T> => {
-    const response = await axiosInstance.get<T>(url, config)
+  get: async <T>(url: string): Promise<T> => {
+    const response = await axiosInstance.get<T>(url)
     return response.data
   },
 
-  post: async <T>(url: string, data?: unknown, config?: RequestConfig): Promise<T> => {
-    const response = await axiosInstance.post<T>(url, data, config)
+  post: async <T>(url: string, data?: unknown): Promise<T> => {
+    const response = await axiosInstance.post<T>(url, data)
     return response.data
   },
 
-  put: async <T>(url: string, data?: unknown, config?: RequestConfig): Promise<T> => {
-    const response = await axiosInstance.put<T>(url, data, config)
+  put: async <T>(url: string, data?: unknown): Promise<T> => {
+    const response = await axiosInstance.put<T>(url, data)
     return response.data
   },
 
-  delete: async <T>(url: string, config?: RequestConfig): Promise<T> => {
-    const response = await axiosInstance.delete<T>(url, config)
+  delete: async <T>(url: string): Promise<T> => {
+    const response = await axiosInstance.delete<T>(url)
     return response.data
   },
 })

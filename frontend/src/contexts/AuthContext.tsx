@@ -2,7 +2,6 @@ import { createContext, useState, useEffect, type ReactNode } from 'react'
 
 import type { User } from '../models/user'
 
-import { type Auth } from '../models/auth'
 import { authToken } from '../services/authToken'
 import { useApiClient } from './ApiContext'
 
@@ -50,7 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       try {
-        const user = await apiClient.get<User>('/auth/user')
+        const user = await apiClient.get('/auth/user')
         setState({ user, isAuthenticated: true, isLoading: false })
       } catch {
         authToken.remove()
@@ -62,13 +61,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
   const login = async (username: string, password: string): Promise<void> => {
-    const response = await apiClient.post<Auth>('/auth/login', { username, password })
+    const response = await apiClient.post('/auth/login', { username, password })
     authToken.set(response.token)
     setState({ user: response.user, isAuthenticated: true, isLoading: false })
   }
 
   const register = async (username: string, email: string, password: string): Promise<void> => {
-    const response = await apiClient.post<Auth>('/auth/register', { username, email, password })
+    const response = await apiClient.post('/auth/register', { username, email, password })
     authToken.set(response.token)
     setState({ user: response.user, isAuthenticated: true, isLoading: false })
   }

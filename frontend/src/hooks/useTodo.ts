@@ -21,7 +21,7 @@ export const useTodo = (): TodoService => {
   const fetchTodos = async () => {
     setIsLoading(true)
     try {
-      const data = await apiClient.get<readonly Todo[]>('/todo/')
+      const data = await apiClient.get('/todo/')
       setTodos(data)
     } finally {
       setIsLoading(false)
@@ -29,7 +29,7 @@ export const useTodo = (): TodoService => {
   }
 
   const addTodo = async (name: string, detail: string) => {
-    await apiClient.post<Todo>('/todo/', { name, detail })
+    await apiClient.post('/todo/', { name, detail })
     fetchTodos()
   }
 
