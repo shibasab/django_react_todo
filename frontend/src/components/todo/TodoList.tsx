@@ -27,13 +27,13 @@ export const TodoList = ({ todos, onDelete, onEdit }: TodoListProps) => {
   }
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (editState === null) return
+    if (editState == null) return
     const { name, value } = e.target
     setEditState({ ...editState, [name]: value, error: null })
   }
 
   const handleSaveClick = () => {
-    if (editState === null) return
+    if (editState == null) return
     if (editState.name.trim() === '') {
       setEditState({ ...editState, error: 'タスク名は必須です' })
       return

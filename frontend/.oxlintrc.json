@@ -13,7 +13,7 @@
   "rules": {
     "block-scoped-var": "warn",
     "constructor-super": "deny",
-    "eqeqeq": "warn",
+    "eqeqeq": ["error", "smart"],
     "for-direction": "deny",
     "no-async-promise-executor": "deny",
     "no-await-in-loop": "warn",

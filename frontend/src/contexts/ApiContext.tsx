@@ -23,7 +23,7 @@ export const ApiProvider = ({ client, children }: ApiProviderProps) => {
  */
 export const useApiClient = (): ApiClient => {
   const context = useContext(ApiContext)
-  if (context === null) {
+  if (context == null) {
     throw new Error('useApiClient must be used within an ApiProvider')
   }
   return context
