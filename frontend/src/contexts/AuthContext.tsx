@@ -36,7 +36,7 @@ const initialState: AuthState = {
 export const AuthContext = createContext<AuthContextValue | null>(null)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const apiClient = useApiClient()
+  const { apiClient } = useApiClient()
   const [state, setState] = useState<AuthState>(initialState)
 
   // 初回マウント時にユーザー情報を読み込む
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     loadUser()
-  }, [])
+  }, [apiClient])
 
   const login = async (username: string, password: string): Promise<void> => {
     const response = await apiClient.post('/auth/login', { username, password })

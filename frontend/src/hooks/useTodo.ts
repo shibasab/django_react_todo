@@ -14,18 +14,12 @@ type TodoService = Readonly<{
 }>
 
 export const useTodo = (): TodoService => {
-  const apiClient = useApiClient()
+  const { apiClient, isLoading } = useApiClient()
   const [todos, setTodos] = useState<readonly Todo[]>([])
-  const [isLoading, setIsLoading] = useState(true)
 
   const fetchTodos = async () => {
-    setIsLoading(true)
-    try {
-      const data = await apiClient.get('/todo/')
-      setTodos(data)
-    } finally {
-      setIsLoading(false)
-    }
+    const data = await apiClient.get('/todo/')
+    setTodos(data)
   }
 
   const addTodo = async (name: string, detail: string) => {

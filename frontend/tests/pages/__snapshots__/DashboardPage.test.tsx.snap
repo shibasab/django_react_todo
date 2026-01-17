@@ -44,6 +44,8 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
 ]
 `;
 
+exports[`DashboardPage > 初期表示 > ページレンダリング時にGET APIが呼ばれ、TODOリストが表示される > api-requests 2`] = `[]`;
+
 exports[`DashboardPage > 初期表示 > ページレンダリング時にGET APIが呼ばれ、TODOリストが表示される > dom 1`] = `
 <div>
   <nav

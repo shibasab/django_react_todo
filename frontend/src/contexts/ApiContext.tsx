@@ -1,27 +1,48 @@
-import { createContext, useContext, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
 
 import { type ApiClient, createApiClient } from '../services/api'
+
+type ApiContextValue = Readonly<{
+  apiClient: ApiClient
+  isLoading: boolean
+}>
 
 type ApiProviderProps = Readonly<{
   client?: ApiClient
   children: ReactNode
 }>
 
-const ApiContext = createContext<ApiClient | null>(null)
+const ApiContext = createContext<ApiContextValue | null>(null)
 
-/**
- * APIクライアントプロバイダー
- * テスト時にモック用クライアントを注入可能
- */
+const useLoadingCounter = () => {
+  const [count, setCount] = useState(0)
+
+  const increment = useCallback(() => setCount((prev) => prev + 1), [])
+  const decrement = useCallback(() => setCount((prev) => Math.max(0, prev - 1)), [])
+
+  return { isLoading: count > 0, increment, decrement }
+}
+
 export const ApiProvider = ({ client, children }: ApiProviderProps) => {
-  const apiClient = client ?? createApiClient()
-  return <ApiContext.Provider value={apiClient}>{children}</ApiContext.Provider>
+  const { isLoading, increment, decrement } = useLoadingCounter()
+
+  const apiClient = useMemo(
+    () =>
+      client ??
+      createApiClient(undefined, {
+        onRequestStart: increment,
+        onRequestEnd: decrement,
+      }),
+    [client, increment, decrement],
+  )
+
+  return <ApiContext.Provider value={{ apiClient, isLoading }}>{children}</ApiContext.Provider>
 }
 
 /**
  * APIクライアントを取得するフック
  */
-export const useApiClient = (): ApiClient => {
+export const useApiClient = (): ApiContextValue => {
   const context = useContext(ApiContext)
   if (context == null) {
     throw new Error('useApiClient must be used within an ApiProvider')

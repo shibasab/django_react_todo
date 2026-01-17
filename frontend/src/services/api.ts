@@ -54,24 +54,49 @@ const createAxiosInstance = (): AxiosInstance => {
   return instance
 }
 
-export const createApiClient = (axiosInstance: AxiosInstance = createAxiosInstance()): ApiClient => ({
-  get: async <T>(url: string): Promise<T> => {
-    const response = await axiosInstance.get<T>(url)
-    return response.data
-  },
+export type ApiClientCallbacks = Readonly<{
+  onRequestStart: () => void
+  onRequestEnd: () => void
+}>
 
-  post: async <T>(url: string, data?: unknown): Promise<T> => {
-    const response = await axiosInstance.post<T>(url, data)
-    return response.data
-  },
+export const createApiClient = (
+  axiosInstance: AxiosInstance = createAxiosInstance(),
+  callbacks: ApiClientCallbacks,
+): ApiClient => {
+  const { onRequestStart, onRequestEnd } = callbacks
 
-  put: async <T>(url: string, data?: unknown): Promise<T> => {
-    const response = await axiosInstance.put<T>(url, data)
-    return response.data
-  },
+  const withTracking = async <T>(fn: () => Promise<T>): Promise<T> => {
+    onRequestStart?.()
+    try {
+      return await fn()
+    } finally {
+      onRequestEnd?.()
+    }
+  }
 
-  delete: async <T>(url: string): Promise<T> => {
-    const response = await axiosInstance.delete<T>(url)
-    return response.data
-  },
-})
+  return {
+    get: async <T>(url: string): Promise<T> =>
+      withTracking(async () => {
+        const response = await axiosInstance.get<T>(url)
+        return response.data
+      }),
+
+    post: async <T>(url: string, data?: unknown): Promise<T> =>
+      withTracking(async () => {
+        const response = await axiosInstance.post<T>(url, data)
+        return response.data
+      }),
+
+    put: async <T>(url: string, data?: unknown): Promise<T> =>
+      withTracking(async () => {
+        const response = await axiosInstance.put<T>(url, data)
+        return response.data
+      }),
+
+    delete: async <T>(url: string): Promise<T> =>
+      withTracking(async () => {
+        const response = await axiosInstance.delete<T>(url)
+        return response.data
+      }),
+  }
+}
