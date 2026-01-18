@@ -2,6 +2,8 @@ import { vi } from 'vitest'
 
 import type { ApiClient } from '../../src/services/api'
 
+import { ok } from '../../src/models/result'
+
 type ApiRequest = Readonly<{
   method: 'GET' | 'POST' | 'PUT' | 'DELETE'
   url: string
@@ -35,12 +37,12 @@ export const createMockApiClient = (options: MockApiClientOptions = {}) => {
 
     post: vi.fn(async <T>(url: string, data?: unknown): Promise<T> => {
       requests.push({ method: 'POST', url, data })
-      return (options.postResponse ?? {}) as T
+      return ok(options.postResponse ?? {}) as unknown as T
     }),
 
     put: vi.fn(async <T>(url: string, data?: unknown): Promise<T> => {
       requests.push({ method: 'PUT', url, data })
-      return (options.putResponse ?? {}) as T
+      return ok(options.putResponse ?? {}) as unknown as T
     }),
 
     delete: vi.fn(async <T>(url: string): Promise<T> => {
