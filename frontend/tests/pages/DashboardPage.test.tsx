@@ -219,7 +219,7 @@ describe('DashboardPage', () => {
 
       // エラーメッセージが表示される
       await waitFor(() => {
-        expect(within(container).getByText('タスク名は必須です')).toBeInTheDocument()
+        expect(within(container).getByText('タスク名を入力してください')).toBeInTheDocument()
       })
 
       // API呼び出しがないことを確認
