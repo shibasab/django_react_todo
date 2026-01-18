@@ -3,6 +3,7 @@ import { Fragment, useState, type ChangeEvent } from 'react'
 import type { ValidationError } from '../../models/error'
 import type { Todo } from '../../models/todo'
 
+import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH } from '../../hooks/useTodo'
 import { FieldError } from '../FieldError'
 
 type TodoListProps = Readonly<{
@@ -66,6 +67,7 @@ export const TodoList = ({ todos, onDelete, onEdit }: TodoListProps) => {
                     <input
                       id={`edit-name-${todo.id}`}
                       type="text"
+                      maxLength={TODO_NAME_MAX_LENGTH}
                       name="name"
                       value={editState.name}
                       onChange={handleInputChange}
@@ -82,6 +84,7 @@ export const TodoList = ({ todos, onDelete, onEdit }: TodoListProps) => {
                     <input
                       id={`edit-detail-${todo.id}`}
                       type="text"
+                      maxLength={TODO_DETAIL_MAX_LENGTH}
                       name="detail"
                       value={editState.detail}
                       onChange={handleInputChange}

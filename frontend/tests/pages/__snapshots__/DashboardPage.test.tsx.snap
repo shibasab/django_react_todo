@@ -184,6 +184,7 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
           <input
             class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"
             id="todo-name"
+            maxlength="100"
             name="name"
             type="text"
             value=""
@@ -201,6 +202,7 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
           <input
             class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"
             id="todo-detail"
+            maxlength="500"
             name="detail"
             type="text"
             value=""

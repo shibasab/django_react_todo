@@ -7,8 +7,8 @@ import { useApiClient } from '../contexts/ApiContext'
 import { validateRequired, validateMaxLength } from '../services/validation'
 
 // バリデーション制約値（バックエンドと同期）
-const TODO_NAME_MAX_LENGTH = 100
-const TODO_DETAIL_MAX_LENGTH = 500
+export const TODO_NAME_MAX_LENGTH = 100
+export const TODO_DETAIL_MAX_LENGTH = 500
 
 /**
  * Todoフォームのバリデーション

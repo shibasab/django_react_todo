@@ -2,6 +2,7 @@ import { useState, type FormEvent, type ChangeEvent } from 'react'
 
 import type { ValidationError } from '../../models/error'
 
+import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH } from '../../hooks/useTodo'
 import { FieldError } from '../FieldError'
 
 type TodoFormProps = Readonly<{
@@ -50,6 +51,7 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
               errors.some((e) => e.field === 'name') ? 'border-red-500' : 'border-gray-300'
             }`}
             type="text"
+            maxLength={TODO_NAME_MAX_LENGTH}
             name="name"
             onChange={handleChange}
             value={formState.name}
@@ -66,6 +68,7 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
               errors.some((e) => e.field === 'detail') ? 'border-red-500' : 'border-gray-300'
             }`}
             type="text"
+            maxLength={TODO_DETAIL_MAX_LENGTH}
             name="detail"
             onChange={handleChange}
             value={formState.detail}
