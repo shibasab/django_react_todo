@@ -1,25 +1,28 @@
 import { Fragment, useState, type ChangeEvent } from 'react'
 
+import type { ValidationError } from '../../models/error'
 import type { Todo } from '../../models/todo'
+
+import { FieldError } from '../FieldError'
 
 type TodoListProps = Readonly<{
   todos: readonly Todo[]
   onDelete: (id: number) => void
-  onEdit: (id: number, name: string, detail: string) => void
+  onEdit: (id: number, name: string, detail: string) => Promise<readonly ValidationError[] | undefined>
 }>
 
 type EditState = Readonly<{
   id: number
   name: string
   detail: string
-  error: string | null
+  errors: readonly ValidationError[]
 }> | null
 
 export const TodoList = ({ todos, onDelete, onEdit }: TodoListProps) => {
   const [editState, setEditState] = useState<EditState>(null)
 
   const handleEditClick = (todo: Todo) => {
-    setEditState({ id: todo.id, name: todo.name, detail: todo.detail, error: null })
+    setEditState({ id: todo.id, name: todo.name, detail: todo.detail, errors: [] })
   }
 
   const handleCancelClick = () => {
@@ -29,16 +32,16 @@ export const TodoList = ({ todos, onDelete, onEdit }: TodoListProps) => {
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (editState == null) return
     const { name, value } = e.target
-    setEditState({ ...editState, [name]: value, error: null })
+    setEditState({ ...editState, [name]: value })
   }
 
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
     if (editState == null) return
-    if (editState.name.trim() === '') {
-      setEditState({ ...editState, error: 'タスク名は必須です' })
+    const validationErrors = await onEdit(editState.id, editState.name.trim(), editState.detail)
+    if (validationErrors) {
+      setEditState({ ...editState, errors: validationErrors })
       return
     }
-    onEdit(editState.id, editState.name.trim(), editState.detail)
     setEditState(null)
   }
 
@@ -67,10 +70,10 @@ export const TodoList = ({ todos, onDelete, onEdit }: TodoListProps) => {
                       value={editState.name}
                       onChange={handleInputChange}
                       className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        editState.error ? 'border-red-500' : 'border-gray-300'
+                        editState.errors.some((e) => e.field === 'name') ? 'border-red-500' : 'border-gray-300'
                       }`}
                     />
-                    {editState.error && <p className="mt-1 text-sm text-red-600">{editState.error}</p>}
+                    <FieldError errors={editState.errors} fieldName="name" fieldLabel="タスク名" />
                   </div>
                   <div className="mb-3">
                     <label htmlFor={`edit-detail-${todo.id}`} className="block text-sm font-medium text-gray-700 mb-1">
@@ -82,8 +85,11 @@ export const TodoList = ({ todos, onDelete, onEdit }: TodoListProps) => {
                       name="detail"
                       value={editState.detail}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                        editState.errors.some((e) => e.field === 'detail') ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     />
+                    <FieldError errors={editState.errors} fieldName="detail" fieldLabel="詳細" />
                   </div>
                   <div className="flex gap-2">
                     <button

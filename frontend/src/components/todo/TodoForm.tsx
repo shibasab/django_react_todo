@@ -1,7 +1,11 @@
 import { useState, type FormEvent, type ChangeEvent } from 'react'
 
+import type { ValidationError } from '../../models/error'
+
+import { FieldError } from '../FieldError'
+
 type TodoFormProps = Readonly<{
-  onSubmit: (name: string, detail: string) => void
+  onSubmit: (name: string, detail: string) => Promise<readonly ValidationError[] | undefined>
 }>
 
 type FormState = Readonly<{
@@ -14,16 +18,22 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
     name: '',
     detail: '',
   })
+  const [errors, setErrors] = useState<readonly ValidationError[]>([])
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormState((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    onSubmit(formState.name, formState.detail)
+    const validationErrors = await onSubmit(formState.name, formState.detail)
+    if (validationErrors != null && validationErrors.length > 0) {
+      setErrors(validationErrors)
+      return
+    }
     setFormState({ name: '', detail: '' })
+    setErrors([])
   }
 
   return (
@@ -36,12 +46,15 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
           </label>
           <input
             id="todo-name"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.some((e) => e.field === 'name') ? 'border-red-500' : 'border-gray-300'
+            }`}
             type="text"
             name="name"
             onChange={handleChange}
             value={formState.name}
           />
+          <FieldError errors={errors} fieldName="name" fieldLabel="タスク名" />
         </div>
         <div className="mb-4">
           <label htmlFor="todo-detail" className="block text-sm font-medium text-gray-700 mb-2">
@@ -49,12 +62,15 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
           </label>
           <input
             id="todo-detail"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.some((e) => e.field === 'detail') ? 'border-red-500' : 'border-gray-300'
+            }`}
             type="text"
             name="detail"
             onChange={handleChange}
             value={formState.detail}
           />
+          <FieldError errors={errors} fieldName="detail" fieldLabel="詳細" />
         </div>
 
         <div className="mb-4">
