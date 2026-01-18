@@ -1,4 +1,5 @@
 import type { Auth } from '../models/auth'
+import type { ValidationErrorResponse } from '../models/error'
 import type { Todo } from '../models/todo'
 import type { User } from '../models/user'
 
@@ -29,13 +30,13 @@ export type ApiEndpoints = {
     '/auth/user': { response: User }
   }
   post: {
-    '/todo/': { request: CreateTodoRequest; response: Todo }
+    '/todo/': { request: CreateTodoRequest; response: Todo; error: ValidationErrorResponse }
     '/auth/login': { request: LoginRequest; response: Auth }
     '/auth/register': { request: RegisterRequest; response: Auth }
     '/auth/logout': { response: void }
   }
   put: {
-    '/todo/{id}/': { request: UpdateTodoRequest; response: Todo }
+    '/todo/{id}/': { request: UpdateTodoRequest; response: Todo; error: ValidationErrorResponse }
   }
   delete: {
     '/todo/{id}/': { response: void }
@@ -58,3 +59,9 @@ export type ApiRequest<M extends keyof ApiEndpoints, E extends keyof ApiEndpoint
 }
   ? R
   : undefined
+
+export type ApiError<M extends keyof ApiEndpoints, E extends keyof ApiEndpoints[M]> = ApiEndpoints[M][E] extends {
+  error: infer R
+}
+  ? R
+  : never

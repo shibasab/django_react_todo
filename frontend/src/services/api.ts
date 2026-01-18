@@ -1,6 +1,7 @@
-import axios, { type AxiosInstance } from 'axios'
+import axios, { isAxiosError, type AxiosInstance } from 'axios'
 
 import type {
+  ApiError,
   ApiRequest,
   ApiResponse,
   DeleteEndpoints,
@@ -10,6 +11,7 @@ import type {
 } from './apiEndpoints'
 
 import config from '../config'
+import { type Result, err, ok } from '../models/result'
 import { authToken } from './authToken'
 
 export type ApiClient = Readonly<{
@@ -18,12 +20,18 @@ export type ApiClient = Readonly<{
     <T>(url: string): Promise<T>
   }
   post: {
-    <E extends PostEndpoints>(url: E, data: ApiRequest<'post', E>): Promise<ApiResponse<'post', E>>
-    <T>(url: string, data?: unknown): Promise<T>
+    <E extends PostEndpoints>(
+      url: E,
+      data: ApiRequest<'post', E>,
+    ): Promise<Result<ApiResponse<'post', E>, ApiError<'post', E>>>
+    <T, E = unknown>(url: string, data?: unknown): Promise<Result<T, E>>
   }
   put: {
-    <E extends PutEndpoints>(url: E, data: ApiRequest<'put', E>): Promise<ApiResponse<'put', E>>
-    <T>(url: string, data?: unknown): Promise<T>
+    <E extends PutEndpoints>(
+      url: E,
+      data: ApiRequest<'put', E>,
+    ): Promise<Result<ApiResponse<'put', E>, ApiError<'put', E>>>
+    <T, E = unknown>(url: string, data?: unknown): Promise<Result<T, E>>
   }
   delete: {
     <E extends DeleteEndpoints>(url: E): Promise<ApiResponse<'delete', E>>
@@ -81,16 +89,30 @@ export const createApiClient = (
         return response.data
       }),
 
-    post: async <T>(url: string, data?: unknown): Promise<T> =>
+    post: async <T, E>(url: string, data?: unknown): Promise<Result<T, E>> =>
       withTracking(async () => {
-        const response = await axiosInstance.post<T>(url, data)
-        return response.data
+        try {
+          const response = await axiosInstance.post<T>(url, data)
+          return ok(response.data)
+        } catch (error) {
+          if (isAxiosError(error) && error.response?.status === 422) {
+            return err(error.response.data as E)
+          }
+          throw error
+        }
       }),
 
-    put: async <T>(url: string, data?: unknown): Promise<T> =>
+    put: async <T, E>(url: string, data?: unknown): Promise<Result<T, E>> =>
       withTracking(async () => {
-        const response = await axiosInstance.put<T>(url, data)
-        return response.data
+        try {
+          const response = await axiosInstance.put<T>(url, data)
+          return ok(response.data)
+        } catch (error) {
+          if (isAxiosError(error) && error.response?.status === 422) {
+            return err(error.response.data as E)
+          }
+          throw error
+        }
       }),
 
     delete: async <T>(url: string): Promise<T> =>
