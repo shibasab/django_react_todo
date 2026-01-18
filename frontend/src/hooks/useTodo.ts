@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import type { ValidationError, ValidationErrorResponse } from '../models/error'
 import type { Todo } from '../models/todo'
 
 import { useApiClient } from '../contexts/ApiContext'
@@ -8,8 +9,8 @@ type TodoService = Readonly<{
   todos: readonly Todo[]
   isLoading: boolean
   fetchTodos: () => Promise<void>
-  addTodo: (name: string, detail: string) => Promise<void>
-  updateTodo: (id: number, name: string, detail: string) => Promise<void>
+  addTodo: (name: string, detail: string) => Promise<readonly ValidationError[] | undefined>
+  updateTodo: (id: number, name: string, detail: string) => Promise<readonly ValidationError[] | undefined>
   removeTodo: (id: number) => Promise<void>
 }>
 
@@ -22,18 +23,24 @@ export const useTodo = (): TodoService => {
     setTodos(data)
   }
 
-  const addTodo = async (name: string, detail: string) => {
+  const addTodo = async (name: string, detail: string): Promise<readonly ValidationError[] | undefined> => {
     const result = await apiClient.post('/todo/', { name, detail })
-    if (result.ok) {
-      fetchTodos()
+    if (!result.ok) {
+      return result.error.errors
     }
+    fetchTodos()
   }
 
-  const updateTodo = async (id: number, name: string, detail: string) => {
-    const result = await apiClient.put(`/todo/${id}/`, { name, detail })
-    if (result.ok) {
-      fetchTodos()
+  const updateTodo = async (
+    id: number,
+    name: string,
+    detail: string,
+  ): Promise<readonly ValidationError[] | undefined> => {
+    const result = await apiClient.put<Todo, ValidationErrorResponse>(`/todo/${id}/`, { name, detail })
+    if (!result.ok) {
+      return result.error.errors
     }
+    fetchTodos()
   }
 
   const removeTodo = async (id: number) => {
