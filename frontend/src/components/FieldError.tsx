@@ -16,6 +16,10 @@ const toErrorMessage = (error: ValidationError, fieldLabel: string): string => {
       return `${fieldLabel}は${error.limit}文字以内で入力してください`
     case 'min_length':
       return `${fieldLabel}は${error.limit}文字以上で入力してください`
+    default: {
+      const exhaustiveCheck: never = error
+      throw new Error(`Not Exhaustive: ${exhaustiveCheck}`)
+    }
   }
 }
 
