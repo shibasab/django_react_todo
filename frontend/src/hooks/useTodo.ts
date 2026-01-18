@@ -23,13 +23,17 @@ export const useTodo = (): TodoService => {
   }
 
   const addTodo = async (name: string, detail: string) => {
-    await apiClient.post('/todo/', { name, detail })
-    fetchTodos()
+    const result = await apiClient.post('/todo/', { name, detail })
+    if (result.ok) {
+      fetchTodos()
+    }
   }
 
   const updateTodo = async (id: number, name: string, detail: string) => {
-    await apiClient.put<Todo>(`/todo/${id}/`, { name, detail })
-    fetchTodos()
+    const result = await apiClient.put(`/todo/${id}/`, { name, detail })
+    if (result.ok) {
+      fetchTodos()
+    }
   }
 
   const removeTodo = async (id: number) => {

@@ -65,15 +65,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [apiClient])
 
   const login = async (username: string, password: string): Promise<void> => {
-    const response = await apiClient.post('/auth/login', { username, password })
-    authToken.set(response.token)
-    setAuthState({ status: 'authenticated', user: response.user })
+    const result = await apiClient.post('/auth/login', { username, password })
+    if (!result.ok) {
+      // TODO: エラーハンドリング
+      return
+    }
+    authToken.set(result.data.token)
+    setAuthState({ status: 'authenticated', user: result.data.user })
   }
 
   const register = async (username: string, email: string, password: string): Promise<void> => {
-    const response = await apiClient.post('/auth/register', { username, email, password })
-    authToken.set(response.token)
-    setAuthState({ status: 'authenticated', user: response.user })
+    const result = await apiClient.post('/auth/register', { username, email, password })
+    if (!result.ok) {
+      // TODO: エラーハンドリング
+      return
+    }
+    authToken.set(result.data.token)
+    setAuthState({ status: 'authenticated', user: result.data.user })
   }
 
   const logout = async (): Promise<void> => {
