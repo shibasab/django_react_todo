@@ -1,10 +1,15 @@
-from typing import List
+from typing import List, NewType
 from sqlalchemy.orm import Session
 
 from app.models.todo import Todo
 from app.schemas.todo import TodoCreate
 from app.repositories.todo import TodoRepository
 from app.exceptions import NotFoundError, DuplicateError
+
+
+# ビジネスバリデーション完了済みのTODOデータを表す型
+# 静的型チェッカーがバリデーション済みかどうかを区別できる
+ValidatedTodoData = NewType("ValidatedTodoData", TodoCreate)
 
 
 class TodoService:
@@ -17,8 +22,8 @@ class TodoService:
 
     def _validate_todo(
         self, owner_id: int, data: TodoCreate, exclude_id: int | None = None
-    ) -> None:
-        """TODOデータのバリデーションを行う
+    ) -> ValidatedTodoData:
+        """TODOデータのバリデーションを行い、バリデーション済みデータを返す
 
         現在は名前の重複チェックのみを実施。
         今後、他のバリデーションルールもこのメソッドに追加していく。
@@ -29,6 +34,9 @@ class TodoService:
             exclude_id: チェックから除外するTodoのID
                 （更新時に自分自身を除外するために使用）
 
+        Returns:
+            ValidatedTodoData: バリデーション済みのTODOデータ
+
         Raises:
             DuplicateError: 名前が重複している場合
         """
@@ -37,21 +45,27 @@ class TodoService:
             raise DuplicateError(
                 f"Task with name '{data.name}' already exists", field="name"
             )
+        return ValidatedTodoData(data)
 
-    def _apply_update(self, todo: Todo, data: TodoCreate) -> None:
-        todo.name = data.name
-        todo.detail = data.detail or ""
-        todo.due_date = data.due_date
-
-    def create_todo(self, data: TodoCreate, owner_id: int) -> Todo:
-        self._validate_todo(owner_id, data)
-
-        todo = Todo(
+    def _create_todo_entity(self, data: ValidatedTodoData, owner_id: int) -> Todo:
+        """ValidatedTodoData からTodoエンティティを作成する"""
+        return Todo(
             name=data.name,
             detail=data.detail or "",
             due_date=data.due_date,
             owner_id=owner_id,
         )
+
+    def _apply_update(self, todo: Todo, data: ValidatedTodoData) -> None:
+        """ValidatedTodoData を使ってTodoエンティティを更新する"""
+        todo.name = data.name
+        todo.detail = data.detail or ""
+        todo.due_date = data.due_date
+
+    def create_todo(self, data: TodoCreate, owner_id: int) -> Todo:
+        validated = self._validate_todo(owner_id, data)
+
+        todo = self._create_todo_entity(validated, owner_id)
         self.repo.create(todo)
         self.db.commit()
         self.db.refresh(todo)
@@ -66,9 +80,9 @@ class TodoService:
     def update_todo(self, todo_id: int, data: TodoCreate, owner_id: int) -> Todo:
         todo = self.get_todo(todo_id, owner_id)
 
-        self._validate_todo(owner_id, data, exclude_id=todo_id)
+        validated = self._validate_todo(owner_id, data, exclude_id=todo_id)
 
-        self._apply_update(todo, data)
+        self._apply_update(todo, validated)
         self.db.commit()
         self.db.refresh(todo)
         return todo
