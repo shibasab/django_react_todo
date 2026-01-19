@@ -24,11 +24,16 @@ class MinLengthError(ValidationErrorItemBase):
     limit: int
 
 
+class InvalidFormatError(ValidationErrorItemBase):
+    reason: Literal["invalid_format"] = "invalid_format"
+
+
 ValidationError = Union[
     RequiredError,
     UniqueViolationError,
     MaxLengthError,
     MinLengthError,
+    InvalidFormatError,
 ]
 
 

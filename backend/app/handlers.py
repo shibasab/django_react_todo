@@ -15,6 +15,7 @@ from app.schemas.errors import (
     MaxLengthError,
     MinLengthError,
     UniqueViolationError,
+    InvalidFormatError,
 )
 from app.exceptions import DuplicateError
 
@@ -23,7 +24,9 @@ async def validation_exception_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
     """Pydanticバリデーションエラーを構造化レスポンスに変換"""
-    errors: list[Union[RequiredError, MaxLengthError, MinLengthError]] = []
+    errors: list[
+        Union[RequiredError, MaxLengthError, MinLengthError, InvalidFormatError]
+    ] = []
 
     for error in exc.errors():
         field = error["loc"][-1] if error["loc"] else "unknown"
@@ -39,6 +42,8 @@ async def validation_exception_handler(
             ctx = error.get("ctx", {})
             limit = ctx.get("max_length", 0)
             errors.append(MaxLengthError(field=str(field), limit=limit))
+        elif "date" in error_type or error_type == "value_error":
+            errors.append(InvalidFormatError(field=str(field)))
         else:
             # その他のバリデーションエラーは将来的に追加
             # 現時点では無視

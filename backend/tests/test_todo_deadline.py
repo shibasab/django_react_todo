@@ -69,3 +69,35 @@ class TestTodoDeadline:
         assert response.status_code == 200
         data = response.json()
         assert data["dueDate"] is None
+
+    def test_create_todo_invalid_deadline_format(self, client, auth_headers):
+        """期限日の形式エラー（不正な日付文字列）"""
+        response = client.post(
+            "/api/todo/",
+            headers=auth_headers,
+            json={
+                "name": "Invalid Deadline Task",
+                "dueDate": "not-a-date",
+            },
+        )
+
+        assert response.status_code == 422
+        data = response.json()
+        assert data["errors"][0]["field"] == "dueDate"
+        assert data["errors"][0]["reason"] == "invalid_format"
+
+    def test_create_todo_invalid_date_value(self, client, auth_headers):
+        """期限日の値エラー（存在しない日付）"""
+        response = client.post(
+            "/api/todo/",
+            headers=auth_headers,
+            json={
+                "name": "Invalid Date Value",
+                "dueDate": "2026-02-30",
+            },
+        )
+
+        assert response.status_code == 422
+        data = response.json()
+        assert data["errors"][0]["field"] == "dueDate"
+        assert data["errors"][0]["reason"] == "invalid_format"
