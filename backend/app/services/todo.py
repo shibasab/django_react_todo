@@ -15,12 +15,31 @@ class TodoService:
     def get_todos(self, owner_id: int) -> List[Todo]:
         return self.repo.get_by_owner(owner_id)
 
-    def create_todo(self, data: TodoCreate, owner_id: int) -> Todo:
-        # 重複チェック
-        if self.repo.check_name_exists(owner_id, data.name):
+    def _validate_todo(
+        self, owner_id: int, data: TodoCreate, exclude_id: int | None = None
+    ) -> None:
+        """TODOデータのバリデーションを行う
+
+        現在は名前の重複チェックのみを実施。
+        今後、他のバリデーションルールもこのメソッドに追加していく。
+
+        Args:
+            owner_id: オーナーID
+            data: バリデーション対象のTODOデータ
+            exclude_id: チェックから除外するTodoのID
+                （更新時に自分自身を除外するために使用）
+
+        Raises:
+            DuplicateError: 名前が重複している場合
+        """
+        # 名前の重複チェック
+        if self.repo.check_name_exists(owner_id, data.name, exclude_id=exclude_id):
             raise DuplicateError(
                 f"Task with name '{data.name}' already exists", field="name"
             )
+
+    def create_todo(self, data: TodoCreate, owner_id: int) -> Todo:
+        self._validate_todo(owner_id, data)
 
         todo = Todo(
             name=data.name,
@@ -42,11 +61,7 @@ class TodoService:
     def update_todo(self, todo_id: int, data: TodoCreate, owner_id: int) -> Todo:
         todo = self.get_todo(todo_id, owner_id)
 
-        # 重複チェック（自分自身は除外）
-        if self.repo.check_name_exists(owner_id, data.name, exclude_id=todo_id):
-            raise DuplicateError(
-                f"Task with name '{data.name}' already exists", field="name"
-            )
+        self._validate_todo(owner_id, data, exclude_id=todo_id)
 
         todo.name = data.name
         todo.detail = data.detail or ""
