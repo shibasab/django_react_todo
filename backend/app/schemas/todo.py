@@ -29,12 +29,6 @@ class TodoCreate(TodoBase):
     pass
 
 
-class TodoUpdate(BaseModel):
-    name: Optional[RequiredStr] = Field(default=None, max_length=100)
-    detail: Optional[str] = Field(default=None, max_length=500)
-    due_date: Optional[date] = Field(default=None, alias="dueDate")
-
-
 class TodoResponse(TodoBase):
     id: int
     owner: Optional[int] = Field(default=None, validation_alias="owner_id")

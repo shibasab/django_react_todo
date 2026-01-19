@@ -21,42 +21,6 @@ class TestTodoDeadline:
         assert data["dueDate"] == "2026-12-31"
         assert "due_date" not in data
 
-    def test_patch_todo_add_deadline(self, client, auth_headers, test_user, test_db):
-        """既存タスクに期限日を追加（PATCHでdueDate）"""
-        todo = Todo(name="No Deadline", owner_id=test_user.id)
-        test_db.add(todo)
-        test_db.commit()
-
-        response = client.patch(
-            f"/api/todo/{todo.id}/",
-            headers=auth_headers,
-            json={"dueDate": "2026-10-01"},
-        )
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["dueDate"] == "2026-10-01"
-
-    def test_patch_todo_remove_deadline(self, client, auth_headers, test_user, test_db):
-        """期限日を削除（PATCHでdueDate: null）"""
-        from datetime import date
-
-        todo = Todo(
-            name="Has Deadline", due_date=date(2026, 12, 31), owner_id=test_user.id
-        )
-        test_db.add(todo)
-        test_db.commit()
-
-        response = client.patch(
-            f"/api/todo/{todo.id}/",
-            headers=auth_headers,
-            json={"dueDate": None},
-        )
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["dueDate"] is None
-
     def test_put_todo_with_deadline(self, client, auth_headers, test_user, test_db):
         """PUTで期限日を含むタスク全体を更新"""
         todo = Todo(name="Original Task", detail="Original", owner_id=test_user.id)
