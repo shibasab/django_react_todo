@@ -42,7 +42,7 @@ async def validation_exception_handler(
             ctx = error.get("ctx", {})
             limit = ctx.get("max_length", 0)
             errors.append(MaxLengthError(field=str(field), limit=limit))
-        elif "date" in error_type or error_type == "value_error":
+        elif error_type == "invalid_format":
             errors.append(InvalidFormatError(field=str(field)))
         else:
             # その他のバリデーションエラーは将来的に追加
