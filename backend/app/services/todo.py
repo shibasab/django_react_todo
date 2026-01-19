@@ -22,7 +22,12 @@ class TodoService:
                 f"Task with name '{data.name}' already exists", field="name"
             )
 
-        todo = Todo(name=data.name, detail=data.detail or "", owner_id=owner_id)
+        todo = Todo(
+            name=data.name,
+            detail=data.detail or "",
+            due_date=data.due_date,
+            owner_id=owner_id,
+        )
         self.repo.create(todo)
         self.db.commit()
         self.db.refresh(todo)
@@ -45,6 +50,7 @@ class TodoService:
 
         todo.name = data.name
         todo.detail = data.detail or ""
+        todo.due_date = data.due_date
         self.db.commit()
         self.db.refresh(todo)
         return todo
@@ -54,16 +60,23 @@ class TodoService:
     ) -> Todo:
         todo = self.get_todo(todo_id, owner_id)
 
-        # 名前が変更される場合のみ重複チェック
-        if data.name is not None:
-            if self.repo.check_name_exists(owner_id, data.name, exclude_id=todo_id):
-                raise DuplicateError(
-                    f"Task with name '{data.name}' already exists", field="name"
-                )
-            todo.name = data.name
+        # 変更されたフィールドのみ取得
+        update_data = data.model_dump(exclude_unset=True)
 
-        if data.detail is not None:
-            todo.detail = data.detail
+        if "name" in update_data:
+            new_name = update_data["name"]
+            if self.repo.check_name_exists(owner_id, new_name, exclude_id=todo_id):
+                raise DuplicateError(
+                    f"Task with name '{new_name}' already exists", field="name"
+                )
+            todo.name = new_name
+
+        if "detail" in update_data:
+            todo.detail = update_data["detail"]
+
+        if "due_date" in update_data:
+            todo.due_date = update_data["due_date"]
+
         self.db.commit()
         self.db.refresh(todo)
         return todo

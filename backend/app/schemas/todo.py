@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, ConfigDict, AfterValidator
 from pydantic_core import PydanticCustomError
 from typing import Optional, Annotated
-from datetime import datetime
+from datetime import datetime, date
 
 
 # TODO: バリデーション処理を別ファイルに移動する
@@ -22,6 +22,7 @@ RequiredStr = Annotated[str, AfterValidator(validate_not_empty)]
 class TodoBase(BaseModel):
     name: RequiredStr = Field(..., max_length=100)
     detail: str = Field(default="", max_length=500)
+    due_date: Optional[date] = Field(default=None, alias="dueDate")
 
 
 class TodoCreate(TodoBase):
@@ -31,6 +32,7 @@ class TodoCreate(TodoBase):
 class TodoUpdate(BaseModel):
     name: Optional[RequiredStr] = Field(default=None, max_length=100)
     detail: Optional[str] = Field(default=None, max_length=500)
+    due_date: Optional[date] = Field(default=None, alias="dueDate")
 
 
 class TodoResponse(TodoBase):
@@ -38,4 +40,6 @@ class TodoResponse(TodoBase):
     owner: Optional[int] = Field(default=None, validation_alias="owner_id")
     created_at: datetime
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True, validate_by_name=True, validate_by_alias=True
+    )
