@@ -38,6 +38,11 @@ class TodoService:
                 f"Task with name '{data.name}' already exists", field="name"
             )
 
+    def _apply_update(self, todo: Todo, data: TodoCreate) -> None:
+        todo.name = data.name
+        todo.detail = data.detail or ""
+        todo.due_date = data.due_date
+
     def create_todo(self, data: TodoCreate, owner_id: int) -> Todo:
         self._validate_todo(owner_id, data)
 
@@ -63,9 +68,7 @@ class TodoService:
 
         self._validate_todo(owner_id, data, exclude_id=todo_id)
 
-        todo.name = data.name
-        todo.detail = data.detail or ""
-        todo.due_date = data.due_date
+        self._apply_update(todo, data)
         self.db.commit()
         self.db.refresh(todo)
         return todo
