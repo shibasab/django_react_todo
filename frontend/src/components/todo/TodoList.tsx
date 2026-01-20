@@ -101,6 +101,22 @@ export const TodoList = ({ todos, onDelete, onEdit }: TodoListProps) => {
                     />
                     <FieldError errors={editState.errors} fieldName="detail" fieldLabel="詳細" />
                   </div>
+                  <div className="mb-3">
+                    <label htmlFor={`edit-dueDate-${todo.id}`} className="block text-sm font-medium text-gray-700 mb-1">
+                      期限
+                    </label>
+                    <input
+                      id={`edit-dueDate-${todo.id}`}
+                      type="date"
+                      name="dueDate"
+                      value={editState.dueDate}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                        editState.errors.some((e) => e.field === 'dueDate') ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
+                    <FieldError errors={editState.errors} fieldName="dueDate" fieldLabel="期限" />
+                  </div>
                   <div className="flex gap-2">
                     <button
                       onClick={handleSaveClick}
@@ -125,9 +141,14 @@ export const TodoList = ({ todos, onDelete, onEdit }: TodoListProps) => {
                 className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 overflow-hidden"
               >
                 <div className="flex justify-between items-start gap-4">
-                  <h5 className="text-lg font-semibold text-gray-800 break-all overflow-hidden flex-1 min-w-0">
-                    {todo.name}
-                  </h5>
+                  <div className="flex-1 min-w-0">
+                    <h5 className="text-lg font-semibold text-gray-800 break-all overflow-hidden">
+                      {todo.name}
+                    </h5>
+                    <p className="text-sm text-gray-500 mt-1">
+                      期限: {todo.dueDate ?? '-'}
+                    </p>
+                  </div>
                   <div className="flex gap-2 shrink-0">
                     <button
                       onClick={() => handleEditClick(todo)}
