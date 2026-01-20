@@ -1,7 +1,15 @@
 from datetime import datetime, date
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import String, Text, DateTime, ForeignKey, UniqueConstraint, Date
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    ForeignKey,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -23,5 +31,6 @@ class Todo(Base):
     )
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     due_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    is_completed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     owner: Mapped["User"] = relationship("User", backref="todos")

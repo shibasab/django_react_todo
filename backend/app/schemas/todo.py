@@ -44,14 +44,20 @@ class TodoBase(BaseModel):
 
 
 class TodoCreate(TodoBase):
-    pass
+    is_completed: bool = Field(default=False, alias="isCompleted")
 
 
 class TodoResponse(TodoBase):
     id: int
     owner: Optional[int] = Field(default=None, validation_alias="owner_id")
     created_at: datetime
+    is_completed: bool = Field(
+        default=False, alias="isCompleted", validation_alias="is_completed"
+    )
 
     model_config = ConfigDict(
-        from_attributes=True, validate_by_name=True, validate_by_alias=True
+        from_attributes=True,
+        validate_by_name=True,
+        validate_by_alias=True,
+        populate_by_name=True,
     )
