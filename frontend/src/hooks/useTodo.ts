@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import type { ValidationError, ValidationErrorResponse } from '../models/error'
 import type { Todo } from '../models/todo'
@@ -36,49 +36,54 @@ export const useTodo = (): TodoService => {
   const { apiClient, isLoading } = useApiClient()
   const [todos, setTodos] = useState<readonly Todo[]>([])
 
-  const fetchTodos = async () => {
+  const fetchTodos = useCallback(async () => {
     const data = await apiClient.get('/todo/')
     setTodos(data)
-  }
+  }, [apiClient])
 
-  const addTodo = async (name: string, detail: string): Promise<readonly ValidationError[] | undefined> => {
-    // クライアントバリデーション
-    const clientErrors = validateTodoForm(name, detail)
-    if (clientErrors.length > 0) {
-      return clientErrors
-    }
+  const addTodo = useCallback(
+    async (name: string, detail: string): Promise<readonly ValidationError[] | undefined> => {
+      // クライアントバリデーション
+      const clientErrors = validateTodoForm(name, detail)
+      if (clientErrors.length > 0) {
+        return clientErrors
+      }
 
-    // API 呼び出し（unique_violation 等はサーバーでのみ検出）
-    const result = await apiClient.post('/todo/', { name, detail })
-    if (!result.ok) {
-      return result.error.errors
-    }
-    fetchTodos()
-  }
+      // API 呼び出し（unique_violation 等はサーバーでのみ検出）
+      const result = await apiClient.post('/todo/', { name, detail })
+      if (!result.ok) {
+        return result.error.errors
+      }
+      await fetchTodos()
+    },
+    [apiClient, fetchTodos],
+  )
 
-  const updateTodo = async (
-    id: number,
-    name: string,
-    detail: string,
-  ): Promise<readonly ValidationError[] | undefined> => {
-    // クライアントバリデーション
-    const clientErrors = validateTodoForm(name, detail)
-    if (clientErrors.length > 0) {
-      return clientErrors
-    }
+  const updateTodo = useCallback(
+    async (id: number, name: string, detail: string): Promise<readonly ValidationError[] | undefined> => {
+      // クライアントバリデーション
+      const clientErrors = validateTodoForm(name, detail)
+      if (clientErrors.length > 0) {
+        return clientErrors
+      }
 
-    // API 呼び出し（unique_violation 等はサーバーでのみ検出）
-    const result = await apiClient.put<Todo, ValidationErrorResponse>(`/todo/${id}/`, { name, detail })
-    if (!result.ok) {
-      return result.error.errors
-    }
-    fetchTodos()
-  }
+      // API 呼び出し（unique_violation 等はサーバーでのみ検出）
+      const result = await apiClient.put<Todo, ValidationErrorResponse>(`/todo/${id}/`, { name, detail })
+      if (!result.ok) {
+        return result.error.errors
+      }
+      await fetchTodos()
+    },
+    [apiClient, fetchTodos],
+  )
 
-  const removeTodo = async (id: number) => {
-    await apiClient.delete(`/todo/${id}/`)
-    fetchTodos()
-  }
+  const removeTodo = useCallback(
+    async (id: number) => {
+      await apiClient.delete(`/todo/${id}/`)
+      await fetchTodos()
+    },
+    [apiClient, fetchTodos],
+  )
 
   return {
     todos,
