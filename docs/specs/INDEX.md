@@ -2,6 +2,10 @@
 プロジェクトの機能仕様とアイデアを管理するインデックスです。
 
 ## Idea
+- [タスク完了ステータス](./000_backlog/task-completion-status.md) (task_completion_status) - 2026-01-20 - Idea
+- [タスク優先度設定](./000_backlog/task-priority.md) (task_priority) - 2026-01-20 - Idea
+- [タスク検索・フィルタリング](./000_backlog/task-search-filter.md) (task_search_filter) - 2026-01-20 - Idea
+- [タスクカテゴリ・タグ](./000_backlog/task-category-tag.md) (task_category_tag) - 2026-01-20 - Idea
 
 
 ## Ready
