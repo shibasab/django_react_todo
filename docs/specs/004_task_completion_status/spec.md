@@ -21,24 +21,24 @@ Source: ../000_backlog/task-completion-status.md
 ## 3. User Scenarios & Testing
 
 ### シナリオ1: タスクを完了としてマークする
-- **Given**: An incomplete task is visible in the list.
-- **When**: The user clicks the completion toggle (checkbox) on the task.
-- **Then**: The task is saved as completed and is visually distinguished (e.g., strikethrough or muted color). The state persists after a reload.
+- **Given**: 未完了のタスクが一覧に表示されている。
+- **When**: ユーザーがタスクの完了トグル（チェックボックス）をクリックする。
+- **Then**: タスクが完了状態として保存され、一覧上で視覚的に区別される（取り消し線/淡色など）。再読み込みしても状態が維持される。
 
 ### シナリオ2: 完了タスクを未完了に戻す
-- **Given**: A completed task is visible in the list.
-- **When**: The user turns the completion toggle off.
-- **Then**: The task is saved as incomplete and returns to the normal display.
+- **Given**: 完了済みのタスクが一覧に表示されている。
+- **When**: ユーザーが完了トグルをオフにする。
+- **Then**: タスクが未完了として保存され、通常表示に戻る。
 
 ### シナリオ3: 完了/未完了のフィルタリング
-- **Given**: The list contains both completed and incomplete tasks.
-- **When**: The user switches the filter to "Incomplete" or "Completed".
-- **Then**: Only tasks matching the selected status are shown. Switching back to "All" shows every task.
+- **Given**: 完了と未完了のタスクが混在している。
+- **When**: ユーザーがフィルタを「未完了」または「完了」に切り替える。
+- **Then**: 対象の状態に一致するタスクのみが表示される。「すべて」に戻すと全件が表示される。
 
 ### シナリオ4: フィルタ中のステータス切り替え
-- **Given**: The filter is set to "Incomplete".
-- **When**: The user marks a visible task as completed.
-- **Then**: The task disappears from the list because it no longer matches the filter.
+- **Given**: フィルタが「未完了」になっている。
+- **When**: 表示中のタスクを完了に切り替える。
+- **Then**: そのタスクはフィルタ条件から外れるため一覧から消える。
 
 ## 4. Edge Cases
 - **更新失敗**: 完了ステータスの更新に失敗した場合は、トグルを元に戻し、ユーザーに失敗を通知する。
