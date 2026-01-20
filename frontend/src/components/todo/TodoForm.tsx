@@ -78,6 +78,22 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
           />
           <FieldError errors={errors} fieldName="detail" fieldLabel="詳細" />
         </div>
+        <div className="mb-4">
+          <label htmlFor="todo-dueDate" className="block text-sm font-medium text-gray-700 mb-2">
+            Due Date
+          </label>
+          <input
+            id="todo-dueDate"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.some((e) => e.field === 'dueDate') ? 'border-red-500' : 'border-gray-300'
+            }`}
+            type="date"
+            name="dueDate"
+            onChange={handleChange}
+            value={formState.dueDate}
+          />
+          <FieldError errors={errors} fieldName="dueDate" fieldLabel="期限" />
+        </div>
 
         <div className="mb-4">
           <button
