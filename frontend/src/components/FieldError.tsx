@@ -7,7 +7,8 @@ type Props = Readonly<{
 }>
 
 const toErrorMessage = (error: ValidationError, fieldLabel: string): string => {
-  switch (error.reason) {
+  const reason = error.reason
+  switch (reason) {
     case 'required':
       return `${fieldLabel}を入力してください`
     case 'unique_violation':
@@ -17,7 +18,7 @@ const toErrorMessage = (error: ValidationError, fieldLabel: string): string => {
     case 'min_length':
       return `${fieldLabel}は${error.limit}文字以上で入力してください`
     default: {
-      const exhaustiveCheck: never = error.reason
+      const exhaustiveCheck: never = reason
       throw new Error(`Not Exhaustive: ${exhaustiveCheck}`)
     }
   }
