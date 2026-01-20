@@ -98,11 +98,21 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
         <div
           class="flex justify-between items-start gap-4"
         >
-          <h5
-            class="text-lg font-semibold text-gray-800 break-all overflow-hidden flex-1 min-w-0"
+          <div
+            class="flex-1 min-w-0"
           >
-            Test Todo 1
-          </h5>
+            <h5
+              class="text-lg font-semibold text-gray-800 break-all overflow-hidden"
+            >
+              Test Todo 1
+            </h5>
+            <p
+              class="text-sm text-gray-500 mt-1"
+            >
+              期限: 
+              -
+            </p>
+          </div>
           <div
             class="flex gap-2 shrink-0"
           >
@@ -134,11 +144,21 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
         <div
           class="flex justify-between items-start gap-4"
         >
-          <h5
-            class="text-lg font-semibold text-gray-800 break-all overflow-hidden flex-1 min-w-0"
+          <div
+            class="flex-1 min-w-0"
           >
-            Test Todo 2
-          </h5>
+            <h5
+              class="text-lg font-semibold text-gray-800 break-all overflow-hidden"
+            >
+              Test Todo 2
+            </h5>
+            <p
+              class="text-sm text-gray-500 mt-1"
+            >
+              期限: 
+              -
+            </p>
+          </div>
           <div
             class="flex gap-2 shrink-0"
           >
