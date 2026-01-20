@@ -66,15 +66,15 @@ frontend/
 
 このプロジェクトはレイヤードアーキテクチャを採用しています。詳細は`docs/ARCHITECTURE.md`を参照してください。
 
-| レイヤー | 責務 | 依存可能なレイヤー |
-| --------- | ---- | ------------------ |
-| **pages** | ページコンポーネント、ルーティングに対応するトップレベルコンポーネント | models, hooks, contexts, components |
-| **layouts** | レイアウト構造、認証ガード、共通UI構造 | models, hooks, contexts, components |
-| **components** | 再利用可能なUIコンポーネント | models, hooks, contexts |
-| **hooks** | 再利用可能なカスタムフック、状態管理ロジックのカプセル化 | models, services, contexts |
-| **contexts** | React Contextによるグローバル状態管理 | models, services |
-| **services** | 外部連携・アプリケーションロジック、APIクライアント | models |
-| **models** | 型定義・ビジネスロジック、ドメインモデル | なし（独立） |
+| レイヤー       | 責務                                                                   | 依存可能なレイヤー                  |
+| -------------- | ---------------------------------------------------------------------- | ----------------------------------- |
+| **pages**      | ページコンポーネント、ルーティングに対応するトップレベルコンポーネント | models, hooks, contexts, components |
+| **layouts**    | レイアウト構造、認証ガード、共通UI構造                                 | models, hooks, contexts, components |
+| **components** | 再利用可能なUIコンポーネント                                           | models, hooks, contexts             |
+| **hooks**      | 再利用可能なカスタムフック、状態管理ロジックのカプセル化               | models, services, contexts          |
+| **contexts**   | React Contextによるグローバル状態管理                                  | models, services                    |
+| **services**   | 外部連携・アプリケーションロジック、APIクライアント                    | models                              |
+| **models**     | 型定義・ビジネスロジック、ドメインモデル                               | なし（独立）                        |
 
 ### 重要な原則
 

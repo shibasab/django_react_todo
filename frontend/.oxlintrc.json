@@ -155,7 +155,7 @@
     "typescript/no-wrapper-object-types": "deny",
     "typescript/prefer-as-const": "deny",
     "typescript/require-array-sort-compare": "deny",
-    "typescript/restrict-template-expressions": ["deny", {"allowNever": true }],
+    "typescript/restrict-template-expressions": ["deny", { "allowNever": true }],
     "typescript/switch-exhaustiveness-check": "deny",
     "typescript/triple-slash-reference": "deny",
     "typescript/unbound-method": "deny"
