@@ -26,8 +26,13 @@ type TodoService = Readonly<{
   todos: readonly Todo[]
   isLoading: boolean
   fetchTodos: () => Promise<void>
-  addTodo: (name: string, detail: string) => Promise<readonly ValidationError[] | undefined>
-  updateTodo: (id: number, name: string, detail: string) => Promise<readonly ValidationError[] | undefined>
+  addTodo: (name: string, detail: string, dueDate: string | null) => Promise<readonly ValidationError[] | undefined>
+  updateTodo: (
+    id: number,
+    name: string,
+    detail: string,
+    dueDate: string | null,
+  ) => Promise<readonly ValidationError[] | undefined>
   removeTodo: (id: number) => Promise<void>
   validateTodo: (name: string, detail: string) => readonly ValidationError[]
 }>
@@ -42,7 +47,7 @@ export const useTodo = (): TodoService => {
   }, [apiClient])
 
   const addTodo = useCallback(
-    async (name: string, detail: string): Promise<readonly ValidationError[] | undefined> => {
+    async (name: string, detail: string, dueDate: string | null): Promise<readonly ValidationError[] | undefined> => {
       // クライアントバリデーション
       const clientErrors = validateTodoForm(name, detail)
       if (clientErrors.length > 0) {
@@ -50,7 +55,7 @@ export const useTodo = (): TodoService => {
       }
 
       // API 呼び出し（unique_violation 等はサーバーでのみ検出）
-      const result = await apiClient.post('/todo/', { name, detail })
+      const result = await apiClient.post('/todo/', { name, detail, dueDate })
       if (!result.ok) {
         return result.error.errors
       }
@@ -60,7 +65,12 @@ export const useTodo = (): TodoService => {
   )
 
   const updateTodo = useCallback(
-    async (id: number, name: string, detail: string): Promise<readonly ValidationError[] | undefined> => {
+    async (
+      id: number,
+      name: string,
+      detail: string,
+      dueDate: string | null,
+    ): Promise<readonly ValidationError[] | undefined> => {
       // クライアントバリデーション
       const clientErrors = validateTodoForm(name, detail)
       if (clientErrors.length > 0) {
@@ -68,7 +78,7 @@ export const useTodo = (): TodoService => {
       }
 
       // API 呼び出し（unique_violation 等はサーバーでのみ検出）
-      const result = await apiClient.put<Todo, ValidationErrorResponse>(`/todo/${id}/`, { name, detail })
+      const result = await apiClient.put<Todo, ValidationErrorResponse>(`/todo/${id}/`, { name, detail, dueDate })
       if (!result.ok) {
         return result.error.errors
       }
