@@ -14,6 +14,7 @@ exports[`DashboardPage > TODO更新 > 値変更→保存ボタンでPUT APIが�
   {
     "data": {
       "detail": "Updated Detail",
+      "dueDate": null,
       "name": "Updated Todo",
     },
     "method": "PUT",
@@ -27,6 +28,7 @@ exports[`DashboardPage > TODO追加 > タスク名入力→追加ボタンでPOS
   {
     "data": {
       "detail": "New Detail",
+      "dueDate": null,
       "name": "New Todo",
     },
     "method": "POST",

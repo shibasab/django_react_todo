@@ -6,18 +6,20 @@ import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH } from '../../hooks/useTod
 import { FieldError } from '../FieldError'
 
 type TodoFormProps = Readonly<{
-  onSubmit: (name: string, detail: string) => Promise<readonly ValidationError[] | undefined>
+  onSubmit: (name: string, detail: string, dueDate: string | null) => Promise<readonly ValidationError[] | undefined>
 }>
 
 type FormState = Readonly<{
   name: string
   detail: string
+  dueDate: string
 }>
 
 export const TodoForm = ({ onSubmit }: TodoFormProps) => {
   const [formState, setFormState] = useState<FormState>({
     name: '',
     detail: '',
+    dueDate: '',
   })
   const [errors, setErrors] = useState<readonly ValidationError[]>([])
 
@@ -28,12 +30,13 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    const validationErrors = await onSubmit(formState.name, formState.detail)
+    const dueDate = formState.dueDate === '' ? null : formState.dueDate
+    const validationErrors = await onSubmit(formState.name, formState.detail, dueDate)
     if (validationErrors != null && validationErrors.length > 0) {
       setErrors(validationErrors)
       return
     }
-    setFormState({ name: '', detail: '' })
+    setFormState({ name: '', detail: '', dueDate: '' })
     setErrors([])
   }
 

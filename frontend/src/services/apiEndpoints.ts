@@ -6,11 +6,13 @@ import type { User } from '../models/user'
 export type CreateTodoRequest = Readonly<{
   name: string
   detail: string
+  dueDate: string | null
 }>
 
 export type UpdateTodoRequest = Readonly<{
   name: string
   detail: string
+  dueDate: string | null
 }>
 
 export type LoginRequest = Readonly<{
