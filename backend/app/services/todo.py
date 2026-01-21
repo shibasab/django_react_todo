@@ -2,7 +2,7 @@ from typing import List, NewType
 from sqlalchemy.orm import Session
 
 from app.models.todo import Todo
-from app.schemas.todo import TodoCreate
+from app.schemas.todo import TodoCreate, TodoUpdate
 from app.repositories.todo import TodoRepository
 from app.exceptions import NotFoundError, DuplicateError
 
@@ -10,6 +10,7 @@ from app.exceptions import NotFoundError, DuplicateError
 # ビジネスバリデーション完了済みのTODOデータを表す型
 # 静的型チェッカーがバリデーション済みかどうかを区別できる
 ValidatedTodoData = NewType("ValidatedTodoData", TodoCreate)
+ValidatedTodoUpdateData = NewType("ValidatedTodoUpdateData", dict)
 
 
 class TodoService:
@@ -58,11 +59,53 @@ class TodoService:
         )
 
     def _apply_update(self, todo: Todo, data: ValidatedTodoData) -> None:
-        """ValidatedTodoData を使ってTodoエンティティを更新する"""
+        """ValidatedTodoData を使ってTodoエンティティを更新する（全置換）"""
         todo.name = data.name
         todo.detail = data.detail or ""
         todo.due_date = data.due_date
         todo.is_completed = data.is_completed
+
+    def _validate_update(
+        self, owner_id: int, todo: Todo, data: TodoUpdate
+    ) -> ValidatedTodoUpdateData:
+        """更新データのバリデーションを行い、バリデーション済みデータを返す
+
+        Args:
+            owner_id: オーナーID
+            todo: 更新対象のTodoエンティティ
+            data: バリデーション対象の更新データ
+
+        Returns:
+            ValidatedTodoUpdateData: バリデーション済みの更新データ
+                （設定されたフィールドのみ）
+
+        Raises:
+            DuplicateError: 名前が重複している場合
+        """
+        # exclude_unset=Trueで実際にリクエストに含まれるフィールドのみ取得
+        # by_alias=Trueでエイリアス名（dueDate, isCompleted）をPython名に変換
+        update_data = data.model_dump(exclude_unset=True, by_alias=False)
+
+        # 名前が更新される場合は重複チェック
+        if "name" in update_data:
+            if self.repo.check_name_exists(
+                owner_id, update_data["name"], exclude_id=todo.id
+            ):
+                raise DuplicateError(
+                    f"Task with name '{update_data['name']}' already exists",
+                    field="name",
+                )
+
+        return ValidatedTodoUpdateData(update_data)
+
+    def _apply_partial_update(
+        self, todo: Todo, update_data: ValidatedTodoUpdateData
+    ) -> None:
+        """リクエストに含まれるフィールドのみTodoエンティティを更新する"""
+        for field, value in update_data.items():
+            if field == "detail":
+                value = value or ""
+            setattr(todo, field, value)
 
     def create_todo(self, data: TodoCreate, owner_id: int) -> Todo:
         validated = self._validate_todo(owner_id, data)
@@ -79,12 +122,16 @@ class TodoService:
             raise NotFoundError("Todo not found")
         return todo
 
-    def update_todo(self, todo_id: int, data: TodoCreate, owner_id: int) -> Todo:
+    def update_todo(self, todo_id: int, data: TodoUpdate, owner_id: int) -> Todo:
+        """Todoを更新する（部分更新対応）
+
+        リクエストに含まれるフィールドのみ更新される。
+        """
         todo = self.get_todo(todo_id, owner_id)
 
-        validated = self._validate_todo(owner_id, data, exclude_id=todo_id)
+        validated = self._validate_update(owner_id, todo, data)
 
-        self._apply_update(todo, validated)
+        self._apply_partial_update(todo, validated)
         self.db.commit()
         self.db.refresh(todo)
         return todo

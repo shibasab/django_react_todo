@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.models.user import User
-from app.schemas.todo import TodoCreate, TodoResponse
+from app.schemas.todo import TodoCreate, TodoUpdate, TodoResponse
 from app.dependencies.auth import get_current_user
 from app.dependencies.container import get_todo_service
 from app.services.todo import TodoService
@@ -55,11 +55,11 @@ def get_todo(
 @router.put("/{todo_id}/", response_model=TodoResponse)
 def update_todo(
     todo_id: int,
-    todo_data: TodoCreate,
+    todo_data: TodoUpdate,
     current_user: User = Depends(get_current_user),
     service: TodoService = Depends(get_todo_service),
 ):
-    """Todoを更新（全置換）"""
+    """Todoを更新（部分更新対応）"""
     try:
         todo = service.update_todo(
             todo_id,
