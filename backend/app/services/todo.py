@@ -54,6 +54,7 @@ class TodoService:
             detail=data.detail or "",
             due_date=data.due_date,
             owner_id=owner_id,
+            is_completed=data.is_completed,
         )
 
     def _apply_update(self, todo: Todo, data: ValidatedTodoData) -> None:
@@ -61,6 +62,7 @@ class TodoService:
         todo.name = data.name
         todo.detail = data.detail or ""
         todo.due_date = data.due_date
+        todo.is_completed = data.is_completed
 
     def create_todo(self, data: TodoCreate, owner_id: int) -> Todo:
         validated = self._validate_todo(owner_id, data)
