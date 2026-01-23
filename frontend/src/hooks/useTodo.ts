@@ -44,7 +44,7 @@ export const useTodo = (): TodoService => {
   const [todos, setTodos] = useState<readonly Todo[]>([])
 
   const fetchTodos = useCallback(async () => {
-    const data = await apiClient.get<readonly Todo[]>('/todo/')
+    const data = await apiClient.get('/todo/')
     setTodos(data)
   }, [apiClient])
 

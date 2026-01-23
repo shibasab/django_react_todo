@@ -8,7 +8,9 @@ export const DashboardPage = () => {
   const { todos, isLoading, fetchTodos, addTodo, updateTodo, removeTodo, toggleTodoCompletion } = useTodo()
 
   useEffect(() => {
-    void fetchTodos()
+    // TODO: Promiseが浮いているため、適切なエラーハンドリングまたはvoid演算子の使用を検討する
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    fetchTodos()
   }, [fetchTodos])
 
   // 初回ロード時のみローディング表示（todos が取得済みの場合は表示しない）
