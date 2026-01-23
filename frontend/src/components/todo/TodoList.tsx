@@ -154,8 +154,8 @@ export const TodoList = ({ todos, onDelete, onEdit, onToggleCompletion }: TodoLi
             return (
               <div
                 key={todo.id}
-                className={`bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 overflow-hidden ${
-                  todo.isCompleted ? 'bg-gray-50' : ''
+                className={`rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 overflow-hidden ${
+                  todo.isCompleted ? 'bg-gray-50' : 'bg-white'
                 }`}
               >
                 <div className="flex justify-between items-start gap-4">

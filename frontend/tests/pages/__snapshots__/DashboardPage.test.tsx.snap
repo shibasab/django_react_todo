@@ -109,7 +109,7 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
       class="space-y-4"
     >
       <div
-        class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 overflow-hidden "
+        class="rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 overflow-hidden bg-white"
       >
         <div
           class="flex justify-between items-start gap-4"
@@ -163,7 +163,7 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
         </div>
       </div>
       <div
-        class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 overflow-hidden bg-gray-50"
+        class="rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 overflow-hidden bg-gray-50"
       >
         <div
           class="flex justify-between items-start gap-4"
