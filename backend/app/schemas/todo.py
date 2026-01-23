@@ -1,4 +1,11 @@
-from pydantic import BaseModel, Field, ConfigDict, AfterValidator, WrapValidator
+from pydantic import (
+    BaseModel,
+    Field,
+    ConfigDict,
+    AfterValidator,
+    WrapValidator,
+    BeforeValidator,
+)
 from pydantic_core import PydanticCustomError
 from typing import Optional, Annotated
 from datetime import datetime, date
@@ -30,22 +37,51 @@ def validate_date_format(v, handler):
         ) from None
 
 
+def reject_null(v):
+    """明示的なnullを拒否するバリデーター"""
+    if v is None:
+        raise PydanticCustomError(
+            "null_not_allowed",
+            "Null is not allowed",
+        )
+    return v
+
+
+TODO_NAME_MAX_LENGTH = 100
+TODO_DETAIL_MAX_LENGTH = 500
+
 # 必須文字列型（空文字列を許可しない）
 RequiredStr = Annotated[str, AfterValidator(validate_not_empty)]
 
 # 検証済み日付型（すべてのパースエラーをinvalid_formatに統一）
 ValidatedDate = Annotated[Optional[date], WrapValidator(validate_date_format)]
 
+# 更新用のOptional型（明示的nullは拒否）
+# - 部分更新では「未送信」と「null送信」を区別したい
+# - OptionalRequiredStr は「値を送れば必須の検証を行うが、未送信なら許容する」を表す
+OptionalRequiredStr = Annotated[Optional[RequiredStr], BeforeValidator(reject_null)]
+OptionalStr = Annotated[Optional[str], BeforeValidator(reject_null)]
+OptionalBool = Annotated[Optional[bool], BeforeValidator(reject_null)]
+
 
 class TodoBase(BaseModel):
-    name: RequiredStr = Field(..., max_length=100)
-    detail: str = Field(default="", max_length=500)
+    name: RequiredStr = Field(..., max_length=TODO_NAME_MAX_LENGTH)
+    detail: str = Field(default="", max_length=TODO_DETAIL_MAX_LENGTH)
     due_date: ValidatedDate = Field(default=None, alias="dueDate")
     is_completed: bool = Field(default=False, alias="isCompleted")
 
 
 class TodoCreate(TodoBase):
     pass
+
+
+class TodoUpdate(TodoBase):
+    model_config = ConfigDict(validate_default=False)
+
+    name: OptionalRequiredStr = Field(default=None, max_length=TODO_NAME_MAX_LENGTH)
+    detail: OptionalStr = Field(default=None, max_length=TODO_DETAIL_MAX_LENGTH)
+    due_date: ValidatedDate = Field(default=None, alias="dueDate")
+    is_completed: OptionalBool = Field(default=None, alias="isCompleted")
 
 
 class TodoResponse(TodoBase):
