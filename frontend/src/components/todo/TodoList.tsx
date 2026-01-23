@@ -14,7 +14,9 @@ type TodoListProps = Readonly<{
     name: string,
     detail: string,
     dueDate: string | null,
+    isCompleted: boolean,
   ) => Promise<readonly ValidationError[] | undefined>
+  onToggleCompletion: (todo: Todo) => Promise<void>
 }>
 
 type EditState = Readonly<{
@@ -22,14 +24,22 @@ type EditState = Readonly<{
   name: string
   detail: string
   dueDate: string
+  isCompleted: boolean
   errors: readonly ValidationError[]
 }> | null
 
-export const TodoList = ({ todos, onDelete, onEdit }: TodoListProps) => {
+export const TodoList = ({ todos, onDelete, onEdit, onToggleCompletion }: TodoListProps) => {
   const [editState, setEditState] = useState<EditState>(null)
 
   const handleEditClick = (todo: Todo) => {
-    setEditState({ id: todo.id, name: todo.name, detail: todo.detail, dueDate: todo.dueDate ?? '', errors: [] })
+    setEditState({
+      id: todo.id,
+      name: todo.name,
+      detail: todo.detail,
+      dueDate: todo.dueDate ?? '',
+      isCompleted: todo.isCompleted,
+      errors: [],
+    })
   }
 
   const handleCancelClick = () => {
@@ -45,7 +55,13 @@ export const TodoList = ({ todos, onDelete, onEdit }: TodoListProps) => {
   const handleSaveClick = async () => {
     if (editState == null) return
     const dueDate = editState.dueDate === '' ? null : editState.dueDate
-    const validationErrors = await onEdit(editState.id, editState.name.trim(), editState.detail, dueDate)
+    const validationErrors = await onEdit(
+      editState.id,
+      editState.name.trim(),
+      editState.detail,
+      dueDate,
+      editState.isCompleted,
+    )
     if (validationErrors) {
       setEditState({ ...editState, errors: validationErrors })
       return
@@ -138,16 +154,30 @@ export const TodoList = ({ todos, onDelete, onEdit }: TodoListProps) => {
             return (
               <div
                 key={todo.id}
-                className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 overflow-hidden"
+                className={`bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 overflow-hidden ${
+                  todo.isCompleted ? 'bg-gray-50' : ''
+                }`}
               >
                 <div className="flex justify-between items-start gap-4">
-                  <div className="flex-1 min-w-0">
-                    <h5 className="text-lg font-semibold text-gray-800 break-all overflow-hidden">
-                      {todo.name}
-                    </h5>
-                    <p className="text-sm text-gray-500 mt-1">
-                      期限: {todo.dueDate ?? '-'}
-                    </p>
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
+                    <input
+                      type="checkbox"
+                      checked={todo.isCompleted}
+                      onChange={() => onToggleCompletion(todo)}
+                      className="mt-1.5 w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300 cursor-pointer"
+                    />
+                    <div className="min-w-0">
+                      <h5
+                        className={`text-lg font-semibold break-all overflow-hidden ${
+                          todo.isCompleted ? 'text-gray-400 line-through' : 'text-gray-800'
+                        }`}
+                      >
+                        {todo.name}
+                      </h5>
+                      <p className={`text-sm mt-1 ${todo.isCompleted ? 'text-gray-400' : 'text-gray-500'}`}>
+                        期限: {todo.dueDate ?? '-'}
+                      </p>
+                    </div>
                   </div>
                   <div className="flex gap-2 shrink-0">
                     <button
@@ -166,7 +196,13 @@ export const TodoList = ({ todos, onDelete, onEdit }: TodoListProps) => {
                 </div>
                 {todo.detail && (
                   <div className="mt-3 pt-3 border-t border-gray-100">
-                    <p className="text-gray-600 break-all whitespace-pre-wrap overflow-hidden">{todo.detail}</p>
+                    <p
+                      className={`break-all whitespace-pre-wrap overflow-hidden ${
+                        todo.isCompleted ? 'text-gray-400' : 'text-gray-600'
+                      }`}
+                    >
+                      {todo.detail}
+                    </p>
                   </div>
                 )}
               </div>

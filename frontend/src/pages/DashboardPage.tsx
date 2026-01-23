@@ -5,10 +5,10 @@ import { TodoList } from '../components/todo/TodoList'
 import { useTodo } from '../hooks/useTodo'
 
 export const DashboardPage = () => {
-  const { todos, isLoading, fetchTodos, addTodo, updateTodo, removeTodo } = useTodo()
+  const { todos, isLoading, fetchTodos, addTodo, updateTodo, removeTodo, toggleTodoCompletion } = useTodo()
 
   useEffect(() => {
-    fetchTodos()
+    void fetchTodos()
   }, [fetchTodos])
 
   // 初回ロード時のみローディング表示（todos が取得済みの場合は表示しない）
@@ -18,7 +18,12 @@ export const DashboardPage = () => {
 
   return (
     <Fragment>
-      <TodoList todos={todos} onDelete={removeTodo} onEdit={updateTodo} />
+      <TodoList
+        todos={todos}
+        onDelete={removeTodo}
+        onEdit={updateTodo}
+        onToggleCompletion={toggleTodoCompletion}
+      />
       <TodoForm onSubmit={addTodo} />
     </Fragment>
   )

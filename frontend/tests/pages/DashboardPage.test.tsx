@@ -6,8 +6,8 @@ import { renderApp } from '../helpers/renderPage'
 
 describe('DashboardPage', () => {
   const mockTodos = [
-    { id: 1, name: 'Test Todo 1', detail: 'Detail 1' },
-    { id: 2, name: 'Test Todo 2', detail: 'Detail 2' },
+    { id: 1, name: 'Test Todo 1', detail: 'Detail 1', isCompleted: false },
+    { id: 2, name: 'Test Todo 2', detail: 'Detail 2', isCompleted: true },
   ]
 
   describe('初期表示', () => {
@@ -38,7 +38,7 @@ describe('DashboardPage', () => {
     it('タスク名入力→追加ボタンでPOST APIが呼ばれる', async () => {
       const { client, requests, clearRequests } = createMockApiClient({
         getResponse: mockTodos,
-        postResponse: { id: 3, name: 'New Todo', detail: 'New Detail' },
+        postResponse: { id: 3, name: 'New Todo', detail: 'New Detail', isCompleted: false },
       })
 
       const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
@@ -119,7 +119,7 @@ describe('DashboardPage', () => {
     it('値変更→保存ボタンでPUT APIが呼ばれる', async () => {
       const { client, requests, clearRequests } = createMockApiClient({
         getResponse: mockTodos,
-        putResponse: { id: 1, name: 'Updated Todo', detail: 'Updated Detail' },
+        putResponse: { id: 1, name: 'Updated Todo', detail: 'Updated Detail', isCompleted: false },
       })
 
       const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
@@ -224,6 +224,28 @@ describe('DashboardPage', () => {
 
       // API呼び出しがないことを確認
       expect(requests.length).toBe(0)
+    })
+
+    it('チェックボックスクリックで完了状態が更新される', async () => {
+      const { client, requests, clearRequests } = createMockApiClient({
+        getResponse: mockTodos,
+        putResponse: { id: 1, name: 'Test Todo 1', detail: 'Detail 1', isCompleted: true },
+      })
+
+      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+
+      await waitFor(() => {
+        expect(within(container).getByText('Test Todo 1')).toBeInTheDocument()
+      })
+      clearRequests()
+
+      // 1つ目のTODOのチェックボックスをクリック（未完了 -> 完了）
+      const checkboxes = within(container).getAllByRole('checkbox')
+      fireEvent.click(checkboxes[0])
+
+      await waitFor(() => {
+        expect(requests).toMatchSnapshot('api-requests-toggle')
+      })
     })
   })
 })

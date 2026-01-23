@@ -9,12 +9,28 @@ exports[`DashboardPage > TODO削除 > 削除ボタンクリックでDELETE API�
 ]
 `;
 
+exports[`DashboardPage > TODO更新 > チェックボックスクリックで完了状態が更新される > api-requests-toggle 1`] = `
+[
+  {
+    "data": {
+      "detail": "Detail 1",
+      "dueDate": undefined,
+      "isCompleted": true,
+      "name": "Test Todo 1",
+    },
+    "method": "PUT",
+    "url": "/todo/1/",
+  },
+]
+`;
+
 exports[`DashboardPage > TODO更新 > 値変更→保存ボタンでPUT APIが呼ばれる > api-requests-update 1`] = `
 [
   {
     "data": {
       "detail": "Updated Detail",
       "dueDate": null,
+      "isCompleted": false,
       "name": "Updated Todo",
     },
     "method": "PUT",
@@ -93,25 +109,33 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
       class="space-y-4"
     >
       <div
-        class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 overflow-hidden"
+        class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 overflow-hidden "
       >
         <div
           class="flex justify-between items-start gap-4"
         >
           <div
-            class="flex-1 min-w-0"
+            class="flex items-start gap-3 flex-1 min-w-0"
           >
-            <h5
-              class="text-lg font-semibold text-gray-800 break-all overflow-hidden"
+            <input
+              class="mt-1.5 w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300 cursor-pointer"
+              type="checkbox"
+            />
+            <div
+              class="min-w-0"
             >
-              Test Todo 1
-            </h5>
-            <p
-              class="text-sm text-gray-500 mt-1"
-            >
-              期限: 
-              -
-            </p>
+              <h5
+                class="text-lg font-semibold break-all overflow-hidden text-gray-800"
+              >
+                Test Todo 1
+              </h5>
+              <p
+                class="text-sm mt-1 text-gray-500"
+              >
+                期限: 
+                -
+              </p>
+            </div>
           </div>
           <div
             class="flex gap-2 shrink-0"
@@ -132,32 +156,41 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
           class="mt-3 pt-3 border-t border-gray-100"
         >
           <p
-            class="text-gray-600 break-all whitespace-pre-wrap overflow-hidden"
+            class="break-all whitespace-pre-wrap overflow-hidden text-gray-600"
           >
             Detail 1
           </p>
         </div>
       </div>
       <div
-        class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 overflow-hidden"
+        class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 overflow-hidden bg-gray-50"
       >
         <div
           class="flex justify-between items-start gap-4"
         >
           <div
-            class="flex-1 min-w-0"
+            class="flex items-start gap-3 flex-1 min-w-0"
           >
-            <h5
-              class="text-lg font-semibold text-gray-800 break-all overflow-hidden"
+            <input
+              checked=""
+              class="mt-1.5 w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300 cursor-pointer"
+              type="checkbox"
+            />
+            <div
+              class="min-w-0"
             >
-              Test Todo 2
-            </h5>
-            <p
-              class="text-sm text-gray-500 mt-1"
-            >
-              期限: 
-              -
-            </p>
+              <h5
+                class="text-lg font-semibold break-all overflow-hidden text-gray-400 line-through"
+              >
+                Test Todo 2
+              </h5>
+              <p
+                class="text-sm mt-1 text-gray-400"
+              >
+                期限: 
+                -
+              </p>
+            </div>
           </div>
           <div
             class="flex gap-2 shrink-0"
@@ -178,7 +211,7 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
           class="mt-3 pt-3 border-t border-gray-100"
         >
           <p
-            class="text-gray-600 break-all whitespace-pre-wrap overflow-hidden"
+            class="break-all whitespace-pre-wrap overflow-hidden text-gray-400"
           >
             Detail 2
           </p>
