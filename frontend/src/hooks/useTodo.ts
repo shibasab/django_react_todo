@@ -3,7 +3,6 @@ import { useCallback, useState } from 'react'
 import type { ValidationError, ValidationErrorResponse } from '../models/error'
 import type { Todo } from '../models/todo'
 
-import { toast } from 'react-toastify'
 import { useApiClient } from '../contexts/ApiContext'
 import { validateRequired, validateMaxLength } from '../services/validation'
 
@@ -98,24 +97,8 @@ export const useTodo = (): TodoService => {
 
   const toggleTodoCompletion = useCallback(
     async (todo: Todo) => {
-      try {
-        // 現在の状態を反転させて更新
-        const errors = await updateTodo(
-          todo.id,
-          todo.name,
-          todo.detail,
-          todo.dueDate,
-          !todo.isCompleted,
-        )
-
-        if (errors) {
-          errors.forEach((error) => {
-            toast.error(error.message)
-          })
-        }
-      } catch (error) {
-        toast.error('タスクの状態更新に失敗しました')
-      }
+      // 現在の状態を反転させて更新
+      await updateTodo(todo.id, todo.name, todo.detail, todo.dueDate, !todo.isCompleted)
     },
     [updateTodo],
   )
