@@ -6,4 +6,5 @@ export type Todo = Readonly<{
   name: string
   detail: string
   dueDate: string | null
+  isCompleted: boolean
 }>

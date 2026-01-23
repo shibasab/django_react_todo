@@ -5,9 +5,11 @@ import { TodoList } from '../components/todo/TodoList'
 import { useTodo } from '../hooks/useTodo'
 
 export const DashboardPage = () => {
-  const { todos, isLoading, fetchTodos, addTodo, updateTodo, removeTodo } = useTodo()
+  const { todos, isLoading, fetchTodos, addTodo, updateTodo, removeTodo, toggleTodoCompletion } = useTodo()
 
   useEffect(() => {
+    // TODO: Promiseが浮いているため、適切なエラーハンドリングまたはvoid演算子の使用を検討する
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchTodos()
   }, [fetchTodos])
 
@@ -18,7 +20,12 @@ export const DashboardPage = () => {
 
   return (
     <Fragment>
-      <TodoList todos={todos} onDelete={removeTodo} onEdit={updateTodo} />
+      <TodoList
+        todos={todos}
+        onDelete={removeTodo}
+        onEdit={updateTodo}
+        onToggleCompletion={toggleTodoCompletion}
+      />
       <TodoForm onSubmit={addTodo} />
     </Fragment>
   )
