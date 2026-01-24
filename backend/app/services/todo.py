@@ -10,7 +10,7 @@ from app.exceptions import NotFoundError, DuplicateError
 # ビジネスバリデーション完了済みのTODOデータを表す型
 # 静的型チェッカーがバリデーション済みかどうかを区別できる
 ValidatedTodoData = NewType("ValidatedTodoData", TodoCreate)
-ValidatedTodoUpdate = NewType("ValidatedTodoUpdate", dict)
+ValidatedTodoUpdate = NewType("ValidatedTodoUpdate", TodoUpdate)
 
 
 class TodoService:
@@ -38,11 +38,9 @@ class TodoService:
     def _validate_update(
         self, owner_id: int, data: TodoUpdate, exclude_id: int
     ) -> ValidatedTodoUpdate:
-        update_data = data.model_dump(exclude_unset=True)
-        name = update_data.get("name")
-        if name is not None:
-            self._ensure_name_unique(owner_id, name, exclude_id=exclude_id)
-        return ValidatedTodoUpdate(update_data)
+        if "name" in data.model_fields_set:
+            self._ensure_name_unique(owner_id, data.name, exclude_id=exclude_id)
+        return ValidatedTodoUpdate(data)
 
     def _create_todo_entity(self, data: ValidatedTodoData, owner_id: int) -> Todo:
         """ValidatedTodoData からTodoエンティティを作成する"""
@@ -56,14 +54,14 @@ class TodoService:
 
     def _apply_update(self, todo: Todo, data: ValidatedTodoUpdate) -> None:
         """更新対象のフィールドのみをTodoエンティティに反映する"""
-        if "name" in data:
-            todo.name = data["name"]
-        if "detail" in data:
-            todo.detail = data["detail"] or ""
-        if "due_date" in data:
-            todo.due_date = data["due_date"]
-        if "is_completed" in data:
-            todo.is_completed = data["is_completed"]
+        if "name" in data.model_fields_set:
+            todo.name = data.name
+        if "detail" in data.model_fields_set:
+            todo.detail = data.detail or ""
+        if "due_date" in data.model_fields_set:
+            todo.due_date = data.due_date
+        if "is_completed" in data.model_fields_set:
+            todo.is_completed = data.is_completed
 
     def create_todo(self, data: TodoCreate, owner_id: int) -> Todo:
         validated = self._validate_todo(owner_id, data)
