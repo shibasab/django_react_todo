@@ -38,7 +38,7 @@ class TodoService:
     def _validate_update(
         self, owner_id: int, data: TodoUpdate, exclude_id: int
     ) -> ValidatedTodoUpdate:
-        if "name" in data.model_fields_set:
+        if "name" in data.model_fields_set and data.name is not None:
             self._ensure_name_unique(owner_id, data.name, exclude_id=exclude_id)
         return ValidatedTodoUpdate(data)
 
@@ -54,7 +54,7 @@ class TodoService:
 
     def _apply_update(self, todo: Todo, data: ValidatedTodoUpdate) -> None:
         """更新対象のフィールドのみをTodoエンティティに反映する"""
-        if "name" in data.model_fields_set:
+        if "name" in data.model_fields_set and data.name is not None:
             todo.name = data.name
         if "detail" in data.model_fields_set:
             todo.detail = data.detail or ""
