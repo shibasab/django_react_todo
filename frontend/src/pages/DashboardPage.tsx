@@ -20,12 +20,7 @@ export const DashboardPage = () => {
 
   return (
     <Fragment>
-      <TodoList
-        todos={todos}
-        onDelete={removeTodo}
-        onEdit={updateTodo}
-        onToggleCompletion={toggleTodoCompletion}
-      />
+      <TodoList todos={todos} onDelete={removeTodo} onEdit={updateTodo} onToggleCompletion={toggleTodoCompletion} />
       <TodoForm onSubmit={addTodo} />
     </Fragment>
   )

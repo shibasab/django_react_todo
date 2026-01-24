@@ -98,13 +98,7 @@ export const useTodo = (): TodoService => {
   const toggleTodoCompletion = useCallback(
     async (todo: Todo) => {
       // 現在の状態を反転させて更新
-      const validationErrors = await updateTodo(
-        todo.id,
-        todo.name,
-        todo.detail,
-        todo.dueDate,
-        !todo.isCompleted,
-      )
+      const validationErrors = await updateTodo(todo.id, todo.name, todo.detail, todo.dueDate, !todo.isCompleted)
       if (validationErrors) {
         // TODO: エラー対応（toast表示など）を行う
         return

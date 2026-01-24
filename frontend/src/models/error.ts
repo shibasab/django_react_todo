@@ -35,7 +35,12 @@ export type InvalidFormatError = ValidationErrorBase &
     reason: 'invalid_format'
   }>
 
-export type ValidationError = RequiredError | UniqueViolationError | MaxLengthError | MinLengthError | InvalidFormatError
+export type ValidationError =
+  | RequiredError
+  | UniqueViolationError
+  | MaxLengthError
+  | MinLengthError
+  | InvalidFormatError
 
 export type ValidationErrorResponse = Readonly<{
   status: number
