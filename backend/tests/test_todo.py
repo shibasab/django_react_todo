@@ -353,7 +353,7 @@ class TestUpdateTodo:
         assert data["errors"][0]["reason"] == "required"
 
     def test_update_todo_name_missing(self, client, auth_headers, test_user, test_db):
-        """タスク名フィールドが欠落している場合は422エラー"""
+        """タスク名フィールドが欠落している場合でも他フィールドを更新できる"""
         # Todoを作成
         todo = Todo(name="Original Task", detail="Original", owner_id=test_user.id)
         test_db.add(todo)
@@ -366,12 +366,36 @@ class TestUpdateTodo:
             json={"detail": "Test Detail"},  # nameフィールドなし
         )
 
-        assert response.status_code == 422
+        assert response.status_code == 200
         data = response.json()
-        assert data["type"] == "validation_error"
-        assert len(data["errors"]) == 1
-        assert data["errors"][0]["field"] == "name"
-        assert data["errors"][0]["reason"] == "required"
+        assert data["name"] == "Original Task"
+        assert data["detail"] == "Test Detail"
+
+    def test_update_todo_preserves_fields_when_omitted(
+        self, client, auth_headers, test_user, test_db
+    ):
+        """未指定のフィールドは既存値を保持する"""
+        todo = Todo(
+            name="Original Task",
+            detail="Original detail",
+            owner_id=test_user.id,
+            due_date=None,
+        )
+        test_db.add(todo)
+        test_db.commit()
+        test_db.refresh(todo)
+
+        response = client.put(
+            f"/api/todo/{todo.id}/",
+            headers=auth_headers,
+            json={"name": "Updated Task"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["name"] == "Updated Task"
+        assert data["detail"] == "Original detail"
+        assert data["dueDate"] is None
 
 
 class TestDeleteTodo:

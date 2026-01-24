@@ -143,6 +143,32 @@ class TestTodoCompletion:
         assert data["detail"] == "Updated detail"
         assert data["isCompleted"] is True
 
+    def test_update_omits_completion_status_keeps_value(
+        self, client, auth_headers, test_user, test_db
+    ):
+        """isCompleted未送信でも完了状態が維持される"""
+        todo = Todo(
+            name="Original Name",
+            detail="Original detail",
+            owner_id=test_user.id,
+            is_completed=True,
+        )
+        test_db.add(todo)
+        test_db.commit()
+        test_db.refresh(todo)
+
+        response = client.put(
+            f"/api/todo/{todo.id}/",
+            headers=auth_headers,
+            json={"detail": "Updated detail"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["name"] == "Original Name"
+        assert data["detail"] == "Updated detail"
+        assert data["isCompleted"] is True
+
     def test_list_todos_includes_completion_status(
         self, client, auth_headers, test_user, test_db
     ):
