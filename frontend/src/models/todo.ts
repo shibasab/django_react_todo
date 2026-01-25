@@ -8,3 +8,7 @@ export type Todo = Readonly<{
   dueDate: string | null
   isCompleted: boolean
 }>
+
+export type CreateTodoRequest = Omit<Todo, 'id'>
+
+export type UpdateTodoRequest = Omit<Todo, 'id'>

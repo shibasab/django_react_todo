@@ -57,7 +57,12 @@ export const useTodo = (): TodoService => {
       }
 
       // API 呼び出し（unique_violation 等はサーバーでのみ検出）
-      const result = await apiClient.post('/todo/', { name, detail, dueDate })
+      const result = await apiClient.post('/todo/', {
+        name,
+        detail,
+        dueDate,
+        isCompleted: false,
+      })
       if (!result.ok) {
         return result.error.errors
       }

@@ -1,20 +1,7 @@
 import type { Auth } from '../models/auth'
 import type { ValidationErrorResponse } from '../models/error'
-import type { Todo } from '../models/todo'
+import type { CreateTodoRequest, Todo, UpdateTodoRequest } from '../models/todo'
 import type { User } from '../models/user'
-
-export type CreateTodoRequest = Readonly<{
-  name: string
-  detail: string
-  dueDate: string | null
-}>
-
-export type UpdateTodoRequest = Readonly<{
-  name: string
-  detail: string
-  dueDate: string | null
-  isCompleted: boolean
-}>
 
 export type LoginRequest = Readonly<{
   username: string
