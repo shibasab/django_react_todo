@@ -14,7 +14,6 @@ exports[`DashboardPage > TODO更新 > チェックボックスクリックで完
   {
     "data": {
       "detail": "Detail 1",
-      "dueDate": undefined,
       "isCompleted": true,
       "name": "Test Todo 1",
     },
@@ -45,6 +44,7 @@ exports[`DashboardPage > TODO追加 > タスク名入力→追加ボタンでPOS
     "data": {
       "detail": "New Detail",
       "dueDate": null,
+      "isCompleted": false,
       "name": "New Todo",
     },
     "method": "POST",

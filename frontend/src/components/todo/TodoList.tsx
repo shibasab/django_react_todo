@@ -9,24 +9,17 @@ import { FieldError } from '../FieldError'
 type TodoListProps = Readonly<{
   todos: readonly Todo[]
   onDelete: (id: number) => void
-  onEdit: (
-    id: number,
-    name: string,
-    detail: string,
-    dueDate: string | null,
-    isCompleted: boolean,
-  ) => Promise<readonly ValidationError[] | undefined>
+  onEdit: (todo: Todo) => Promise<readonly ValidationError[] | undefined>
   onToggleCompletion: (todo: Todo) => Promise<void>
 }>
 
-type EditState = Readonly<{
-  id: number
-  name: string
-  detail: string
-  dueDate: string
-  isCompleted: boolean
-  errors: readonly ValidationError[]
-}> | null
+type EditState =
+  | (Todo &
+      Readonly<{
+        dueDate: string
+        errors: readonly ValidationError[]
+      }>)
+  | null
 
 export const TodoList = ({ todos, onDelete, onEdit, onToggleCompletion }: TodoListProps) => {
   const [editState, setEditState] = useState<EditState>(null)
@@ -54,14 +47,13 @@ export const TodoList = ({ todos, onDelete, onEdit, onToggleCompletion }: TodoLi
 
   const handleSaveClick = async () => {
     if (editState == null) return
+    const { errors, ...todo } = editState
     const dueDate = editState.dueDate === '' ? null : editState.dueDate
-    const validationErrors = await onEdit(
-      editState.id,
-      editState.name.trim(),
-      editState.detail,
+    const validationErrors = await onEdit({
+      ...todo,
+      name: todo.name.trim(),
       dueDate,
-      editState.isCompleted,
-    )
+    })
     if (validationErrors) {
       setEditState({ ...editState, errors: validationErrors })
       return

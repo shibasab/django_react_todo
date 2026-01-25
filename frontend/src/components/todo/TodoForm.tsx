@@ -3,10 +3,11 @@ import { useState, type FormEvent, type ChangeEvent } from 'react'
 import type { ValidationError } from '../../models/error'
 
 import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH } from '../../hooks/useTodo'
+import { Todo } from '../../models/todo'
 import { FieldError } from '../FieldError'
 
 type TodoFormProps = Readonly<{
-  onSubmit: (name: string, detail: string, dueDate: string | null) => Promise<readonly ValidationError[] | undefined>
+  onSubmit: (todo: Omit<Todo, 'id'>) => Promise<readonly ValidationError[] | undefined>
 }>
 
 type FormState = Readonly<{
@@ -31,7 +32,12 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     const dueDate = formState.dueDate === '' ? null : formState.dueDate
-    const validationErrors = await onSubmit(formState.name, formState.detail, dueDate)
+    const validationErrors = await onSubmit({
+      name: formState.name.trim(),
+      detail: formState.detail,
+      dueDate,
+      isCompleted: false,
+    })
     if (validationErrors != null && validationErrors.length > 0) {
       setErrors(validationErrors)
       return

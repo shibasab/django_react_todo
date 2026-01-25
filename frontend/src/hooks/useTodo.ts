@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 
 import type { ValidationError, ValidationErrorResponse } from '../models/error'
-import type { Todo } from '../models/todo'
+import type { CreateTodoRequest, Todo } from '../models/todo'
 
 import { useApiClient } from '../contexts/ApiContext'
 import { validateRequired, validateMaxLength } from '../services/validation'
@@ -26,14 +26,8 @@ type TodoService = Readonly<{
   todos: readonly Todo[]
   isLoading: boolean
   fetchTodos: () => Promise<void>
-  addTodo: (name: string, detail: string, dueDate: string | null) => Promise<readonly ValidationError[] | undefined>
-  updateTodo: (
-    id: number,
-    name: string,
-    detail: string,
-    dueDate: string | null,
-    isCompleted: boolean,
-  ) => Promise<readonly ValidationError[] | undefined>
+  addTodo: (todo: Omit<Todo, 'id'>) => Promise<readonly ValidationError[] | undefined>
+  updateTodo: (todo: Todo) => Promise<readonly ValidationError[] | undefined>
   toggleTodoCompletion: (todo: Todo) => Promise<void>
   removeTodo: (id: number) => Promise<void>
   validateTodo: (name: string, detail: string) => readonly ValidationError[]
@@ -49,19 +43,16 @@ export const useTodo = (): TodoService => {
   }, [apiClient])
 
   const addTodo = useCallback(
-    async (name: string, detail: string, dueDate: string | null): Promise<readonly ValidationError[] | undefined> => {
+    async (data: CreateTodoRequest): Promise<readonly ValidationError[] | undefined> => {
       // クライアントバリデーション
-      const clientErrors = validateTodoForm(name, detail)
+      const clientErrors = validateTodoForm(data.name, data.detail)
       if (clientErrors.length > 0) {
         return clientErrors
       }
 
       // API 呼び出し（unique_violation 等はサーバーでのみ検出）
       const result = await apiClient.post('/todo/', {
-        name,
-        detail,
-        dueDate,
-        isCompleted: false,
+        ...data,
       })
       if (!result.ok) {
         return result.error.errors
@@ -72,25 +63,17 @@ export const useTodo = (): TodoService => {
   )
 
   const updateTodo = useCallback(
-    async (
-      id: number,
-      name: string,
-      detail: string,
-      dueDate: string | null,
-      isCompleted: boolean,
-    ): Promise<readonly ValidationError[] | undefined> => {
+    async (todo: Todo): Promise<readonly ValidationError[] | undefined> => {
       // クライアントバリデーション
-      const clientErrors = validateTodoForm(name, detail)
+      const clientErrors = validateTodoForm(todo.name, todo.detail)
       if (clientErrors.length > 0) {
         return clientErrors
       }
 
+      const { id, ...body } = todo
       // API 呼び出し（unique_violation 等はサーバーでのみ検出）
       const result = await apiClient.put<Todo, ValidationErrorResponse>(`/todo/${id}/`, {
-        name,
-        detail,
-        dueDate,
-        isCompleted,
+        ...body,
       })
       if (!result.ok) {
         return result.error.errors
@@ -103,7 +86,10 @@ export const useTodo = (): TodoService => {
   const toggleTodoCompletion = useCallback(
     async (todo: Todo) => {
       // 現在の状態を反転させて更新
-      const validationErrors = await updateTodo(todo.id, todo.name, todo.detail, todo.dueDate, !todo.isCompleted)
+      const validationErrors = await updateTodo({
+        ...todo,
+        isCompleted: !todo.isCompleted,
+      })
       if (validationErrors) {
         // TODO: エラー対応（toast表示など）を行う
         return
