@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom/client'
 
+// eslint-disable-next-line no-unassigned-import
 import './styles/index.css'
 import App from './App'
 

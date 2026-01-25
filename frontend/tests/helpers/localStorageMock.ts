@@ -1,4 +1,4 @@
-import { vi, beforeEach } from 'vitest'
+import { vi } from 'vitest'
 
 /**
  * localStorage のモックオブジェクト

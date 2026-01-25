@@ -1,6 +1,6 @@
 import { HashRouter, Routes, Route } from 'react-router'
 import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+
 import { ApiProvider } from './contexts/ApiContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { Header } from './layouts/Header'
@@ -10,7 +10,7 @@ import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 
-export const App = () => {
+const App = () => {
   return (
     <ApiProvider>
       <AuthProvider>

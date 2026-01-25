@@ -47,7 +47,7 @@ export const TodoList = ({ todos, onDelete, onEdit, onToggleCompletion }: TodoLi
 
   const handleSaveClick = async () => {
     if (editState == null) return
-    const { errors, ...todo } = editState
+    const { errors: _, ...todo } = editState
     const dueDate = editState.dueDate === '' ? null : editState.dueDate
     const validationErrors = await onEdit({
       ...todo,
