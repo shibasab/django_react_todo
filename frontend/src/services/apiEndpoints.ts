@@ -13,6 +13,7 @@ export type UpdateTodoRequest = Readonly<{
   name: string
   detail: string
   dueDate: string | null
+  isCompleted: boolean
 }>
 
 export type LoginRequest = Readonly<{
