@@ -1,10 +1,12 @@
-import { useState, type FormEvent, type ChangeEvent } from 'react'
+import { useCallback, useState, type FormEvent, type ChangeEvent } from 'react'
 
 import type { ValidationError } from '../../models/error'
 
 import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH } from '../../hooks/useTodo'
 import { Todo } from '../../models/todo'
+import { validateMaxLength, validateRequired } from '../../services/validation'
 import { FieldError } from '../FieldError'
+import { ValidatedInput } from '../ValidatedInput'
 
 type TodoFormProps = Readonly<{
   onSubmit: (todo: Omit<Todo, 'id'>) => Promise<readonly ValidationError[] | undefined>
@@ -24,6 +26,46 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
   })
   const [errors, setErrors] = useState<readonly ValidationError[]>([])
 
+  const removeNulls = useCallback(<T,>(values: readonly (T | null)[]): readonly T[] => {
+    return values.filter((value) => value != null)
+  }, [])
+
+  const setFieldErrors = useCallback((field: string, fieldErrors: readonly ValidationError[]) => {
+    setErrors((prev) => {
+      const remaining = prev.filter((error) => error.field !== field)
+      return fieldErrors.length > 0 ? [...remaining, ...fieldErrors] : remaining
+    })
+  }, [])
+
+  const mergeErrors = useCallback((incoming: readonly ValidationError[]) => {
+    setErrors((prev) => {
+      if (incoming.length === 0) {
+        return prev
+      }
+      const fields = new Set(incoming.map((error) => error.field))
+      const remaining = prev.filter((error) => !fields.has(error.field))
+      return [...remaining, ...incoming]
+    })
+  }, [])
+
+  const validateName = useCallback(
+    (value: string) => {
+      const fieldErrors = [validateRequired('name', value), validateMaxLength('name', value, TODO_NAME_MAX_LENGTH)]
+      const filteredErrors = removeNulls(fieldErrors)
+      setFieldErrors('name', filteredErrors)
+    },
+    [removeNulls, setFieldErrors],
+  )
+
+  const validateDetail = useCallback(
+    (value: string) => {
+      const fieldErrors = [validateMaxLength('detail', value, TODO_DETAIL_MAX_LENGTH)]
+      const filteredErrors = removeNulls(fieldErrors)
+      setFieldErrors('detail', filteredErrors)
+    },
+    [removeNulls, setFieldErrors],
+  )
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormState((prev) => ({ ...prev, [name]: value }))
@@ -39,7 +81,7 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
       isCompleted: false,
     })
     if (validationErrors != null && validationErrors.length > 0) {
-      setErrors(validationErrors)
+      mergeErrors(validationErrors)
       return
     }
     setFormState({ name: '', detail: '', dueDate: '' })
@@ -50,40 +92,30 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
     <div className="bg-white rounded-lg shadow-md p-6 my-6">
       <h2 className="text-xl font-bold mb-4">Add Todo</h2>
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="todo-name" className="block text-sm font-medium text-gray-700 mb-2">
-            Task
-          </label>
-          <input
-            id="todo-name"
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.some((e) => e.field === 'name') ? 'border-red-500' : 'border-gray-300'
-            }`}
-            type="text"
-            maxLength={TODO_NAME_MAX_LENGTH}
-            name="name"
-            onChange={handleChange}
-            value={formState.name}
-          />
-          <FieldError errors={errors} fieldName="name" fieldLabel="タスク名" />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="todo-detail" className="block text-sm font-medium text-gray-700 mb-2">
-            Detail
-          </label>
-          <input
-            id="todo-detail"
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.some((e) => e.field === 'detail') ? 'border-red-500' : 'border-gray-300'
-            }`}
-            type="text"
-            maxLength={TODO_DETAIL_MAX_LENGTH}
-            name="detail"
-            onChange={handleChange}
-            value={formState.detail}
-          />
-          <FieldError errors={errors} fieldName="detail" fieldLabel="詳細" />
-        </div>
+        <ValidatedInput
+          id="todo-name"
+          name="name"
+          label="Task"
+          errorLabel="タスク名"
+          type="text"
+          maxLength={TODO_NAME_MAX_LENGTH}
+          value={formState.name}
+          onChange={handleChange}
+          validate={validateName}
+          errors={errors}
+        />
+        <ValidatedInput
+          id="todo-detail"
+          name="detail"
+          label="Detail"
+          errorLabel="詳細"
+          type="text"
+          maxLength={TODO_DETAIL_MAX_LENGTH}
+          value={formState.detail}
+          onChange={handleChange}
+          validate={validateDetail}
+          errors={errors}
+        />
         <div className="mb-4">
           <label htmlFor="todo-dueDate" className="block text-sm font-medium text-gray-700 mb-2">
             Due Date
