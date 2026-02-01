@@ -60,7 +60,7 @@ export const TodoList = ({ todos, onDelete, onEdit, onToggleCompletion }: TodoLi
       const validationErrors = [
         validateRequired('name', value),
         validateMaxLength('name', value, TODO_NAME_MAX_LENGTH),
-      ].filter((e) => e != null) as readonly ValidationError[]
+      ].filter((e) => e != null)
       updateFieldErrors('name', validationErrors)
     },
     [updateFieldErrors],
@@ -68,9 +68,7 @@ export const TodoList = ({ todos, onDelete, onEdit, onToggleCompletion }: TodoLi
 
   const validateDetail = useCallback(
     (value: string) => {
-      const validationErrors = [validateMaxLength('detail', value, TODO_DETAIL_MAX_LENGTH)].filter(
-        (e) => e != null,
-      ) as readonly ValidationError[]
+      const validationErrors = [validateMaxLength('detail', value, TODO_DETAIL_MAX_LENGTH)].filter((e) => e != null)
       updateFieldErrors('detail', validationErrors)
     },
     [updateFieldErrors],
