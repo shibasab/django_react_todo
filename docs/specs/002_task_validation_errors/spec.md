@@ -1,7 +1,7 @@
 Title: タスク作成・編集時のエラー表示機能
-Status: Ready
+Status: Done
 Created: 2026-01-15
-Last updated: 2026-01-15
+Last updated: 2026-01-31
 Source: ../000_backlog/task-validation-errors.md
 
 ## Goal
