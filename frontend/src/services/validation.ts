@@ -1,7 +1,7 @@
 /**
  * クライアントサイドバリデーション（汎用）
  */
-import type { RequiredError, MaxLengthError } from '../models/error'
+import type { MaxLengthError, RequiredError, ValidationError } from '../models/error'
 
 /**
  * 必須チェック
@@ -21,4 +21,16 @@ export const validateMaxLength = (field: string, value: string, limit: number): 
     return { field, reason: 'max_length', limit }
   }
   return null
+}
+
+export const mergeValidationErrors = (
+  prev: readonly ValidationError[],
+  incoming: readonly ValidationError[],
+): readonly ValidationError[] => {
+  if (incoming.length === 0) {
+    return prev
+  }
+  const fields = new Set(incoming.map((error) => error.field))
+  const remaining = prev.filter((error) => !fields.has(error.field))
+  return [...remaining, ...incoming]
 }

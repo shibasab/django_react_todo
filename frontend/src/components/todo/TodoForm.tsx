@@ -2,9 +2,9 @@ import { useCallback, useState, type FormEvent, type ChangeEvent } from 'react'
 
 import type { ValidationError } from '../../models/error'
 
-import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH } from '../../hooks/useTodo'
+import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH, useTodoFieldValidation } from '../../hooks/useTodo'
 import { Todo } from '../../models/todo'
-import { validateMaxLength, validateRequired } from '../../services/validation'
+import { mergeValidationErrors } from '../../services/validation'
 import { FieldError } from '../FieldError'
 import { ValidatedInput } from '../ValidatedInput'
 
@@ -26,45 +26,11 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
   })
   const [errors, setErrors] = useState<readonly ValidationError[]>([])
 
-  const removeNulls = useCallback(<T,>(values: readonly (T | null)[]): readonly T[] => {
-    return values.filter((value) => value != null)
-  }, [])
-
-  const setFieldErrors = useCallback((field: string, fieldErrors: readonly ValidationError[]) => {
-    setErrors((prev) => {
-      const remaining = prev.filter((error) => error.field !== field)
-      return fieldErrors.length > 0 ? [...remaining, ...fieldErrors] : remaining
-    })
-  }, [])
-
   const mergeErrors = useCallback((incoming: readonly ValidationError[]) => {
-    setErrors((prev) => {
-      if (incoming.length === 0) {
-        return prev
-      }
-      const fields = new Set(incoming.map((error) => error.field))
-      const remaining = prev.filter((error) => !fields.has(error.field))
-      return [...remaining, ...incoming]
-    })
+    setErrors((prev) => mergeValidationErrors(prev, incoming))
   }, [])
 
-  const validateName = useCallback(
-    (value: string) => {
-      const fieldErrors = [validateRequired('name', value), validateMaxLength('name', value, TODO_NAME_MAX_LENGTH)]
-      const filteredErrors = removeNulls(fieldErrors)
-      setFieldErrors('name', filteredErrors)
-    },
-    [removeNulls, setFieldErrors],
-  )
-
-  const validateDetail = useCallback(
-    (value: string) => {
-      const fieldErrors = [validateMaxLength('detail', value, TODO_DETAIL_MAX_LENGTH)]
-      const filteredErrors = removeNulls(fieldErrors)
-      setFieldErrors('detail', filteredErrors)
-    },
-    [removeNulls, setFieldErrors],
-  )
+  const { validateName, validateDetail } = useTodoFieldValidation((update) => setErrors(update))
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target

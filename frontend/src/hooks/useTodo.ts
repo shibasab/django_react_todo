@@ -10,16 +10,54 @@ import { validateRequired, validateMaxLength } from '../services/validation'
 export const TODO_NAME_MAX_LENGTH = 100
 export const TODO_DETAIL_MAX_LENGTH = 500
 
+const removeNulls = <T>(values: readonly (T | null)[]): readonly T[] => {
+  return values.filter((value) => value != null)
+}
+
+const getTodoNameErrors = (value: string): readonly ValidationError[] => {
+  return removeNulls([validateRequired('name', value), validateMaxLength('name', value, TODO_NAME_MAX_LENGTH)])
+}
+
+const getTodoDetailErrors = (value: string): readonly ValidationError[] => {
+  return removeNulls([validateMaxLength('detail', value, TODO_DETAIL_MAX_LENGTH)])
+}
+
 /**
  * Todoフォームのバリデーション
  * @returns バリデーションエラーの配列（エラーがなければ空配列）
  */
 const validateTodoForm = (name: string, detail: string): readonly ValidationError[] => {
-  return [
-    validateRequired('name', name),
-    validateMaxLength('name', name, TODO_NAME_MAX_LENGTH),
-    validateMaxLength('detail', detail, TODO_DETAIL_MAX_LENGTH),
-  ].filter((e) => e != null)
+  return [...getTodoNameErrors(name), ...getTodoDetailErrors(detail)]
+}
+
+type ErrorsUpdater = (update: (prev: readonly ValidationError[]) => readonly ValidationError[]) => void
+
+export const useTodoFieldValidation = (setErrors: ErrorsUpdater) => {
+  const updateFieldErrors = useCallback(
+    (fieldName: string, newErrors: readonly ValidationError[]) => {
+      setErrors((prev) => {
+        const remaining = prev.filter((error) => error.field !== fieldName)
+        return newErrors.length > 0 ? [...remaining, ...newErrors] : remaining
+      })
+    },
+    [setErrors],
+  )
+
+  const validateName = useCallback(
+    (value: string) => {
+      updateFieldErrors('name', getTodoNameErrors(value))
+    },
+    [updateFieldErrors],
+  )
+
+  const validateDetail = useCallback(
+    (value: string) => {
+      updateFieldErrors('detail', getTodoDetailErrors(value))
+    },
+    [updateFieldErrors],
+  )
+
+  return { validateName, validateDetail, updateFieldErrors } as const
 }
 
 type TodoService = Readonly<{

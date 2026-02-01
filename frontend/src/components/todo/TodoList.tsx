@@ -3,8 +3,8 @@ import { Fragment, useState, useCallback, type ChangeEvent } from 'react'
 import type { ValidationError } from '../../models/error'
 import type { Todo } from '../../models/todo'
 
-import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH } from '../../hooks/useTodo'
-import { validateRequired, validateMaxLength } from '../../services/validation'
+import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH, useTodoFieldValidation } from '../../hooks/useTodo'
+import { mergeValidationErrors } from '../../services/validation'
 import { FieldError } from '../FieldError'
 import { ValidatedInput } from '../ValidatedInput'
 
@@ -47,32 +47,14 @@ export const TodoList = ({ todos, onDelete, onEdit, onToggleCompletion }: TodoLi
     setEditState({ ...editState, [name]: value })
   }
 
-  const updateFieldErrors = useCallback((fieldName: string, newErrors: readonly ValidationError[]) => {
+  const setEditErrors = useCallback((update: (prev: readonly ValidationError[]) => readonly ValidationError[]) => {
     setEditState((prev) => {
       if (prev == null) return prev
-      const otherErrors = prev.errors.filter((e) => e.field !== fieldName)
-      return { ...prev, errors: [...otherErrors, ...newErrors] }
+      return { ...prev, errors: update(prev.errors) }
     })
   }, [])
 
-  const validateName = useCallback(
-    (value: string) => {
-      const validationErrors = [
-        validateRequired('name', value),
-        validateMaxLength('name', value, TODO_NAME_MAX_LENGTH),
-      ].filter((e) => e != null)
-      updateFieldErrors('name', validationErrors)
-    },
-    [updateFieldErrors],
-  )
-
-  const validateDetail = useCallback(
-    (value: string) => {
-      const validationErrors = [validateMaxLength('detail', value, TODO_DETAIL_MAX_LENGTH)].filter((e) => e != null)
-      updateFieldErrors('detail', validationErrors)
-    },
-    [updateFieldErrors],
-  )
+  const { validateName, validateDetail } = useTodoFieldValidation(setEditErrors)
 
   const handleSaveClick = async () => {
     if (editState == null) return
@@ -86,9 +68,7 @@ export const TodoList = ({ todos, onDelete, onEdit, onToggleCompletion }: TodoLi
     if (validationErrors) {
       setEditState((prev) => {
         if (prev == null) return prev
-        const serverErrorFields = new Set(validationErrors.map((e) => e.field))
-        const clientErrors = prev.errors.filter((e) => !serverErrorFields.has(e.field))
-        return { ...prev, errors: [...clientErrors, ...validationErrors] }
+        return { ...prev, errors: mergeValidationErrors(prev.errors, validationErrors) }
       })
       return
     }
