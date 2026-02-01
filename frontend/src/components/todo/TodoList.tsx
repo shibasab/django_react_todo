@@ -1,10 +1,12 @@
-import { Fragment, useState, type ChangeEvent } from 'react'
+import { Fragment, useState, useCallback, type ChangeEvent } from 'react'
 
 import type { ValidationError } from '../../models/error'
 import type { Todo } from '../../models/todo'
 
 import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH } from '../../hooks/useTodo'
+import { validateRequired, validateMaxLength } from '../../services/validation'
 import { FieldError } from '../FieldError'
+import { ValidatedInput } from '../ValidatedInput'
 
 type TodoListProps = Readonly<{
   todos: readonly Todo[]
@@ -45,6 +47,35 @@ export const TodoList = ({ todos, onDelete, onEdit, onToggleCompletion }: TodoLi
     setEditState({ ...editState, [name]: value })
   }
 
+  const updateFieldErrors = useCallback((fieldName: string, newErrors: readonly ValidationError[]) => {
+    setEditState((prev) => {
+      if (prev == null) return prev
+      const otherErrors = prev.errors.filter((e) => e.field !== fieldName)
+      return { ...prev, errors: [...otherErrors, ...newErrors] }
+    })
+  }, [])
+
+  const validateName = useCallback(
+    (value: string) => {
+      const validationErrors = [
+        validateRequired('name', value),
+        validateMaxLength('name', value, TODO_NAME_MAX_LENGTH),
+      ].filter((e) => e != null) as readonly ValidationError[]
+      updateFieldErrors('name', validationErrors)
+    },
+    [updateFieldErrors],
+  )
+
+  const validateDetail = useCallback(
+    (value: string) => {
+      const validationErrors = [validateMaxLength('detail', value, TODO_DETAIL_MAX_LENGTH)].filter(
+        (e) => e != null,
+      ) as readonly ValidationError[]
+      updateFieldErrors('detail', validationErrors)
+    },
+    [updateFieldErrors],
+  )
+
   const handleSaveClick = async () => {
     if (editState == null) return
     const { errors: _, ...todo } = editState
@@ -55,7 +86,12 @@ export const TodoList = ({ todos, onDelete, onEdit, onToggleCompletion }: TodoLi
       dueDate,
     })
     if (validationErrors) {
-      setEditState({ ...editState, errors: validationErrors })
+      setEditState((prev) => {
+        if (prev == null) return prev
+        const serverErrorFields = new Set(validationErrors.map((e) => e.field))
+        const clientErrors = prev.errors.filter((e) => !serverErrorFields.has(e.field))
+        return { ...prev, errors: [...clientErrors, ...validationErrors] }
+      })
       return
     }
     setEditState(null)
@@ -75,40 +111,30 @@ export const TodoList = ({ todos, onDelete, onEdit, onToggleCompletion }: TodoLi
             if (isEditing) {
               return (
                 <div key={todo.id} className="bg-white rounded-lg shadow-md p-4 border-2 border-blue-400">
-                  <div className="mb-3">
-                    <label htmlFor={`edit-name-${todo.id}`} className="block text-sm font-medium text-gray-700 mb-1">
-                      タスク名
-                    </label>
-                    <input
-                      id={`edit-name-${todo.id}`}
-                      type="text"
-                      maxLength={TODO_NAME_MAX_LENGTH}
-                      name="name"
-                      value={editState.name}
-                      onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        editState.errors.some((e) => e.field === 'name') ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                    />
-                    <FieldError errors={editState.errors} fieldName="name" fieldLabel="タスク名" />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor={`edit-detail-${todo.id}`} className="block text-sm font-medium text-gray-700 mb-1">
-                      詳細
-                    </label>
-                    <input
-                      id={`edit-detail-${todo.id}`}
-                      type="text"
-                      maxLength={TODO_DETAIL_MAX_LENGTH}
-                      name="detail"
-                      value={editState.detail}
-                      onChange={handleInputChange}
-                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        editState.errors.some((e) => e.field === 'detail') ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                    />
-                    <FieldError errors={editState.errors} fieldName="detail" fieldLabel="詳細" />
-                  </div>
+                  <ValidatedInput
+                    id={`edit-name-${todo.id}`}
+                    name="name"
+                    type="text"
+                    label="タスク名"
+                    errorLabel="タスク名"
+                    value={editState.name}
+                    maxLength={TODO_NAME_MAX_LENGTH}
+                    errors={editState.errors}
+                    validate={validateName}
+                    onChange={handleInputChange}
+                  />
+                  <ValidatedInput
+                    id={`edit-detail-${todo.id}`}
+                    name="detail"
+                    type="text"
+                    label="詳細"
+                    errorLabel="詳細"
+                    value={editState.detail}
+                    maxLength={TODO_DETAIL_MAX_LENGTH}
+                    errors={editState.errors}
+                    validate={validateDetail}
+                    onChange={handleInputChange}
+                  />
                   <div className="mb-3">
                     <label htmlFor={`edit-dueDate-${todo.id}`} className="block text-sm font-medium text-gray-700 mb-1">
                       期限
