@@ -18,7 +18,15 @@ class TodoService:
         self.db = db
         self.repo = repo
 
-    def get_todos(self, owner_id: int) -> List[Todo]:
+    def get_todos(
+        self,
+        owner_id: int,
+        query: str | None = None,
+        name: str | None = None,
+        status: str | None = None,
+        due_date: str | None = None,
+    ) -> List[Todo]:
+        del query, name, status, due_date
         return self.repo.get_by_owner(owner_id)
 
     def _ensure_name_unique(
@@ -26,7 +34,9 @@ class TodoService:
     ) -> None:
         """指定した名前が既存のTodoと重複していないことを保証する"""
         if self.repo.check_name_exists(owner_id, name, exclude_id=exclude_id):
-            raise DuplicateError(f"Task with name '{name}' already exists", field="name")
+            raise DuplicateError(
+                f"Task with name '{name}' already exists", field="name"
+            )
 
     def _validate_todo(
         self, owner_id: int, data: TodoCreate, exclude_id: int | None = None
