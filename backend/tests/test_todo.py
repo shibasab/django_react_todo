@@ -160,6 +160,27 @@ class TestListTodos:
         data = response.json()
         assert len(data) == 0  # 他人のTodoは見えない
 
+    def test_list_todos_accepts_search_filters(
+        self, client, auth_headers, test_user, test_db
+    ):
+        """検索・フィルタ用のクエリパラメータを受け付ける"""
+        todo = Todo(name="My Task", detail="My Detail", owner_id=test_user.id)
+        test_db.add(todo)
+        test_db.commit()
+
+        response = client.get(
+            "/api/todo/",
+            headers=auth_headers,
+            params={
+                "query": "My",
+                "name": "My Task",
+                "status": "all",
+                "due_date": "all",
+            },
+        )
+
+        assert response.status_code == 200
+
 
 class TestAccessOthersTodo:
     """他人のTodoへのアクセス制限テスト"""

@@ -1,5 +1,5 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List, Literal
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.models.user import User
 from app.schemas.todo import TodoCreate, TodoResponse, TodoUpdate
@@ -13,11 +13,29 @@ router = APIRouter()
 
 @router.get("/", response_model=List[TodoResponse])
 def list_todos(
+    query: str | None = Query(default=None),
+    name_param: str | None = Query(default=None, alias="name"),
+    status_param: Literal["all", "completed", "incomplete"] | None = Query(
+        default=None,
+        alias="status",
+    ),
+    due_date_param: Literal["all", "today", "this_week", "overdue", "none"] | None = (
+        Query(
+            default=None,
+            alias="due_date",
+        )
+    ),
     current_user: User = Depends(get_current_user),
     service: TodoService = Depends(get_todo_service),
 ):
     """現在のユーザーのTodo一覧を取得"""
-    todos = service.get_todos(current_user.id)  # pyrefly: ignore[bad-argument-type]
+    todos = service.get_todos(
+        current_user.id,  # pyrefly: ignore[bad-argument-type]
+        query=query,
+        name=name_param,
+        status=status_param,
+        due_date=due_date_param,
+    )
     return [TodoResponse.model_validate(todo) for todo in todos]
 
 
