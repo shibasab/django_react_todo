@@ -21,13 +21,23 @@ class TodoService:
     def get_todos(
         self,
         owner_id: int,
-        query: str | None = None,
-        name: str | None = None,
+        keyword: str | None = None,
         status: str | None = None,
         due_date: str | None = None,
     ) -> List[Todo]:
-        del query, name, status, due_date
-        return self.repo.get_by_owner(owner_id)
+        normalized_keyword = self._normalize_search_term(keyword)
+        return self.repo.get_by_owner(
+            owner_id,
+            keyword=normalized_keyword,
+            status=status,
+            due_date=due_date,
+        )
+
+    def _normalize_search_term(self, value: str | None) -> str | None:
+        if value is None:
+            return None
+        stripped = value.strip()
+        return stripped or None
 
     def _ensure_name_unique(
         self, owner_id: int, name: str, exclude_id: int | None = None

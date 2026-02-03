@@ -2,6 +2,8 @@
 Todo APIのテスト
 """
 
+from datetime import date, timedelta
+
 from app.models.user import User
 from app.models.todo import Todo
 
@@ -137,6 +139,174 @@ class TestListTodos:
         assert len(data) == 1
         assert data[0]["name"] == "My Task"
 
+
+class TestTodoSearchFilters:
+    """Todo検索・フィルタリングのテスト"""
+
+    def test_search_keyword_matches_name_and_detail(
+        self, client, auth_headers, test_user, test_db
+    ):
+        todo_match_name = Todo(
+            name="Alpha Task",
+            detail="Detail",
+            owner_id=test_user.id,
+        )
+        todo_match_detail = Todo(
+            name="Bravo Task",
+            detail="Contains Alpha keyword",
+            owner_id=test_user.id,
+        )
+        todo_unmatched = Todo(
+            name="Charlie Task",
+            detail="No match here",
+            owner_id=test_user.id,
+        )
+        test_db.add_all([todo_match_name, todo_match_detail, todo_unmatched])
+        test_db.commit()
+
+        response = client.get(
+            "/api/todo/",
+            headers=auth_headers,
+            params={"keyword": "Alpha"},
+        )
+
+        assert response.status_code == 200
+        names = {item["name"] for item in response.json()}
+        assert names == {"Alpha Task", "Bravo Task"}
+
+    def test_search_keyword_is_partial_match(
+        self, client, auth_headers, test_user, test_db
+    ):
+        todo_one = Todo(name="Write Report", detail="", owner_id=test_user.id)
+        todo_two = Todo(name="Review Report", detail="", owner_id=test_user.id)
+        todo_three = Todo(name="Plan Meeting", detail="", owner_id=test_user.id)
+        test_db.add_all([todo_one, todo_two, todo_three])
+        test_db.commit()
+
+        response = client.get(
+            "/api/todo/",
+            headers=auth_headers,
+            params={"keyword": "Report"},
+        )
+
+        assert response.status_code == 200
+        names = {item["name"] for item in response.json()}
+        assert names == {"Write Report", "Review Report"}
+
+    def test_filters_status_and_due_date(
+        self, client, auth_headers, test_user, test_db
+    ):
+        today = date.today()
+        overdue = today - timedelta(days=1)
+        within_week = today + timedelta(days=3)
+
+        todo_completed = Todo(
+            name="Completed Task",
+            detail="",
+            owner_id=test_user.id,
+            is_completed=True,
+            due_date=within_week,
+        )
+        todo_incomplete_overdue = Todo(
+            name="Overdue Task",
+            detail="",
+            owner_id=test_user.id,
+            is_completed=False,
+            due_date=overdue,
+        )
+        todo_no_due = Todo(
+            name="No Due Task",
+            detail="",
+            owner_id=test_user.id,
+            is_completed=False,
+            due_date=None,
+        )
+        test_db.add_all([todo_completed, todo_incomplete_overdue, todo_no_due])
+        test_db.commit()
+
+        response_completed = client.get(
+            "/api/todo/",
+            headers=auth_headers,
+            params={"status": "completed"},
+        )
+
+        assert response_completed.status_code == 200
+        completed_names = {item["name"] for item in response_completed.json()}
+        assert completed_names == {"Completed Task"}
+
+        response_overdue = client.get(
+            "/api/todo/",
+            headers=auth_headers,
+            params={"due_date": "overdue"},
+        )
+
+        assert response_overdue.status_code == 200
+        overdue_names = {item["name"] for item in response_overdue.json()}
+        assert overdue_names == {"Overdue Task"}
+
+        response_none = client.get(
+            "/api/todo/",
+            headers=auth_headers,
+            params={"due_date": "none"},
+        )
+
+        assert response_none.status_code == 200
+        none_names = {item["name"] for item in response_none.json()}
+        assert none_names == {"No Due Task"}
+
+    def test_search_keyword_escapes_like_wildcards(
+        self, client, auth_headers, test_user, test_db
+    ):
+        todo_percent = Todo(
+            name="Save 100% Coverage",
+            detail="",
+            owner_id=test_user.id,
+        )
+        todo_percent_unexpected = Todo(
+            name="Save 100X Coverage",
+            detail="",
+            owner_id=test_user.id,
+        )
+        todo_underscore = Todo(
+            name="test_abc",
+            detail="",
+            owner_id=test_user.id,
+        )
+        todo_underscore_unexpected = Todo(
+            name="testXabc",
+            detail="",
+            owner_id=test_user.id,
+        )
+        test_db.add_all(
+            [
+                todo_percent,
+                todo_percent_unexpected,
+                todo_underscore,
+                todo_underscore_unexpected,
+            ]
+        )
+        test_db.commit()
+
+        response_percent = client.get(
+            "/api/todo/",
+            headers=auth_headers,
+            params={"keyword": "100%"},
+        )
+
+        assert response_percent.status_code == 200
+        percent_names = {item["name"] for item in response_percent.json()}
+        assert percent_names == {"Save 100% Coverage"}
+
+        response_underscore = client.get(
+            "/api/todo/",
+            headers=auth_headers,
+            params={"keyword": "test_abc"},
+        )
+
+        assert response_underscore.status_code == 200
+        underscore_names = {item["name"] for item in response_underscore.json()}
+        assert underscore_names == {"test_abc"}
+
     def test_cannot_see_others_todos(self, client, auth_headers, test_user, test_db):
         """他人のTodoは一覧に表示されない"""
         # 別のユーザーを作成
@@ -172,8 +342,7 @@ class TestListTodos:
             "/api/todo/",
             headers=auth_headers,
             params={
-                "query": "My",
-                "name": "My Task",
+                "keyword": "My",
                 "status": "all",
                 "due_date": "all",
             },

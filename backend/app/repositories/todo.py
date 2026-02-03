@@ -1,4 +1,6 @@
+from datetime import date, timedelta
 from typing import List, Optional
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from app.models.todo import Todo
 
@@ -7,13 +9,45 @@ class TodoRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_by_owner(self, owner_id: int) -> List[Todo]:
-        return (
-            self.db.query(Todo)
-            .filter(Todo.owner_id == owner_id)
-            .order_by(Todo.created_at.desc())
-            .all()
-        )
+    def get_by_owner(
+        self,
+        owner_id: int,
+        keyword: str | None = None,
+        status: str | None = None,
+        due_date: str | None = None,
+    ) -> List[Todo]:
+        db_query = self.db.query(Todo).filter(Todo.owner_id == owner_id)
+
+        if keyword:
+            db_query = db_query.filter(
+                or_(
+                    Todo.name.contains(keyword, autoescape=True),
+                    Todo.detail.contains(keyword, autoescape=True),
+                )
+            )
+
+        if status and status != "all":
+            if status == "completed":
+                db_query = db_query.filter(Todo.is_completed.is_(True))
+            elif status == "incomplete":
+                db_query = db_query.filter(Todo.is_completed.is_(False))
+
+        if due_date and due_date != "all":
+            today = date.today()
+            if due_date == "today":
+                db_query = db_query.filter(Todo.due_date == today)
+            elif due_date == "this_week":
+                end_date = today + timedelta(days=6)
+                db_query = db_query.filter(
+                    Todo.due_date >= today,
+                    Todo.due_date <= end_date,
+                )
+            elif due_date == "overdue":
+                db_query = db_query.filter(Todo.due_date < today)
+            elif due_date == "none":
+                db_query = db_query.filter(Todo.due_date.is_(None))
+
+        return db_query.order_by(Todo.created_at.desc()).all()
 
     def get(self, todo_id: int, owner_id: int) -> Optional[Todo]:
         return (

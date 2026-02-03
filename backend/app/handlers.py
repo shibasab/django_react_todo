@@ -34,11 +34,11 @@ async def validation_exception_handler(
 
         if error_type == "missing" or error_type == "required":
             errors.append(RequiredError(field=str(field)))
-        elif error_type == "string_too_short":
+        elif error_type in {"string_too_short", "too_short"}:
             ctx = error.get("ctx", {})
             limit = ctx.get("min_length", 1)
             errors.append(MinLengthError(field=str(field), limit=limit))
-        elif error_type == "string_too_long":
+        elif error_type in {"string_too_long", "too_long"}:
             ctx = error.get("ctx", {})
             limit = ctx.get("max_length", 0)
             errors.append(MaxLengthError(field=str(field), limit=limit))
