@@ -13,8 +13,7 @@ router = APIRouter()
 
 @router.get("/", response_model=List[TodoResponse])
 def list_todos(
-    query: str | None = Query(default=None),
-    name_param: str | None = Query(default=None, alias="name"),
+    keyword_param: str | None = Query(default=None, alias="keyword"),
     status_param: Literal["all", "completed", "incomplete"] | None = Query(
         default=None,
         alias="status",
@@ -31,8 +30,7 @@ def list_todos(
     """現在のユーザーのTodo一覧を取得"""
     todos = service.get_todos(
         current_user.id,  # pyrefly: ignore[bad-argument-type]
-        query=query,
-        name=name_param,
+        keyword=keyword_param,
         status=status_param,
         due_date=due_date_param,
     )
