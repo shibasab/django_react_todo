@@ -9,9 +9,6 @@ class TodoRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def _escape_like(self, value: str) -> str:
-        return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-
     def get_by_owner(
         self,
         owner_id: int,
@@ -22,12 +19,10 @@ class TodoRepository:
         db_query = self.db.query(Todo).filter(Todo.owner_id == owner_id)
 
         if keyword:
-            escaped_keyword = self._escape_like(keyword)
-            like_keyword = f"%{escaped_keyword}%"
             db_query = db_query.filter(
                 or_(
-                    Todo.name.ilike(like_keyword, escape="\\"),
-                    Todo.detail.ilike(like_keyword, escape="\\"),
+                    Todo.name.contains(keyword, autoescape=True),
+                    Todo.detail.contains(keyword, autoescape=True),
                 )
             )
 
