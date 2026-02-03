@@ -254,6 +254,59 @@ class TestTodoSearchFilters:
         none_names = {item["name"] for item in response_none.json()}
         assert none_names == {"No Due Task"}
 
+    def test_search_keyword_escapes_like_wildcards(
+        self, client, auth_headers, test_user, test_db
+    ):
+        todo_percent = Todo(
+            name="Save 100% Coverage",
+            detail="",
+            owner_id=test_user.id,
+        )
+        todo_percent_unexpected = Todo(
+            name="Save 100X Coverage",
+            detail="",
+            owner_id=test_user.id,
+        )
+        todo_underscore = Todo(
+            name="test_abc",
+            detail="",
+            owner_id=test_user.id,
+        )
+        todo_underscore_unexpected = Todo(
+            name="testXabc",
+            detail="",
+            owner_id=test_user.id,
+        )
+        test_db.add_all(
+            [
+                todo_percent,
+                todo_percent_unexpected,
+                todo_underscore,
+                todo_underscore_unexpected,
+            ]
+        )
+        test_db.commit()
+
+        response_percent = client.get(
+            "/api/todo/",
+            headers=auth_headers,
+            params={"keyword": "100%"},
+        )
+
+        assert response_percent.status_code == 200
+        percent_names = {item["name"] for item in response_percent.json()}
+        assert percent_names == {"Save 100% Coverage"}
+
+        response_underscore = client.get(
+            "/api/todo/",
+            headers=auth_headers,
+            params={"keyword": "test_abc"},
+        )
+
+        assert response_underscore.status_code == 200
+        underscore_names = {item["name"] for item in response_underscore.json()}
+        assert underscore_names == {"test_abc"}
+
     def test_cannot_see_others_todos(self, client, auth_headers, test_user, test_db):
         """他人のTodoは一覧に表示されない"""
         # 別のユーザーを作成
