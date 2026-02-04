@@ -2,6 +2,7 @@ import { Fragment, useEffect } from 'react'
 
 import { TodoForm } from '../components/todo/TodoForm'
 import { TodoList } from '../components/todo/TodoList'
+import { TodoSearchControls } from '../components/todo/TodoSearchControls'
 import { useTodo } from '../hooks/useTodo'
 
 export const DashboardPage = () => {
@@ -20,6 +21,7 @@ export const DashboardPage = () => {
 
   return (
     <Fragment>
+      <TodoSearchControls />
       <TodoList todos={todos} onDelete={removeTodo} onEdit={updateTodo} onToggleCompletion={toggleTodoCompletion} />
       <TodoForm onSubmit={addTodo} />
     </Fragment>

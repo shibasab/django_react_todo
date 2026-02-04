@@ -27,6 +27,10 @@ describe('DashboardPage', () => {
       await waitFor(() => {
         expect(within(container).getByText('Test Todo 1')).toBeInTheDocument()
         expect(within(container).getByText('Test Todo 2')).toBeInTheDocument()
+        expect(within(container).getByLabelText('検索')).toBeInTheDocument()
+        expect(within(container).getByLabelText('状態')).toBeInTheDocument()
+        expect(within(container).getByLabelText('期限')).toBeInTheDocument()
+        expect(within(container).getByRole('button', { name: 'クリア' })).toBeInTheDocument()
       })
 
       // DOMスナップショット
