@@ -164,9 +164,5 @@ exports[`新規登録フロー > 登録成功 > 正しい情報で登録 → API
     "method": "POST",
     "url": "/auth/register",
   },
-  {
-    "method": "GET",
-    "url": "/todo/",
-  },
 ]
 `;
