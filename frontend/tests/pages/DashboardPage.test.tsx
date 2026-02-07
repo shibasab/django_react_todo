@@ -1,4 +1,4 @@
-import { waitFor, fireEvent, within } from '@testing-library/react'
+import { waitFor, fireEvent, within, act } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 
 import { createMockApiClient } from '../helpers/apiMock'
@@ -70,7 +70,7 @@ describe('DashboardPage', () => {
   })
 
   describe('検索・フィルタ', () => {
-    it('検索条件の変更で即時にGET APIが呼ばれる', async () => {
+    it('検索条件の変更後にデバウンスしてGET APIが呼ばれる', async () => {
       const { client, requests, clearRequests } = createMockApiClient({
         getResponse: mockTodos,
       })
@@ -89,6 +89,14 @@ describe('DashboardPage', () => {
       fireEvent.change(keywordInput, { target: { value: 'Test' } })
       fireEvent.change(statusSelect, { target: { value: 'completed' } })
       fireEvent.change(dueDateSelect, { target: { value: 'today' } })
+
+      expect(requests.length).toBe(0)
+
+      await act(async () => {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 350)
+        })
+      })
 
       await waitFor(() => {
         expect(requests).toMatchSnapshot('api-requests-search')
