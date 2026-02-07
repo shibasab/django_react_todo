@@ -15,8 +15,14 @@ import config from '../config'
 import { type Result, err, ok } from '../models/result'
 import { authToken } from './authToken'
 
+type ApiGetOptions = Readonly<{
+  key?: string
+  mode?: 'latestOnly'
+}>
+
 type ApiGetConfig<Params> = Readonly<{
   params?: Params
+  options?: ApiGetOptions
 }>
 
 type ApiGetParams<E extends GetEndpoints> = ApiQuery<'get', E>
@@ -81,6 +87,7 @@ export const createApiClient = (
   callbacks: ApiClientCallbacks,
 ): ApiClient => {
   const { onRequestStart, onRequestEnd } = callbacks
+  const abortControllers = new Map<string, AbortController>()
 
   const resolveParams = <Params extends Readonly<Record<string, unknown>>>(
     params?: Params | ApiGetConfig<Params>,
@@ -89,6 +96,15 @@ export const createApiClient = (
       return params.params
     }
     return params
+  }
+
+  const resolveOptions = <Params extends Readonly<Record<string, unknown>>>(
+    params?: Params | ApiGetConfig<Params>,
+  ): ApiGetOptions | undefined => {
+    if (params && typeof params === 'object' && 'options' in params) {
+      return params.options
+    }
+    return undefined
   }
 
   const withTracking = async <T>(fn: () => Promise<T>): Promise<T> => {
@@ -104,8 +120,27 @@ export const createApiClient = (
     get: async <T>(url: string, params?: ApiGetParamsInputAny): Promise<T> =>
       withTracking(async () => {
         const resolvedParams = resolveParams(params)
-        const response = await axiosInstance.get<T>(url, { params: resolvedParams })
-        return response.data
+        const resolvedOptions = resolveOptions(params)
+        const requestKey = resolvedOptions?.key
+        const shouldAbortPrevious = resolvedOptions?.mode === 'latestOnly' && requestKey
+        const abortController = shouldAbortPrevious ? new AbortController() : undefined
+
+        if (shouldAbortPrevious) {
+          abortControllers.get(requestKey)?.abort()
+          abortControllers.set(requestKey, abortController)
+        }
+
+        try {
+          const response = await axiosInstance.get<T>(url, {
+            params: resolvedParams,
+            signal: abortController?.signal,
+          })
+          return response.data
+        } finally {
+          if (shouldAbortPrevious && requestKey && abortControllers.get(requestKey) === abortController) {
+            abortControllers.delete(requestKey)
+          }
+        }
       }),
 
     post: async <T, E>(url: string, data?: unknown): Promise<Result<T, E>> =>
