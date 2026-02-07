@@ -406,23 +406,8 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
 </div>
 `;
 
-exports[`DashboardPage > 検索・フィルタ > 検索条件の変更で即時にGET APIが呼ばれる > api-requests-search 1`] = `
+exports[`DashboardPage > 検索・フィルタ > 検索条件の変更後にデバウンスしてGET APIが呼ばれる > api-requests-search 1`] = `
 [
-  {
-    "method": "GET",
-    "params": {
-      "keyword": "Test",
-    },
-    "url": "/todo/",
-  },
-  {
-    "method": "GET",
-    "params": {
-      "keyword": "Test",
-      "status": "completed",
-    },
-    "url": "/todo/",
-  },
   {
     "method": "GET",
     "params": {
