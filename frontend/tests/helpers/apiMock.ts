@@ -12,8 +12,13 @@ type ApiRequest = Readonly<{
 }>
 
 type ApiGetParams = Readonly<Record<string, unknown>>
+type ApiGetOptions = Readonly<{
+  key?: string
+  mode?: 'latestOnly'
+}>
 type ApiGetConfig = Readonly<{
   params?: ApiGetParams
+  options?: ApiGetOptions
 }>
 type ApiGetParamsInput = ApiGetParams | ApiGetConfig | undefined
 
@@ -32,8 +37,13 @@ type MockApiClientOptions = Readonly<{
 export const createMockApiClient = (options: MockApiClientOptions = {}) => {
   const requests: ApiRequest[] = []
   const resolveParams = (params?: ApiGetParamsInput) => {
-    if (params && typeof params === 'object' && 'params' in params) {
-      return params.params
+    if (params && typeof params === 'object') {
+      if ('params' in params) {
+        return params.params
+      }
+      if ('options' in params) {
+        return undefined
+      }
     }
     return params
   }
