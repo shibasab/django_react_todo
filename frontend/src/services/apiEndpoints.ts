@@ -44,6 +44,12 @@ export type ApiResponse<M extends keyof ApiEndpoints, E extends keyof ApiEndpoin
   ? R
   : never
 
+export type ApiQuery<M extends keyof ApiEndpoints, E extends keyof ApiEndpoints[M]> = ApiEndpoints[M][E] extends {
+  query: infer Q
+}
+  ? Q
+  : undefined
+
 export type ApiRequest<M extends keyof ApiEndpoints, E extends keyof ApiEndpoints[M]> = ApiEndpoints[M][E] extends {
   request: infer R
 }

@@ -2,6 +2,7 @@ import axios, { isAxiosError, type AxiosInstance } from 'axios'
 
 import type {
   ApiError,
+  ApiQuery,
   ApiRequest,
   ApiResponse,
   DeleteEndpoints,
@@ -14,10 +15,18 @@ import config from '../config'
 import { type Result, err, ok } from '../models/result'
 import { authToken } from './authToken'
 
+type ApiGetConfig<Params> = Readonly<{
+  params?: Params
+}>
+
+type ApiGetParams<E extends GetEndpoints> = ApiQuery<'get', E>
+type ApiGetParamsInput<E extends GetEndpoints> = ApiGetParams<E> | ApiGetConfig<ApiGetParams<E>> | undefined
+type ApiGetParamsInputAny = Readonly<Record<string, unknown>> | ApiGetConfig<Readonly<Record<string, unknown>>> | undefined
+
 export type ApiClient = Readonly<{
   get: {
-    <E extends GetEndpoints>(url: E): Promise<ApiResponse<'get', E>>
-    <T>(url: string): Promise<T>
+    <E extends GetEndpoints>(url: E, params?: ApiGetParamsInput<E>): Promise<ApiResponse<'get', E>>
+    <T>(url: string, params?: ApiGetParamsInputAny): Promise<T>
   }
   post: {
     <E extends PostEndpoints>(
@@ -73,6 +82,15 @@ export const createApiClient = (
 ): ApiClient => {
   const { onRequestStart, onRequestEnd } = callbacks
 
+  const resolveParams = <Params extends Readonly<Record<string, unknown>>>(
+    params?: Params | ApiGetConfig<Params>,
+  ): Params | undefined => {
+    if (params && typeof params === 'object' && 'params' in params) {
+      return params.params
+    }
+    return params
+  }
+
   const withTracking = async <T>(fn: () => Promise<T>): Promise<T> => {
     onRequestStart?.()
     try {
@@ -83,9 +101,10 @@ export const createApiClient = (
   }
 
   return {
-    get: async <T>(url: string): Promise<T> =>
+    get: async <T>(url: string, params?: ApiGetParamsInputAny): Promise<T> =>
       withTracking(async () => {
-        const response = await axiosInstance.get<T>(url)
+        const resolvedParams = resolveParams(params)
+        const response = await axiosInstance.get<T>(url, { params: resolvedParams })
         return response.data
       }),
 
