@@ -10,6 +10,7 @@ import { ValidatedInput } from '../ValidatedInput'
 
 type TodoListProps = Readonly<{
   todos: readonly Todo[]
+  hasSearchCriteria: boolean
   onDelete: (id: number) => void
   onEdit: (todo: Todo) => Promise<readonly ValidationError[] | undefined>
   onToggleCompletion: (todo: Todo) => Promise<void>
@@ -23,8 +24,9 @@ type EditState =
       }>)
   | null
 
-export const TodoList = ({ todos, onDelete, onEdit, onToggleCompletion }: TodoListProps) => {
+export const TodoList = ({ todos, hasSearchCriteria, onDelete, onEdit, onToggleCompletion }: TodoListProps) => {
   const [editState, setEditState] = useState<EditState>(null)
+  const emptyMessage = hasSearchCriteria ? '条件に一致するタスクがありません' : 'タスクはありません'
 
   const handleEditClick = (todo: Todo) => {
     setEditState({
@@ -81,7 +83,7 @@ export const TodoList = ({ todos, onDelete, onEdit, onToggleCompletion }: TodoLi
       <h4 className="text-xl font-bold mb-4">Todo List</h4>
       <div className="space-y-4">
         {todos.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">タスクはありません</div>
+          <div className="text-center py-8 text-gray-500">{emptyMessage}</div>
         ) : (
           todos.map((todo) => {
             const isEditing = editState?.id === todo.id

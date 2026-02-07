@@ -20,3 +20,6 @@ export const DEFAULT_TODO_SEARCH_STATE: TodoSearchState = {
   status: 'all',
   dueDate: 'all',
 }
+
+export const hasSearchCriteria = (state: TodoSearchState): boolean =>
+  state.keyword.trim() !== '' || state.status !== 'all' || state.dueDate !== 'all'
