@@ -1,29 +1,16 @@
-import { useState, type ChangeEvent } from 'react'
+import type { ChangeEvent } from 'react'
 
 import { SelectBox, type SelectOption } from '../SelectBox'
+import type { TodoDueDateFilter, TodoStatusFilter } from '../../models/todo'
+import { DEFAULT_TODO_SEARCH_STATE, type TodoSearchState } from '../../hooks/todoSearch'
 
-type StatusFilter = 'all' | 'completed' | 'incomplete'
-type DueDateFilter = 'all' | 'today' | 'this_week' | 'overdue' | 'none'
-
-type TodoSearchState = Readonly<{
-  keyword: string
-  status: StatusFilter
-  dueDate: DueDateFilter
-}>
-
-const DEFAULT_SEARCH_STATE: TodoSearchState = {
-  keyword: '',
-  status: 'all',
-  dueDate: 'all',
-}
-
-const STATUS_OPTIONS: readonly SelectOption<StatusFilter>[] = [
+const STATUS_OPTIONS: readonly SelectOption<TodoStatusFilter>[] = [
   { value: 'all', label: 'すべて' },
   { value: 'completed', label: '完了' },
   { value: 'incomplete', label: '未完了' },
 ]
 
-const DUE_DATE_OPTIONS: readonly SelectOption<DueDateFilter>[] = [
+const DUE_DATE_OPTIONS: readonly SelectOption<TodoDueDateFilter>[] = [
   { value: 'all', label: 'すべて' },
   { value: 'today', label: '今日' },
   { value: 'this_week', label: '今週' },
@@ -31,23 +18,26 @@ const DUE_DATE_OPTIONS: readonly SelectOption<DueDateFilter>[] = [
   { value: 'none', label: '期限なし' },
 ]
 
-export const TodoSearchControls = () => {
-  const [state, setState] = useState<TodoSearchState>(DEFAULT_SEARCH_STATE)
+type TodoSearchControlsProps = Readonly<{
+  value: TodoSearchState
+  onChange: (next: TodoSearchState) => void
+}>
 
+export const TodoSearchControls = ({ value, onChange }: TodoSearchControlsProps) => {
   const handleKeywordChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setState((prev) => ({ ...prev, keyword: event.target.value }))
+    onChange({ ...value, keyword: event.target.value })
   }
 
-  const handleStatusChange = (status: StatusFilter) => {
-    setState((prev) => ({ ...prev, status }))
+  const handleStatusChange = (status: TodoStatusFilter) => {
+    onChange({ ...value, status })
   }
 
-  const handleDueDateChange = (dueDate: DueDateFilter) => {
-    setState((prev) => ({ ...prev, dueDate }))
+  const handleDueDateChange = (dueDate: TodoDueDateFilter) => {
+    onChange({ ...value, dueDate })
   }
 
   const handleClear = () => {
-    setState(DEFAULT_SEARCH_STATE)
+    onChange(DEFAULT_TODO_SEARCH_STATE)
   }
 
   return (
@@ -61,7 +51,7 @@ export const TodoSearchControls = () => {
           <input
             id="todo-search-keyword"
             type="text"
-            value={state.keyword}
+            value={value.keyword}
             onChange={handleKeywordChange}
             placeholder="タスク名・詳細で検索"
             className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -70,7 +60,7 @@ export const TodoSearchControls = () => {
         <SelectBox
           id="todo-search-status"
           label="状態"
-          value={state.status}
+          value={value.status}
           onChange={handleStatusChange}
           options={STATUS_OPTIONS}
           wrapperClassName="w-full md:w-48"
@@ -78,7 +68,7 @@ export const TodoSearchControls = () => {
         <SelectBox
           id="todo-search-due-date"
           label="期限"
-          value={state.dueDate}
+          value={value.dueDate}
           onChange={handleDueDateChange}
           options={DUE_DATE_OPTIONS}
           wrapperClassName="w-full md:w-48"

@@ -1,9 +1,10 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 import type { ValidationError, ValidationErrorResponse } from '../models/error'
 import type { CreateTodoRequest, Todo } from '../models/todo'
 
 import { useApiClient } from '../contexts/ApiContext'
+import type { TodoSearchParams, TodoSearchState } from './todoSearch'
 import { validateRequired, validateMaxLength } from '../services/validation'
 
 // バリデーション制約値（バックエンドと同期）
@@ -63,7 +64,7 @@ export const useTodoFieldValidation = (setErrors: ErrorsUpdater) => {
 type TodoService = Readonly<{
   todos: readonly Todo[]
   isLoading: boolean
-  fetchTodos: () => Promise<void>
+  fetchTodos: (criteria?: TodoSearchState) => Promise<void>
   addTodo: (todo: Omit<Todo, 'id'>) => Promise<readonly ValidationError[] | undefined>
   updateTodo: (todo: Todo) => Promise<readonly ValidationError[] | undefined>
   toggleTodoCompletion: (todo: Todo) => Promise<void>
@@ -71,12 +72,34 @@ type TodoService = Readonly<{
   validateTodo: (name: string, detail: string) => readonly ValidationError[]
 }>
 
+const buildTodoSearchParams = (criteria?: TodoSearchState): TodoSearchParams | undefined => {
+  if (!criteria) {
+    return undefined
+  }
+
+  const keyword = criteria.keyword.trim()
+  const status = criteria.status === 'all' ? undefined : criteria.status
+  const due_date = criteria.dueDate === 'all' ? undefined : criteria.dueDate
+
+  const params: TodoSearchParams = {
+    ...(keyword === '' ? {} : { keyword }),
+    ...(status ? { status } : {}),
+    ...(due_date ? { due_date } : {}),
+  }
+
+  return Object.keys(params).length > 0 ? params : undefined
+}
+
 export const useTodo = (): TodoService => {
   const { apiClient, isLoading } = useApiClient()
   const [todos, setTodos] = useState<readonly Todo[]>([])
+  // 検索条件を保持し、追加/更新/削除後も同じ条件で再取得するために使用する
+  const lastSearchRef = useRef<TodoSearchState | undefined>(undefined)
 
-  const fetchTodos = useCallback(async () => {
-    const data = await apiClient.get('/todo/')
+  const fetchTodos = useCallback(async (criteria?: TodoSearchState) => {
+    lastSearchRef.current = criteria
+    const params = buildTodoSearchParams(criteria)
+    const data = await apiClient.get('/todo/', params ? { params } : undefined)
     setTodos(data)
   }, [apiClient])
 
@@ -95,7 +118,7 @@ export const useTodo = (): TodoService => {
       if (!result.ok) {
         return result.error.errors
       }
-      await fetchTodos()
+      await fetchTodos(lastSearchRef.current)
     },
     [apiClient, fetchTodos],
   )
@@ -116,7 +139,7 @@ export const useTodo = (): TodoService => {
       if (!result.ok) {
         return result.error.errors
       }
-      await fetchTodos()
+      await fetchTodos(lastSearchRef.current)
     },
     [apiClient, fetchTodos],
   )
@@ -139,7 +162,7 @@ export const useTodo = (): TodoService => {
   const removeTodo = useCallback(
     async (id: number) => {
       await apiClient.delete(`/todo/${id}/`)
-      await fetchTodos()
+      await fetchTodos(lastSearchRef.current)
     },
     [apiClient, fetchTodos],
   )
