@@ -4,19 +4,19 @@ import { SelectBox, type SelectOption } from '../SelectBox'
 import type { TodoDueDateFilter, TodoStatusFilter } from '../../models/todo'
 import { DEFAULT_TODO_SEARCH_STATE, type TodoSearchState } from '../../hooks/todoSearch'
 
-const STATUS_OPTIONS: readonly SelectOption<TodoStatusFilter>[] = [
+const STATUS_OPTIONS = [
   { value: 'all', label: 'すべて' },
   { value: 'completed', label: '完了' },
   { value: 'incomplete', label: '未完了' },
-]
+] as const satisfies readonly SelectOption<TodoStatusFilter>[]
 
-const DUE_DATE_OPTIONS: readonly SelectOption<TodoDueDateFilter>[] = [
+const DUE_DATE_OPTIONS = [
   { value: 'all', label: 'すべて' },
   { value: 'today', label: '今日' },
   { value: 'this_week', label: '今週' },
   { value: 'overdue', label: '期限切れ' },
   { value: 'none', label: '期限なし' },
-]
+] as const satisfies readonly SelectOption<TodoDueDateFilter>[]
 
 type TodoSearchControlsProps = Readonly<{
   value: TodoSearchState

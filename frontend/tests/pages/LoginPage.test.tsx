@@ -75,6 +75,12 @@ describe('ログインフロー', () => {
         expect(within(container).getByText('Welcome testuser')).toBeInTheDocument()
       })
 
+      await waitFor(() => {
+        const todoRequest = requests.find((r) => r.url === '/todo/')
+        expect(todoRequest).toBeDefined()
+        expect(todoRequest?.method).toBe('GET')
+      })
+
       // APIリクエストのスナップショット
       expect(requests).toMatchSnapshot('login-api-requests')
     })
