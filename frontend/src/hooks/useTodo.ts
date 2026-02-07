@@ -95,17 +95,17 @@ export const useTodo = (): TodoService => {
   const [todos, setTodos] = useState<readonly Todo[]>([])
   // 検索条件を保持し、追加/更新/削除後も同じ条件で再取得するために使用する
   const lastSearchRef = useRef<TodoSearchState | undefined>(undefined)
-  const requestIdRef = useRef(0)
 
   const fetchTodos = useCallback(async (criteria?: TodoSearchState) => {
-    const requestId = requestIdRef.current + 1
-    requestIdRef.current = requestId
     lastSearchRef.current = criteria
     const params = buildTodoSearchParams(criteria)
-    const data = await apiClient.get('/todo/', params ? { params } : undefined)
-    if (requestIdRef.current !== requestId) {
-      return
-    }
+    const data = await apiClient.get('/todo/', {
+      ...(params ? { params } : {}),
+      options: {
+        key: 'todo-search',
+        mode: 'latestOnly',
+      },
+    })
     setTodos(data)
   }, [apiClient])
 

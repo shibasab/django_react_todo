@@ -101,6 +101,18 @@ describe('DashboardPage', () => {
       await waitFor(() => {
         expect(requests).toMatchSnapshot('api-requests-search')
       })
+      expect(requests).toHaveLength(1)
+      expect(client.get).toHaveBeenLastCalledWith('/todo/', {
+        params: {
+          due_date: 'today',
+          keyword: 'Test',
+          status: 'completed',
+        },
+        options: {
+          key: 'todo-search',
+          mode: 'latestOnly',
+        },
+      })
     })
   })
 
