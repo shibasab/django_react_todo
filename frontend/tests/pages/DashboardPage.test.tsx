@@ -69,6 +69,33 @@ describe('DashboardPage', () => {
     })
   })
 
+  describe('検索・フィルタ', () => {
+    it('検索条件の変更で即時にGET APIが呼ばれる', async () => {
+      const { client, requests, clearRequests } = createMockApiClient({
+        getResponse: mockTodos,
+      })
+
+      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+
+      await waitFor(() => {
+        expect(within(container).getByText('Test Todo 1')).toBeInTheDocument()
+      })
+      clearRequests()
+
+      const keywordInput = within(container).getByLabelText('検索')
+      const statusSelect = within(container).getByLabelText('状態')
+      const dueDateSelect = within(container).getByLabelText('期限')
+
+      fireEvent.change(keywordInput, { target: { value: 'Test' } })
+      fireEvent.change(statusSelect, { target: { value: 'completed' } })
+      fireEvent.change(dueDateSelect, { target: { value: 'today' } })
+
+      await waitFor(() => {
+        expect(requests).toMatchSnapshot('api-requests-search')
+      })
+    })
+  })
+
   describe('TODO削除', () => {
     it('削除ボタンクリックでDELETE APIが呼ばれる', async () => {
       const { client, requests, clearRequests } = createMockApiClient({

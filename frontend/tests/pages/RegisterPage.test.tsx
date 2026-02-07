@@ -83,6 +83,12 @@ describe('新規登録フロー', () => {
         expect(within(container).getByText('Welcome newuser')).toBeInTheDocument()
       })
 
+      await waitFor(() => {
+        const todoRequest = requests.find((r) => r.url === '/todo/')
+        expect(todoRequest).toBeDefined()
+        expect(todoRequest?.method).toBe('GET')
+      })
+
       // APIリクエストのスナップショット
       expect(requests).toMatchSnapshot('register-api-requests')
     })

@@ -405,3 +405,32 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
   </div>
 </div>
 `;
+
+exports[`DashboardPage > 検索・フィルタ > 検索条件の変更で即時にGET APIが呼ばれる > api-requests-search 1`] = `
+[
+  {
+    "method": "GET",
+    "params": {
+      "keyword": "Test",
+    },
+    "url": "/todo/",
+  },
+  {
+    "method": "GET",
+    "params": {
+      "keyword": "Test",
+      "status": "completed",
+    },
+    "url": "/todo/",
+  },
+  {
+    "method": "GET",
+    "params": {
+      "due_date": "today",
+      "keyword": "Test",
+      "status": "completed",
+    },
+    "url": "/todo/",
+  },
+]
+`;
