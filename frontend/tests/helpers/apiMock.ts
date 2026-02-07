@@ -8,7 +8,14 @@ type ApiRequest = Readonly<{
   method: 'GET' | 'POST' | 'PUT' | 'DELETE'
   url: string
   data?: unknown
+  params?: Readonly<Record<string, unknown>>
 }>
+
+type ApiGetParams = Readonly<Record<string, unknown>>
+type ApiGetConfig = Readonly<{
+  params?: ApiGetParams
+}>
+type ApiGetParamsInput = ApiGetParams | ApiGetConfig | undefined
 
 type MockApiClientOptions = Readonly<{
   getResponse?: unknown
@@ -24,10 +31,17 @@ type MockApiClientOptions = Readonly<{
  */
 export const createMockApiClient = (options: MockApiClientOptions = {}) => {
   const requests: ApiRequest[] = []
+  const resolveParams = (params?: ApiGetParamsInput) => {
+    if (params && typeof params === 'object' && 'params' in params) {
+      return params.params
+    }
+    return params
+  }
 
   const mockClient = {
-    get: vi.fn(async <T>(url: string): Promise<T> => {
-      requests.push({ method: 'GET', url })
+    get: vi.fn(async <T>(url: string, params?: ApiGetParamsInput): Promise<T> => {
+      const resolvedParams = resolveParams(params)
+      requests.push({ method: 'GET', url, ...(resolvedParams == null ? {} : { params: resolvedParams }) })
       // URL別レスポンスがあればそれを優先
       if (options.getResponses && url in options.getResponses) {
         return options.getResponses[url] as T
