@@ -9,12 +9,11 @@
 
 ## Ready
 
-- [タスク検索・フィルタリング](./005_task_search_filter/spec.md) (task_search_filter) - 2026-02-01 - Ready
-
 ## In progress
 
 ## Done
 
+- [タスク検索・フィルタリング](./005_task_search_filter/spec.md) (task_search_filter) - 2026-02-01 - Done
 - [タスク作成・編集時のエラー表示機能](./002_task_validation_errors/spec.md) (task_validation_errors) - 2026-01-15 - Done
 
 - [タスクの更新機能](./001_update_task/spec.md) (update_task) - 2026-01-14 - Done
