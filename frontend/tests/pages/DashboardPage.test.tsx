@@ -69,6 +69,27 @@ describe('DashboardPage', () => {
     })
   })
 
+  describe('空状態メッセージ', () => {
+    it('検索条件の有無で空状態メッセージが切り替わる', async () => {
+      const { client } = createMockApiClient({
+        getResponse: [],
+      })
+
+      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+
+      await waitFor(() => {
+        expect(within(container).getByText('タスクはありません')).toBeInTheDocument()
+      })
+
+      const keywordInput = within(container).getByLabelText('検索')
+      fireEvent.change(keywordInput, { target: { value: 'Test' } })
+
+      await waitFor(() => {
+        expect(within(container).getByText('条件に一致するタスクがありません')).toBeInTheDocument()
+      })
+    })
+  })
+
   describe('検索・フィルタ', () => {
     it('検索条件の変更後にデバウンスしてGET APIが呼ばれる', async () => {
       const { client, requests, clearRequests } = createMockApiClient({
