@@ -15,3 +15,12 @@ export type UpdateTodoRequest = Omit<Todo, 'id'>
 
 export type TodoStatusFilter = 'all' | 'completed' | 'incomplete'
 export type TodoDueDateFilter = 'all' | 'today' | 'this_week' | 'overdue' | 'none'
+
+export type TodoSearchParamStatus = Exclude<TodoStatusFilter, 'all'>
+export type TodoSearchParamDueDate = Exclude<TodoDueDateFilter, 'all'>
+
+export type TodoSearchQuery = Readonly<{
+  keyword?: string
+  status?: TodoSearchParamStatus
+  due_date?: TodoSearchParamDueDate
+}>

@@ -25,15 +25,20 @@ type ApiGetConfig<Params> = Readonly<{
   options?: ApiGetOptions
 }>
 
-type ApiGetParams<E extends GetEndpoints> = ApiQuery<'get', E>
-type ApiGetParamsInput<E extends GetEndpoints> = ApiGetParams<E> | ApiGetConfig<ApiGetParams<E>> | undefined
-type ApiGetParamsInputAny = Readonly<Record<string, unknown>> | ApiGetConfig<Readonly<Record<string, unknown>>> | undefined
+type ApiGetQuery = Readonly<Record<string, unknown>>
+type ApiGetConfigAny = ApiGetConfig<ApiGetQuery>
+
+type ApiGetParamsInput<E extends GetEndpoints> =
+  ApiQuery<'get', E> extends ApiGetQuery
+    ? ApiQuery<'get', E> | ApiGetConfig<ApiQuery<'get', E>> | undefined
+    :
+        | Readonly<{
+            options?: ApiGetOptions
+          }>
+        | undefined
 
 export type ApiClient = Readonly<{
-  get: {
-    <E extends GetEndpoints>(url: E, params?: ApiGetParamsInput<E>): Promise<ApiResponse<'get', E>>
-    <T>(url: string, params?: ApiGetParamsInputAny): Promise<T>
-  }
+  get: <E extends GetEndpoints>(url: E, params?: ApiGetParamsInput<E>) => Promise<ApiResponse<'get', E>>
   post: {
     <E extends PostEndpoints>(
       url: E,
@@ -89,26 +94,30 @@ export const createApiClient = (
   const { onRequestStart, onRequestEnd } = callbacks
   const abortControllers = new Map<string, AbortController>()
 
-  const resolveParams = <Params extends Readonly<Record<string, unknown>>>(
-    params?: Params | ApiGetConfig<Params>,
-  ): Params | undefined => {
-    if (params && typeof params === 'object' && 'params' in params) {
-      return params.params
+  const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
+
+  const isGetConfig = (value: unknown): value is ApiGetConfigAny => {
+    if (!isRecord(value)) {
+      return false
     }
-    if (params && typeof params === 'object' && 'options' in params) {
-      return undefined
-    }
-    return params
+    return 'params' in value || 'options' in value
   }
 
-  const resolveOptions = <Params extends Readonly<Record<string, unknown>>>(
-    params?: Params | ApiGetConfig<Params>,
-  ): ApiGetOptions | undefined => {
-    if (params && typeof params === 'object' && 'options' in params) {
-      return params.options
+  const resolveParams = (params?: unknown): ApiGetQuery | undefined => {
+    if (!isRecord(params)) {
+      return undefined
     }
-    return undefined
+    if (!isGetConfig(params)) {
+      return params
+    }
+    if (!isRecord(params.params)) {
+      return undefined
+    }
+    return params.params
   }
+
+  const resolveOptions = (params?: unknown): ApiGetOptions | undefined =>
+    isGetConfig(params) ? params.options : undefined
 
   const withTracking = async <T>(fn: () => Promise<T>): Promise<T> => {
     onRequestStart?.()
@@ -120,27 +129,33 @@ export const createApiClient = (
   }
 
   return {
-    get: async <T>(url: string, params?: ApiGetParamsInputAny): Promise<T> =>
+    get: async <E extends GetEndpoints>(url: E, params?: ApiGetParamsInput<E>): Promise<ApiResponse<'get', E>> =>
       withTracking(async () => {
         const resolvedParams = resolveParams(params)
         const resolvedOptions = resolveOptions(params)
         const requestKey = resolvedOptions?.key
-        const shouldAbortPrevious = resolvedOptions?.mode === 'latestOnly' && requestKey
-        const abortController = shouldAbortPrevious ? new AbortController() : undefined
+        const shouldAbortPrevious = resolvedOptions?.mode === 'latestOnly' && requestKey != null
+        let abortController: AbortController | undefined
 
-        if (shouldAbortPrevious) {
+        if (shouldAbortPrevious && requestKey) {
+          abortController = new AbortController()
           abortControllers.get(requestKey)?.abort()
           abortControllers.set(requestKey, abortController)
         }
 
         try {
-          const response = await axiosInstance.get<T>(url, {
+          const response = await axiosInstance.get<ApiResponse<'get', E>>(url, {
             params: resolvedParams,
             signal: abortController?.signal,
           })
           return response.data
         } finally {
-          if (shouldAbortPrevious && requestKey && abortControllers.get(requestKey) === abortController) {
+          if (
+            shouldAbortPrevious &&
+            requestKey &&
+            abortController &&
+            abortControllers.get(requestKey) === abortController
+          ) {
             abortControllers.delete(requestKey)
           }
         }

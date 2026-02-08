@@ -1,6 +1,6 @@
 import type { Auth } from '../models/auth'
 import type { ValidationErrorResponse } from '../models/error'
-import type { CreateTodoRequest, Todo, UpdateTodoRequest } from '../models/todo'
+import type { CreateTodoRequest, Todo, TodoSearchQuery, UpdateTodoRequest } from '../models/todo'
 import type { User } from '../models/user'
 
 export type LoginRequest = Readonly<{
@@ -16,7 +16,7 @@ export type RegisterRequest = Readonly<{
 
 export type ApiEndpoints = {
   get: {
-    '/todo/': { response: readonly Todo[] }
+    '/todo/': { query: TodoSearchQuery; response: readonly Todo[] }
     '/auth/user': { response: User }
   }
   post: {
