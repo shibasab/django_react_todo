@@ -87,15 +87,6 @@ const parseBody = (data: unknown): unknown => {
   }
 }
 
-const stripInternalQueryKeys = (query: unknown): unknown => {
-  if (!isPlainObject(query)) {
-    return query
-  }
-
-  const sanitizedEntries = Object.entries(query).filter(([key]) => key !== 'options')
-  return Object.fromEntries(sanitizedEntries)
-}
-
 const toHttpMethod = (method: string | undefined): HttpMethod => {
   const normalized = method?.toUpperCase()
 
@@ -124,7 +115,7 @@ const normalizeRequest = (config: RequestSource): RequestLogEntry => {
       ? toQueryRecord(config.params)
       : config.params == null
         ? queryFromUrl
-        : stripInternalQueryKeys(config.params)
+        : config.params
   const query = toSortedValue(queryCandidate)
   const body = toSortedValue(parseBody(config.data))
 

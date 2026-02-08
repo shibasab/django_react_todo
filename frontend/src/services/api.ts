@@ -95,6 +95,9 @@ export const createApiClient = (
     if (params && typeof params === 'object' && 'params' in params) {
       return params.params
     }
+    if (params && typeof params === 'object' && 'options' in params) {
+      return undefined
+    }
     return params
   }
 
