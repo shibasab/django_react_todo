@@ -4,8 +4,8 @@ import { useDebounce } from 'use-debounce'
 import { TodoForm } from '../components/todo/TodoForm'
 import { TodoList } from '../components/todo/TodoList'
 import { TodoSearchControls } from '../components/todo/TodoSearchControls'
-import { useTodo } from '../hooks/useTodo'
 import { DEFAULT_TODO_SEARCH_STATE, hasSearchCriteria, type TodoSearchState } from '../hooks/todoSearch'
+import { useTodo } from '../hooks/useTodo'
 
 export const DashboardPage = () => {
   const { todos, isLoading, fetchTodos, addTodo, updateTodo, removeTodo, toggleTodoCompletion } = useTodo()

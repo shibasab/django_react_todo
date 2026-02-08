@@ -2,9 +2,9 @@ import { useCallback, useRef, useState } from 'react'
 
 import type { ValidationError, ValidationErrorResponse } from '../models/error'
 import type { CreateTodoRequest, Todo } from '../models/todo'
+import type { TodoSearchParams, TodoSearchState } from './todoSearch'
 
 import { useApiClient } from '../contexts/ApiContext'
-import type { TodoSearchParams, TodoSearchState } from './todoSearch'
 import { validateRequired, validateMaxLength } from '../services/validation'
 
 // バリデーション制約値（バックエンドと同期）
@@ -96,18 +96,21 @@ export const useTodo = (): TodoService => {
   // 検索条件を保持し、追加/更新/削除後も同じ条件で再取得するために使用する
   const lastSearchRef = useRef<TodoSearchState | undefined>(undefined)
 
-  const fetchTodos = useCallback(async (criteria?: TodoSearchState) => {
-    lastSearchRef.current = criteria
-    const params = buildTodoSearchParams(criteria)
-    const data = await apiClient.get('/todo/', {
-      ...(params ? { params } : {}),
-      options: {
-        key: 'todo-search',
-        mode: 'latestOnly',
-      },
-    })
-    setTodos(data)
-  }, [apiClient])
+  const fetchTodos = useCallback(
+    async (criteria?: TodoSearchState) => {
+      lastSearchRef.current = criteria
+      const params = buildTodoSearchParams(criteria)
+      const data = await apiClient.get('/todo/', {
+        ...(params ? { params } : {}),
+        options: {
+          key: 'todo-search',
+          mode: 'latestOnly',
+        },
+      })
+      setTodos(data)
+    },
+    [apiClient],
+  )
 
   const addTodo = useCallback(
     async (data: CreateTodoRequest): Promise<readonly ValidationError[] | undefined> => {
