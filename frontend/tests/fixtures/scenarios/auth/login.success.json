@@ -1,0 +1,14 @@
+{
+  "routes": [
+    {
+      "method": "POST",
+      "url": "/auth/login",
+      "responseFixture": "api/auth/login.testuser.json"
+    },
+    {
+      "method": "GET",
+      "url": "/todo/",
+      "responseFixture": "api/todo/list.empty.json"
+    }
+  ]
+}

@@ -1,23 +1,25 @@
 import { waitFor, fireEvent, within } from '@testing-library/react'
 import { describe, it, expect, beforeEach } from 'vitest'
 
-import { createMockApiClient } from '../helpers/apiMock'
+import type { Auth } from '../../src/models/auth'
+
+import { loadFixture } from '../helpers/fixtures'
+import { setupHttpFixtureTest } from '../helpers/httpMock'
 import { localStorageMock, resetLocalStorageMock } from '../helpers/localStorageMock'
 import { renderApp } from '../helpers/renderPage'
 
-describe('ログインフロー', () => {
-  const mockUser = { id: 1, username: 'testuser', email: 'test@example.com' }
-  const mockAuthResponse = { user: mockUser, token: 'test-token-123' }
+const mockAuthResponse = loadFixture<Auth>('api/auth/login.testuser.json')
 
+describe('ログインフロー', () => {
   beforeEach(() => {
     resetLocalStorageMock()
   })
 
   describe('LoginPage 初期表示', () => {
     it('ログインフォームが正しく表示される', async () => {
-      const { client } = createMockApiClient({})
+      const { apiClient } = setupHttpFixtureTest()
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/login' })
+      const { container } = renderApp({ apiClient, initialRoute: '/login' })
 
       // ローディング完了を待機
       await waitFor(() => {
@@ -38,12 +40,11 @@ describe('ログインフロー', () => {
 
   describe('ログイン成功', () => {
     it('正しい認証情報でログイン → API呼び出し → ダッシュボードへリダイレクト', async () => {
-      const { client, requests } = createMockApiClient({
-        postResponse: mockAuthResponse,
-        getResponse: [], // TODO一覧（空）
+      const { apiClient, requestLog } = setupHttpFixtureTest({
+        scenarioFixture: 'scenarios/auth/login.success.json',
       })
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/login' })
+      const { container } = renderApp({ apiClient, initialRoute: '/login' })
 
       // ローディング完了を待機
       await waitFor(() => {
@@ -59,30 +60,30 @@ describe('ログインフロー', () => {
 
       // API呼び出しを検証
       await waitFor(() => {
-        const loginRequest = requests.find((r) => r.url === '/auth/login')
+        const loginRequest = requestLog.find((r) => r.url === '/auth/login')
         expect(loginRequest).toBeDefined()
         expect(loginRequest?.method).toBe('POST')
-        expect(loginRequest?.data).toEqual({ username: 'testuser', password: 'password123' })
+        expect(loginRequest?.body).toEqual({ username: 'testuser', password: 'password123' })
       })
 
       // トークン保存を検証
       await waitFor(() => {
-        expect(localStorageMock.setItem).toHaveBeenCalledWith('token', 'test-token-123')
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('token', mockAuthResponse.token)
       })
 
       // ダッシュボードへリダイレクト（Header表示確認）
       await waitFor(() => {
-        expect(within(container).getByText('Welcome testuser')).toBeInTheDocument()
+        expect(within(container).getByText(`Welcome ${mockAuthResponse.user.username}`)).toBeInTheDocument()
       })
 
       await waitFor(() => {
-        const todoRequest = requests.find((r) => r.url === '/todo/')
+        const todoRequest = requestLog.find((r) => r.url === '/todo/')
         expect(todoRequest).toBeDefined()
         expect(todoRequest?.method).toBe('GET')
       })
 
       // APIリクエストのスナップショット
-      expect(requests).toMatchSnapshot('login-api-requests')
+      expect(requestLog).toMatchSnapshot('login-api-requests')
     })
   })
 
@@ -91,14 +92,11 @@ describe('ログインフロー', () => {
       // トークンを事前にセット
       localStorageMock.setItem('token', 'existing-token')
 
-      const { client } = createMockApiClient({
-        getResponses: {
-          '/auth/user': mockUser,
-          '/todos': [],
-        },
+      const { apiClient } = setupHttpFixtureTest({
+        scenarioFixture: 'scenarios/auth/authenticated.empty-todos.json',
       })
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/login' })
+      const { container } = renderApp({ apiClient, initialRoute: '/login' })
 
       // ダッシュボードへリダイレクトされることを確認
       await waitFor(() => {

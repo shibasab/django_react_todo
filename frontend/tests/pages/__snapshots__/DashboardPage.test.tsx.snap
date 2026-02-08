@@ -12,8 +12,9 @@ exports[`DashboardPage > TODO削除 > 削除ボタンクリックでDELETE API�
 exports[`DashboardPage > TODO更新 > チェックボックスクリックで完了状態が更新される > api-requests-toggle 1`] = `
 [
   {
-    "data": {
+    "body": {
       "detail": "Detail 1",
+      "dueDate": null,
       "isCompleted": true,
       "name": "Test Todo 1",
     },
@@ -26,7 +27,7 @@ exports[`DashboardPage > TODO更新 > チェックボックスクリックで完
 exports[`DashboardPage > TODO更新 > 値変更→保存ボタンでPUT APIが呼ばれる > api-requests-update 1`] = `
 [
   {
-    "data": {
+    "body": {
       "detail": "Updated Detail",
       "dueDate": null,
       "isCompleted": false,
@@ -41,7 +42,7 @@ exports[`DashboardPage > TODO更新 > 値変更→保存ボタンでPUT APIが�
 exports[`DashboardPage > TODO追加 > タスク名入力→追加ボタンでPOST APIが呼ばれる > api-requests-add 1`] = `
 [
   {
-    "data": {
+    "body": {
       "detail": "New Detail",
       "dueDate": null,
       "isCompleted": false,
@@ -86,6 +87,7 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
             class="text-white font-semibold"
           >
             Welcome 
+            testuser
           </span>
           <button
             class="px-3 py-1 bg-cyan-600 text-white rounded-md hover:bg-cyan-700 transition-colors text-sm"
@@ -410,7 +412,7 @@ exports[`DashboardPage > 検索・フィルタ > 検索条件の変更後にデ�
 [
   {
     "method": "GET",
-    "params": {
+    "query": {
       "due_date": "today",
       "keyword": "Test",
       "status": "completed",

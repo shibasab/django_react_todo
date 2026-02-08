@@ -1,0 +1,8 @@
+{
+  "user": {
+    "id": 1,
+    "username": "newuser",
+    "email": "new@example.com"
+  },
+  "token": "new-user-token"
+}

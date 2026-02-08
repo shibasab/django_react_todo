@@ -1,0 +1,7 @@
+{
+  "id": 3,
+  "name": "New Todo",
+  "detail": "New Detail",
+  "dueDate": null,
+  "isCompleted": false
+}
