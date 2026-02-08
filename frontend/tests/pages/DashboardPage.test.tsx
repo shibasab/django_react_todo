@@ -1,26 +1,35 @@
 import { waitFor, fireEvent, within, act } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 
-import { createMockApiClient } from '../helpers/apiMock'
+import { setupHttpFixtureTest } from '../helpers/httpMock'
 import { renderApp } from '../helpers/renderPage'
 
-describe('DashboardPage', () => {
-  const mockTodos = [
-    { id: 1, name: 'Test Todo 1', detail: 'Detail 1', isCompleted: false },
-    { id: 2, name: 'Test Todo 2', detail: 'Detail 2', isCompleted: true },
-  ]
+const setupAuthenticatedDashboard = (todoListFixture = 'api/todo/list.default.json') => {
+  return setupHttpFixtureTest({
+    scenarioFixture: 'scenarios/dashboard/authenticated.default.json',
+    routes:
+      todoListFixture === 'api/todo/list.default.json'
+        ? []
+        : [
+            {
+              method: 'GET',
+              url: '/todo/',
+              responseFixture: todoListFixture,
+            },
+          ],
+  })
+}
 
+describe('DashboardPage', () => {
   describe('初期表示', () => {
     it('ページレンダリング時にGET APIが呼ばれ、TODOリストが表示される', async () => {
-      const { client, requests } = createMockApiClient({
-        getResponse: mockTodos,
-      })
+      const { apiClient, requestLog } = setupAuthenticatedDashboard()
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+      const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
 
       // APIリクエストを検証
       await waitFor(() => {
-        expect(requests).toMatchSnapshot('api-requests')
+        expect(requestLog).toMatchSnapshot('api-requests')
       })
 
       // 画面表示を検証
@@ -40,12 +49,18 @@ describe('DashboardPage', () => {
 
   describe('TODO追加', () => {
     it('タスク名入力→追加ボタンでPOST APIが呼ばれる', async () => {
-      const { client, requests, clearRequests } = createMockApiClient({
-        getResponse: mockTodos,
-        postResponse: { id: 3, name: 'New Todo', detail: 'New Detail', isCompleted: false },
+      const { apiClient, requestLog, clearRequests } = setupHttpFixtureTest({
+        scenarioFixture: 'scenarios/dashboard/authenticated.default.json',
+        routes: [
+          {
+            method: 'POST',
+            url: '/todo/',
+            responseFixture: 'api/todo/create.new-todo.json',
+          },
+        ],
       })
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+      const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
 
       // 初期表示完了を待機（TODOリストが表示されるまで）
       await waitFor(() => {
@@ -64,18 +79,18 @@ describe('DashboardPage', () => {
 
       // APIリクエストを検証
       await waitFor(() => {
-        expect(requests).toMatchSnapshot('api-requests-add')
+        expect(requestLog).toMatchSnapshot('api-requests-add')
       })
     })
   })
 
   describe('空状態メッセージ', () => {
     it('検索条件の有無で空状態メッセージが切り替わる', async () => {
-      const { client } = createMockApiClient({
-        getResponse: [],
+      const { apiClient } = setupHttpFixtureTest({
+        scenarioFixture: 'scenarios/auth/authenticated.empty-todos.json',
       })
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+      const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
 
       await waitFor(() => {
         expect(within(container).getByText('タスクはありません')).toBeInTheDocument()
@@ -92,11 +107,9 @@ describe('DashboardPage', () => {
 
   describe('検索・フィルタ', () => {
     it('検索条件の変更後にデバウンスしてGET APIが呼ばれる', async () => {
-      const { client, requests, clearRequests } = createMockApiClient({
-        getResponse: mockTodos,
-      })
+      const { apiClient, requestLog, clearRequests } = setupAuthenticatedDashboard()
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+      const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
 
       await waitFor(() => {
         expect(within(container).getByText('Test Todo 1')).toBeInTheDocument()
@@ -111,7 +124,7 @@ describe('DashboardPage', () => {
       fireEvent.change(statusSelect, { target: { value: 'completed' } })
       fireEvent.change(dueDateSelect, { target: { value: 'today' } })
 
-      expect(requests.length).toBe(0)
+      expect(requestLog.length).toBe(0)
 
       await act(async () => {
         await new Promise((resolve) => {
@@ -120,30 +133,26 @@ describe('DashboardPage', () => {
       })
 
       await waitFor(() => {
-        expect(requests).toMatchSnapshot('api-requests-search')
+        expect(requestLog).toMatchSnapshot('api-requests-search')
       })
-      expect(requests).toHaveLength(1)
-      expect(client.get).toHaveBeenLastCalledWith('/todo/', {
-        params: {
-          due_date: 'today',
-          keyword: 'Test',
-          status: 'completed',
-        },
-        options: {
-          key: 'todo-search',
-          mode: 'latestOnly',
-        },
-      })
+      expect(requestLog).toHaveLength(1)
     })
   })
 
   describe('TODO削除', () => {
     it('削除ボタンクリックでDELETE APIが呼ばれる', async () => {
-      const { client, requests, clearRequests } = createMockApiClient({
-        getResponse: mockTodos,
+      const { apiClient, requestLog, clearRequests } = setupHttpFixtureTest({
+        scenarioFixture: 'scenarios/dashboard/authenticated.default.json',
+        routes: [
+          {
+            method: 'DELETE',
+            url: '/todo/1/',
+            response: null,
+          },
+        ],
       })
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+      const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
 
       // 初期表示完了を待機
       await waitFor(() => {
@@ -157,18 +166,16 @@ describe('DashboardPage', () => {
 
       // APIリクエストを検証
       await waitFor(() => {
-        expect(requests).toMatchSnapshot('api-requests-delete')
+        expect(requestLog).toMatchSnapshot('api-requests-delete')
       })
     })
   })
 
   describe('TODO更新', () => {
     it('編集ボタンクリックで編集フォームが表示される', async () => {
-      const { client } = createMockApiClient({
-        getResponse: mockTodos,
-      })
+      const { apiClient } = setupAuthenticatedDashboard()
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+      const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
 
       // 初期表示完了を待機
       await waitFor(() => {
@@ -189,12 +196,18 @@ describe('DashboardPage', () => {
     })
 
     it('値変更→保存ボタンでPUT APIが呼ばれる', async () => {
-      const { client, requests, clearRequests } = createMockApiClient({
-        getResponse: mockTodos,
-        putResponse: { id: 1, name: 'Updated Todo', detail: 'Updated Detail', isCompleted: false },
+      const { apiClient, requestLog, clearRequests } = setupHttpFixtureTest({
+        scenarioFixture: 'scenarios/dashboard/authenticated.default.json',
+        routes: [
+          {
+            method: 'PUT',
+            url: '/todo/1/',
+            responseFixture: 'api/todo/update.updated-todo.json',
+          },
+        ],
       })
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+      const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
 
       // 初期表示完了を待機
       await waitFor(() => {
@@ -223,16 +236,14 @@ describe('DashboardPage', () => {
 
       // APIリクエストを検証
       await waitFor(() => {
-        expect(requests).toMatchSnapshot('api-requests-update')
+        expect(requestLog).toMatchSnapshot('api-requests-update')
       })
     })
 
     it('キャンセルボタンで編集モード終了', async () => {
-      const { client } = createMockApiClient({
-        getResponse: mockTodos,
-      })
+      const { apiClient } = setupAuthenticatedDashboard()
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+      const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
 
       // 初期表示完了を待機
       await waitFor(() => {
@@ -260,11 +271,9 @@ describe('DashboardPage', () => {
     })
 
     it('タスク名が空の場合はバリデーションエラー', async () => {
-      const { client, requests, clearRequests } = createMockApiClient({
-        getResponse: mockTodos,
-      })
+      const { apiClient, requestLog, clearRequests } = setupAuthenticatedDashboard()
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+      const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
 
       // 初期表示完了を待機
       await waitFor(() => {
@@ -295,16 +304,22 @@ describe('DashboardPage', () => {
       })
 
       // API呼び出しがないことを確認
-      expect(requests.length).toBe(0)
+      expect(requestLog.length).toBe(0)
     })
 
     it('チェックボックスクリックで完了状態が更新される', async () => {
-      const { client, requests, clearRequests } = createMockApiClient({
-        getResponse: mockTodos,
-        putResponse: { id: 1, name: 'Test Todo 1', detail: 'Detail 1', isCompleted: true },
+      const { apiClient, requestLog, clearRequests } = setupHttpFixtureTest({
+        scenarioFixture: 'scenarios/dashboard/authenticated.default.json',
+        routes: [
+          {
+            method: 'PUT',
+            url: '/todo/1/',
+            responseFixture: 'api/todo/update.toggle-completed.json',
+          },
+        ],
       })
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/', isAuthenticated: true })
+      const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
 
       await waitFor(() => {
         expect(within(container).getByText('Test Todo 1')).toBeInTheDocument()
@@ -316,7 +331,7 @@ describe('DashboardPage', () => {
       fireEvent.click(checkboxes[0])
 
       await waitFor(() => {
-        expect(requests).toMatchSnapshot('api-requests-toggle')
+        expect(requestLog).toMatchSnapshot('api-requests-toggle')
       })
     })
   })

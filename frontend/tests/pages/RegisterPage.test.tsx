@@ -1,23 +1,25 @@
 import { waitFor, fireEvent, within } from '@testing-library/react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
-import { createMockApiClient } from '../helpers/apiMock'
+import type { Auth } from '../../src/models/auth'
+
+import { loadFixture } from '../helpers/fixtures'
+import { setupHttpFixtureTest } from '../helpers/httpMock'
 import { localStorageMock, resetLocalStorageMock } from '../helpers/localStorageMock'
 import { renderApp } from '../helpers/renderPage'
 
-describe('新規登録フロー', () => {
-  const mockUser = { id: 1, username: 'newuser', email: 'new@example.com' }
-  const mockAuthResponse = { user: mockUser, token: 'new-user-token' }
+const mockAuthResponse = loadFixture<Auth>('api/auth/register.newuser.json')
 
+describe('新規登録フロー', () => {
   beforeEach(() => {
     resetLocalStorageMock()
   })
 
   describe('RegisterPage 初期表示', () => {
     it('登録フォームが正しく表示される', async () => {
-      const { client } = createMockApiClient({})
+      const { apiClient } = setupHttpFixtureTest()
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/register' })
+      const { container } = renderApp({ apiClient, initialRoute: '/register' })
 
       // ローディング完了を待機
       await waitFor(() => {
@@ -40,12 +42,11 @@ describe('新規登録フロー', () => {
 
   describe('登録成功', () => {
     it('正しい情報で登録 → API呼び出し → ダッシュボードへリダイレクト', async () => {
-      const { client, requests } = createMockApiClient({
-        postResponse: mockAuthResponse,
-        getResponse: [], // TODO一覧（空）
+      const { apiClient, requestLog } = setupHttpFixtureTest({
+        scenarioFixture: 'scenarios/auth/register.success.json',
       })
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/register' })
+      const { container } = renderApp({ apiClient, initialRoute: '/register' })
 
       // ローディング完了を待機
       await waitFor(() => {
@@ -63,10 +64,10 @@ describe('新規登録フロー', () => {
 
       // API呼び出しを検証
       await waitFor(() => {
-        const registerRequest = requests.find((r) => r.url === '/auth/register')
+        const registerRequest = requestLog.find((r) => r.url === '/auth/register')
         expect(registerRequest).toBeDefined()
         expect(registerRequest?.method).toBe('POST')
-        expect(registerRequest?.data).toEqual({
+        expect(registerRequest?.body).toEqual({
           username: 'newuser',
           email: 'new@example.com',
           password: 'password123',
@@ -75,31 +76,31 @@ describe('新規登録フロー', () => {
 
       // トークン保存を検証
       await waitFor(() => {
-        expect(localStorageMock.setItem).toHaveBeenCalledWith('token', 'new-user-token')
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('token', mockAuthResponse.token)
       })
 
       // ダッシュボードへリダイレクト（Header表示確認）
       await waitFor(() => {
-        expect(within(container).getByText('Welcome newuser')).toBeInTheDocument()
+        expect(within(container).getByText(`Welcome ${mockAuthResponse.user.username}`)).toBeInTheDocument()
       })
 
       await waitFor(() => {
-        const todoRequest = requests.find((r) => r.url === '/todo/')
+        const todoRequest = requestLog.find((r) => r.url === '/todo/')
         expect(todoRequest).toBeDefined()
         expect(todoRequest?.method).toBe('GET')
       })
 
       // APIリクエストのスナップショット
-      expect(requests).toMatchSnapshot('register-api-requests')
+      expect(requestLog).toMatchSnapshot('register-api-requests')
     })
   })
 
   describe('パスワード不一致', () => {
     it('パスワードと確認パスワードが一致しない場合、APIは呼ばれない', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      const { client, requests } = createMockApiClient({})
+      const { apiClient, requestLog } = setupHttpFixtureTest()
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/register' })
+      const { container } = renderApp({ apiClient, initialRoute: '/register' })
 
       // ローディング完了を待機
       await waitFor(() => {
@@ -117,7 +118,7 @@ describe('新規登録フロー', () => {
 
       // APIが呼ばれていないことを検証（少し待つ）
       await new Promise((resolve) => setTimeout(resolve, 100))
-      const registerRequest = requests.find((r) => r.url === '/auth/register')
+      const registerRequest = requestLog.find((r) => r.url === '/auth/register')
       expect(registerRequest).toBeUndefined()
 
       // エラーログを検証

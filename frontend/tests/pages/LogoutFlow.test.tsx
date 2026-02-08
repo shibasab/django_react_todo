@@ -1,13 +1,11 @@
 import { waitFor, fireEvent, within } from '@testing-library/react'
 import { describe, it, expect, beforeEach } from 'vitest'
 
-import { createMockApiClient } from '../helpers/apiMock'
+import { setupHttpFixtureTest } from '../helpers/httpMock'
 import { localStorageMock, resetLocalStorageMock } from '../helpers/localStorageMock'
 import { renderApp } from '../helpers/renderPage'
 
 describe('ログアウトフロー', () => {
-  const mockUser = { id: 1, username: 'testuser', email: 'test@example.com' }
-
   beforeEach(() => {
     resetLocalStorageMock()
   })
@@ -17,14 +15,11 @@ describe('ログアウトフロー', () => {
       // トークンを事前にセット
       localStorageMock.setItem('token', 'test-token')
 
-      const { client } = createMockApiClient({
-        getResponses: {
-          '/auth/user': mockUser,
-          '/todos': [],
-        },
+      const { apiClient } = setupHttpFixtureTest({
+        scenarioFixture: 'scenarios/auth/authenticated.empty-todos.json',
       })
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/' })
+      const { container } = renderApp({ apiClient, initialRoute: '/' })
 
       // 認証済み状態の表示確認
       await waitFor(() => {
@@ -38,15 +33,11 @@ describe('ログアウトフロー', () => {
       // トークンを事前にセット
       localStorageMock.setItem('token', 'test-token')
 
-      const { client, requests, clearRequests } = createMockApiClient({
-        getResponses: {
-          '/auth/user': mockUser,
-          '/todos': [],
-        },
-        postResponse: {}, // /auth/logout のレスポンス
+      const { apiClient, requestLog, clearRequests } = setupHttpFixtureTest({
+        scenarioFixture: 'scenarios/auth/logout.success.json',
       })
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/' })
+      const { container } = renderApp({ apiClient, initialRoute: '/' })
 
       // 認証済み状態になるまで待機
       await waitFor(() => {
@@ -61,7 +52,7 @@ describe('ログアウトフロー', () => {
 
       // API呼び出しを検証
       await waitFor(() => {
-        const logoutRequest = requests.find((r) => r.url === '/auth/logout')
+        const logoutRequest = requestLog.find((r) => r.url === '/auth/logout')
         expect(logoutRequest).toBeDefined()
         expect(logoutRequest?.method).toBe('POST')
       })
@@ -79,15 +70,15 @@ describe('ログアウトフロー', () => {
       expect(within(container).queryByText('Welcome testuser')).not.toBeInTheDocument()
 
       // APIリクエストのスナップショット
-      expect(requests).toMatchSnapshot('logout-api-requests')
+      expect(requestLog).toMatchSnapshot('logout-api-requests')
     })
   })
 
   describe('Header 未認証状態', () => {
     it('未認証状態ではログイン・登録リンクが表示される', async () => {
-      const { client } = createMockApiClient({})
+      const { apiClient } = setupHttpFixtureTest()
 
-      const { container } = renderApp({ apiClient: client, initialRoute: '/login' })
+      const { container } = renderApp({ apiClient, initialRoute: '/login' })
 
       // ローディング完了を待機
       await waitFor(() => {

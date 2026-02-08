@@ -156,7 +156,7 @@ exports[`新規登録フロー > RegisterPage 初期表示 > 登録フォーム�
 exports[`新規登録フロー > 登録成功 > 正しい情報で登録 → API呼び出し → ダッシュボードへリダイレクト > register-api-requests 1`] = `
 [
   {
-    "data": {
+    "body": {
       "email": "new@example.com",
       "password": "password123",
       "username": "newuser",
