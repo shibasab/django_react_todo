@@ -10,12 +10,11 @@
 
 ## Ready
 
-- [タスク登録の摩擦を減らすクイック追加](./006_task_quick_add/spec.md) (task_quick_add) - 2026-02-09 - Ready
-
 ## In progress
 
 ## Done
 
+- [タスク登録の摩擦を減らすクイック追加](./006_task_quick_add/spec.md) (task_quick_add) - 2026-02-09 - Done
 - [タスク検索・フィルタリング](./005_task_search_filter/spec.md) (task_search_filter) - 2026-02-01 - Done
 - [タスク作成・編集時のエラー表示機能](./002_task_validation_errors/spec.md) (task_validation_errors) - 2026-01-15 - Done
 
