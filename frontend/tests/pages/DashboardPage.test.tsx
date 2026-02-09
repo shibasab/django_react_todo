@@ -39,16 +39,17 @@ describe('DashboardPage', () => {
         expect(within(container).getByLabelText('検索')).toBeInTheDocument()
         expect(within(container).getByLabelText('状態')).toBeInTheDocument()
         expect(within(container).getByLabelText('期限')).toBeInTheDocument()
+        expect(within(container).getByLabelText('クイック入力')).toBeInTheDocument()
+        expect(within(container).getByRole('button', { name: '追加' })).toBeInTheDocument()
+        expect(within(container).getByRole('button', { name: '詳細入力を開く' })).toBeInTheDocument()
         expect(within(container).getByRole('button', { name: 'クリア' })).toBeInTheDocument()
+        expect(within(container).queryByLabelText('Task')).not.toBeInTheDocument()
       })
-
-      // DOMスナップショット
-      expect(container).toMatchSnapshot('dom')
     })
   })
 
   describe('TODO追加', () => {
-    it('タスク名入力→追加ボタンでPOST APIが呼ばれる', async () => {
+    it('自然文入力で期限を抽出してPOST APIが呼ばれる', async () => {
       const { apiClient, requestLog, clearRequests } = setupHttpFixtureTest({
         scenarioFixture: 'scenarios/dashboard/authenticated.default.json',
         routes: [
@@ -68,18 +69,98 @@ describe('DashboardPage', () => {
       })
       clearRequests()
 
-      // フォーム入力
-      const nameInput = within(container).getByLabelText('Task')
-      const detailInput = within(container).getByLabelText('Detail')
-      const submitButton = within(container).getByRole('button', { name: /submit/i })
+      // クイック追加入力
+      const quickAddInput = within(container).getByLabelText('クイック入力')
+      const submitButton = within(container).getByRole('button', { name: '追加' })
 
-      fireEvent.change(nameInput, { target: { value: 'New Todo' } })
-      fireEvent.change(detailInput, { target: { value: 'New Detail' } })
+      fireEvent.change(quickAddInput, { target: { value: '2026-02-20 New Todo' } })
       fireEvent.click(submitButton)
 
       // APIリクエストを検証
       await waitFor(() => {
-        expect(requestLog).toMatchSnapshot('api-requests-add')
+        const postRequest = requestLog.find((entry) => entry.method === 'POST' && entry.url === '/todo/')
+        expect(postRequest).toBeDefined()
+        expect(postRequest).toMatchObject({
+          method: 'POST',
+          url: '/todo/',
+          body: {
+            name: 'New Todo',
+            detail: '',
+            dueDate: '2026-02-20',
+            isCompleted: false,
+          },
+        })
+      })
+    })
+
+    it('期限が解釈できない入力でも登録を継続し、dueDateはnullで送信する', async () => {
+      const { apiClient, requestLog, clearRequests } = setupHttpFixtureTest({
+        scenarioFixture: 'scenarios/dashboard/authenticated.default.json',
+        routes: [
+          {
+            method: 'POST',
+            url: '/todo/',
+            responseFixture: 'api/todo/create.new-todo.json',
+          },
+        ],
+      })
+
+      const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
+
+      await waitFor(() => {
+        expect(within(container).getByText('Test Todo 1')).toBeInTheDocument()
+      })
+      clearRequests()
+
+      const quickAddInput = within(container).getByLabelText('クイック入力')
+      const submitButton = within(container).getByRole('button', { name: '追加' })
+
+      fireEvent.change(quickAddInput, { target: { value: '通常のメモだけ' } })
+      fireEvent.click(submitButton)
+
+      await waitFor(() => {
+        const postRequest = requestLog.find((entry) => entry.method === 'POST' && entry.url === '/todo/')
+        expect(postRequest).toBeDefined()
+        expect(postRequest).toMatchObject({
+          method: 'POST',
+          url: '/todo/',
+          body: {
+            name: '通常のメモだけ',
+            detail: '',
+            dueDate: null,
+            isCompleted: false,
+          },
+        })
+      })
+    })
+  })
+
+  describe('詳細フォーム', () => {
+    it('デフォルトで閉じており、トグルで表示/非表示を切り替えられる', async () => {
+      const { apiClient } = setupAuthenticatedDashboard()
+
+      const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
+
+      await waitFor(() => {
+        expect(within(container).getByText('Test Todo 1')).toBeInTheDocument()
+      })
+
+      expect(within(container).queryByLabelText('Task')).not.toBeInTheDocument()
+
+      const openButton = within(container).getByRole('button', { name: '詳細入力を開く' })
+      fireEvent.click(openButton)
+
+      await waitFor(() => {
+        expect(within(container).getByLabelText('Task')).toBeInTheDocument()
+        expect(within(container).getByLabelText('Detail')).toBeInTheDocument()
+        expect(within(container).getByLabelText('Due Date')).toBeInTheDocument()
+      })
+
+      const closeButton = within(container).getByRole('button', { name: '詳細入力を閉じる' })
+      fireEvent.click(closeButton)
+
+      await waitFor(() => {
+        expect(within(container).queryByLabelText('Task')).not.toBeInTheDocument()
       })
     })
   })
