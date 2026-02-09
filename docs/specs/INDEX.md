@@ -4,12 +4,13 @@
 
 ## Idea
 
-- [タスク登録の摩擦を減らすクイック追加](./000_backlog/task-quick-add.md) (task_quick_add) - 2026-02-08 - Idea
 - [タスク一覧操作の効率化](./000_backlog/task-list-operations.md) (task_list_operations) - 2026-02-08 - Idea
 - [タスク優先度設定](./000_backlog/task-priority.md) (task_priority) - 2026-01-20 - Idea
 - [タスクカテゴリ・タグ](./000_backlog/task-category-tag.md) (task_category_tag) - 2026-01-20 - Idea
 
 ## Ready
+
+- [タスク登録の摩擦を減らすクイック追加](./006_task_quick_add/spec.md) (task_quick_add) - 2026-02-09 - Ready
 
 ## In progress
 
