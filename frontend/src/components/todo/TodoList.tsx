@@ -27,6 +27,12 @@ type EditState =
 export const TodoList = ({ todos, hasSearchCriteria, onDelete, onEdit, onToggleCompletion }: TodoListProps) => {
   const [editState, setEditState] = useState<EditState>(null)
   const emptyMessage = hasSearchCriteria ? '条件に一致するタスクがありません' : 'タスクはありません'
+  const recurrenceTypeLabel: Record<Todo['recurrenceType'], string> = {
+    none: 'なし',
+    daily: '毎日',
+    weekly: '毎週',
+    monthly: '毎月',
+  }
 
   const handleEditClick = (todo: Todo) => {
     setEditState({
@@ -35,6 +41,7 @@ export const TodoList = ({ todos, hasSearchCriteria, onDelete, onEdit, onToggleC
       detail: todo.detail,
       dueDate: todo.dueDate ?? '',
       isCompleted: todo.isCompleted,
+      recurrenceType: todo.recurrenceType,
       errors: [],
     })
   }
@@ -43,7 +50,7 @@ export const TodoList = ({ todos, hasSearchCriteria, onDelete, onEdit, onToggleC
     setEditState(null)
   }
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (editState == null) return
     const { name, value } = e.target
     setEditState({ ...editState, [name]: value })
@@ -116,6 +123,26 @@ export const TodoList = ({ todos, hasSearchCriteria, onDelete, onEdit, onToggleC
                     onChange={handleInputChange}
                   />
                   <div className="mb-3">
+                    <label
+                      htmlFor={`edit-recurrenceType-${todo.id}`}
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      繰り返し
+                    </label>
+                    <select
+                      id={`edit-recurrenceType-${todo.id}`}
+                      name="recurrenceType"
+                      value={editState.recurrenceType}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"
+                    >
+                      <option value="none">なし</option>
+                      <option value="daily">毎日</option>
+                      <option value="weekly">毎週</option>
+                      <option value="monthly">毎月</option>
+                    </select>
+                  </div>
+                  <div className="mb-3">
                     <label htmlFor={`edit-dueDate-${todo.id}`} className="block text-sm font-medium text-gray-700 mb-1">
                       期限
                     </label>
@@ -175,6 +202,11 @@ export const TodoList = ({ todos, hasSearchCriteria, onDelete, onEdit, onToggleC
                       <p className={`text-sm mt-1 ${todo.isCompleted ? 'text-gray-400' : 'text-gray-500'}`}>
                         期限: {todo.dueDate ?? '-'}
                       </p>
+                      {todo.recurrenceType !== 'none' ? (
+                        <p className={`text-sm mt-1 ${todo.isCompleted ? 'text-gray-400' : 'text-cyan-700'}`}>
+                          繰り返し: {recurrenceTypeLabel[todo.recurrenceType]}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
                   <div className="flex gap-2 shrink-0">

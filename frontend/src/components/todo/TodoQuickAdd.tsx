@@ -40,6 +40,7 @@ export const TodoQuickAdd = ({ onSubmit }: TodoQuickAddProps) => {
       detail: '',
       dueDate: parsed.dueDate,
       isCompleted: false,
+      recurrenceType: 'none',
     })
     if (validationErrors != null && validationErrors.length > 0) {
       mergeErrors(validationErrors)
