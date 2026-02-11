@@ -4,8 +4,12 @@ from fastapi.exceptions import RequestValidationError
 
 from app.database import engine, Base
 from app.routers import auth, todo
-from app.handlers import validation_exception_handler, duplicate_exception_handler
-from app.exceptions import DuplicateError
+from app.handlers import (
+    validation_exception_handler,
+    duplicate_exception_handler,
+    required_field_exception_handler,
+)
+from app.exceptions import DuplicateError, RequiredFieldError
 
 # データベーステーブルを作成
 Base.metadata.create_all(bind=engine)
@@ -33,6 +37,10 @@ app.add_exception_handler(
 app.add_exception_handler(
     DuplicateError,
     duplicate_exception_handler,  # pyrefly: ignore[bad-argument-type]
+)
+app.add_exception_handler(
+    RequiredFieldError,
+    required_field_exception_handler,  # pyrefly: ignore[bad-argument-type]
 )
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])

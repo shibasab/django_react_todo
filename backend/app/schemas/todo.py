@@ -7,7 +7,7 @@ from pydantic import (
     BeforeValidator,
 )
 from pydantic_core import PydanticCustomError
-from typing import Optional, Annotated
+from typing import Optional, Annotated, Literal
 from datetime import datetime, date
 
 
@@ -62,6 +62,10 @@ ValidatedDate = Annotated[Optional[date], WrapValidator(validate_date_format)]
 OptionalRequiredStr = Annotated[Optional[RequiredStr], BeforeValidator(reject_null)]
 OptionalStr = Annotated[Optional[str], BeforeValidator(reject_null)]
 OptionalBool = Annotated[Optional[bool], BeforeValidator(reject_null)]
+TodoRecurrenceType = Literal["none", "daily", "weekly", "monthly"]
+OptionalRecurrenceType = Annotated[
+    Optional[TodoRecurrenceType], BeforeValidator(reject_null)
+]
 
 
 class TodoBase(BaseModel):
@@ -69,23 +73,36 @@ class TodoBase(BaseModel):
     detail: str = Field(default="", max_length=TODO_DETAIL_MAX_LENGTH)
     due_date: ValidatedDate = Field(default=None, alias="dueDate")
     is_completed: bool = Field(default=False, alias="isCompleted")
+    recurrence_type: TodoRecurrenceType = Field(default="none", alias="recurrenceType")
 
 
-class TodoCreate(TodoBase):
-    pass
+class TodoCreate(BaseModel):
+    name: RequiredStr = Field(..., max_length=TODO_NAME_MAX_LENGTH)
+    detail: str = Field(default="", max_length=TODO_DETAIL_MAX_LENGTH)
+    due_date: ValidatedDate = Field(default=None, alias="dueDate")
+    is_completed: bool = Field(default=False, alias="isCompleted")
+    recurrence_type: TodoRecurrenceType = Field(default="none", alias="recurrenceType")
 
 
-class TodoUpdate(TodoBase):
+class TodoUpdate(BaseModel):
     model_config = ConfigDict(validate_default=False)
 
     name: OptionalRequiredStr = Field(default=None, max_length=TODO_NAME_MAX_LENGTH)
     detail: OptionalStr = Field(default=None, max_length=TODO_DETAIL_MAX_LENGTH)
     due_date: ValidatedDate = Field(default=None, alias="dueDate")
     is_completed: OptionalBool = Field(default=None, alias="isCompleted")
+    recurrence_type: OptionalRecurrenceType = Field(
+        default=None, alias="recurrenceType"
+    )
 
 
-class TodoResponse(TodoBase):
+class TodoResponse(BaseModel):
     id: int
+    name: RequiredStr = Field(..., max_length=TODO_NAME_MAX_LENGTH)
+    detail: str = Field(default="", max_length=TODO_DETAIL_MAX_LENGTH)
+    due_date: ValidatedDate = Field(default=None, alias="dueDate")
+    is_completed: bool = Field(default=False, alias="isCompleted")
+    recurrence_type: TodoRecurrenceType = Field(default="none", alias="recurrenceType")
     owner: Optional[int] = Field(default=None, validation_alias="owner_id")
     created_at: datetime
 

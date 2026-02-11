@@ -17,7 +17,7 @@ from app.schemas.errors import (
     UniqueViolationError,
     InvalidFormatError,
 )
-from app.exceptions import DuplicateError
+from app.exceptions import DuplicateError, RequiredFieldError
 
 
 async def validation_exception_handler(
@@ -69,6 +69,22 @@ async def duplicate_exception_handler(
         status=422,
         detail="Validation error",
         errors=[UniqueViolationError(field=exc.field)],
+    )
+
+    return JSONResponse(
+        status_code=422,
+        content=error_response.model_dump(),
+    )
+
+
+async def required_field_exception_handler(
+    request: Request, exc: RequiredFieldError
+) -> JSONResponse:
+    """RequiredFieldErrorを構造化レスポンスに変換"""
+    error_response = ValidationErrorResponse(
+        status=422,
+        detail="Validation error",
+        errors=[RequiredError(field=exc.field)],
     )
 
     return JSONResponse(

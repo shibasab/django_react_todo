@@ -1,10 +1,12 @@
-from typing import List, NewType
+import calendar
+from datetime import date, timedelta
+from typing import List, NewType, cast
 from sqlalchemy.orm import Session
 
 from app.models.todo import Todo
-from app.schemas.todo import TodoCreate, TodoUpdate
+from app.schemas.todo import TodoCreate, TodoUpdate, TodoRecurrenceType
 from app.repositories.todo import TodoRepository
-from app.exceptions import NotFoundError, DuplicateError
+from app.exceptions import NotFoundError, DuplicateError, RequiredFieldError
 
 
 # ビジネスバリデーション完了済みのTODOデータを表す型
@@ -52,15 +54,70 @@ class TodoService:
         self, owner_id: int, data: TodoCreate, exclude_id: int | None = None
     ) -> ValidatedTodoData:
         """TODOデータのバリデーションを行い、バリデーション済みデータを返す"""
+        self._validate_recurrence_due_date(data.due_date, data.recurrence_type)
         self._ensure_name_unique(owner_id, data.name, exclude_id=exclude_id)
         return ValidatedTodoData(data)
 
     def _validate_update(
-        self, owner_id: int, data: TodoUpdate, exclude_id: int
+        self, owner_id: int, data: TodoUpdate, todo: Todo, exclude_id: int
     ) -> ValidatedTodoUpdate:
         if "name" in data.model_fields_set and data.name is not None:
             self._ensure_name_unique(owner_id, data.name, exclude_id=exclude_id)
+
+        due_date = cast(
+            date | None,
+            data.due_date if "due_date" in data.model_fields_set else todo.due_date,
+        )
+        recurrence_type = cast(
+            TodoRecurrenceType,
+            data.recurrence_type
+            if "recurrence_type" in data.model_fields_set
+            and data.recurrence_type is not None
+            else todo.recurrence_type,
+        )
+        self._validate_recurrence_due_date(due_date, recurrence_type)
         return ValidatedTodoUpdate(data)
+
+    def _validate_recurrence_due_date(
+        self,
+        due_date: date | None,
+        recurrence_type: TodoRecurrenceType,
+    ) -> None:
+        if recurrence_type != "none" and due_date is None:
+            raise RequiredFieldError(
+                "Due date is required for recurring tasks",
+                field="dueDate",
+            )
+
+    def _is_completion_transition(self, todo: Todo, was_completed: bool) -> bool:
+        is_completed = bool(todo.is_completed)
+        recurrence_type = cast(TodoRecurrenceType, todo.recurrence_type)
+        due_date = cast(date | None, todo.due_date)
+        return (
+            not was_completed
+            and is_completed
+            and recurrence_type != "none"
+            and due_date is not None
+        )
+
+    def _calculate_next_due_date(
+        self,
+        recurrence_type: TodoRecurrenceType,
+        base_date: date,
+    ) -> date:
+        if recurrence_type == "daily":
+            return base_date + timedelta(days=1)
+        if recurrence_type == "weekly":
+            return base_date + timedelta(days=7)
+        if recurrence_type == "monthly":
+            return self._add_one_month(base_date)
+        return base_date
+
+    def _add_one_month(self, value: date) -> date:
+        year = value.year + 1 if value.month == 12 else value.year
+        month = 1 if value.month == 12 else value.month + 1
+        day = min(value.day, calendar.monthrange(year, month)[1])
+        return date(year, month, day)
 
     def _create_todo_entity(self, data: ValidatedTodoData, owner_id: int) -> Todo:
         """ValidatedTodoData からTodoエンティティを作成する"""
@@ -70,6 +127,7 @@ class TodoService:
             due_date=data.due_date,
             owner_id=owner_id,
             is_completed=data.is_completed,
+            recurrence_type=data.recurrence_type,
         )
 
     def _apply_update(self, todo: Todo, data: ValidatedTodoUpdate) -> None:
@@ -80,8 +138,13 @@ class TodoService:
             todo.detail = data.detail or ""
         if "due_date" in data.model_fields_set:
             todo.due_date = data.due_date
-        if "is_completed" in data.model_fields_set:
+        if "is_completed" in data.model_fields_set and data.is_completed is not None:
             todo.is_completed = data.is_completed
+        if (
+            "recurrence_type" in data.model_fields_set
+            and data.recurrence_type is not None
+        ):
+            todo.recurrence_type = data.recurrence_type
 
     def create_todo(self, data: TodoCreate, owner_id: int) -> Todo:
         validated = self._validate_todo(owner_id, data)
@@ -100,9 +163,19 @@ class TodoService:
 
     def update_todo(self, todo_id: int, data: TodoUpdate, owner_id: int) -> Todo:
         todo = self.get_todo(todo_id, owner_id)
+        was_completed = bool(todo.is_completed)
 
-        update_data = self._validate_update(owner_id, data, exclude_id=todo_id)
+        update_data = self._validate_update(owner_id, data, todo, exclude_id=todo_id)
         self._apply_update(todo, update_data)
+        self.db.flush()
+
+        if self._is_completion_transition(todo, was_completed):
+            next_due_date = self._calculate_next_due_date(
+                cast(TodoRecurrenceType, todo.recurrence_type),
+                date.today(),
+            )
+            self.repo.create_recurrence_successor(todo, next_due_date)
+
         self.db.commit()
         self.db.refresh(todo)
         return todo

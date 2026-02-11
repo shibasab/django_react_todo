@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from typing import List, Optional
 from sqlalchemy import or_
+from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.orm import Session
 from app.models.todo import Todo
 
@@ -60,6 +61,24 @@ class TodoRepository:
         self.db.add(todo)
         return todo
 
+    def create_recurrence_successor(
+        self, source_todo: Todo, next_due_date: date
+    ) -> None:
+        stmt = (
+            insert(Todo)
+            .values(
+                name=source_todo.name,
+                detail=source_todo.detail,
+                owner_id=source_todo.owner_id,
+                due_date=next_due_date,
+                is_completed=False,
+                recurrence_type=source_todo.recurrence_type,
+                previous_todo_id=source_todo.id,
+            )
+            .on_conflict_do_nothing(index_elements=["previous_todo_id"])
+        )
+        self.db.execute(stmt)
+
     def delete(self, todo: Todo) -> None:
         self.db.delete(todo)
 
@@ -76,7 +95,11 @@ class TodoRepository:
         Returns:
             bool: タスクが存在する場合True、存在しない場合False
         """
-        query = self.db.query(Todo).filter(Todo.owner_id == owner_id, Todo.name == name)
+        query = self.db.query(Todo).filter(
+            Todo.owner_id == owner_id,
+            Todo.name == name,
+            Todo.is_completed.is_(False),
+        )
         if exclude_id is not None:
             query = query.filter(Todo.id != exclude_id)
         return query.first() is not None
