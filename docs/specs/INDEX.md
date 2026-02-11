@@ -5,12 +5,13 @@
 ## Idea
 
 - [タスク進捗カンバンボード](./000_backlog/task-progress-kanban-board.md) (task_progress_kanban_board) - 2026-02-11 - Idea
-- [繰り返しタスク設定](./000_backlog/recurring-task-management.md) (recurring_task_management) - 2026-02-11 - Idea
 - [タスク一覧操作の効率化](./000_backlog/task-list-operations.md) (task_list_operations) - 2026-02-08 - Idea
 - [タスク優先度設定](./000_backlog/task-priority.md) (task_priority) - 2026-01-20 - Idea
 - [タスクカテゴリ・タグ](./000_backlog/task-category-tag.md) (task_category_tag) - 2026-01-20 - Idea
 
 ## Ready
+
+- [繰り返しタスク設定](./007_recurring_task_management/spec.md) (recurring_task_management) - 2026-02-11 - Ready
 
 ## In progress
 
