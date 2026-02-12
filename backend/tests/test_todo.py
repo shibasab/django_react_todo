@@ -57,6 +57,28 @@ class TestCreateTodo:
         assert data["errors"][0]["field"] == "name"
         assert data["errors"][0]["reason"] == "unique_violation"
 
+    def test_create_todo_allows_name_reuse_if_existing_task_completed(
+        self, client, auth_headers, test_user, test_db
+    ):
+        completed = Todo(
+            name="Reusable Name",
+            detail="done",
+            owner_id=test_user.id,
+            is_completed=True,
+        )
+        test_db.add(completed)
+        test_db.commit()
+
+        response = client.post(
+            "/api/todo/",
+            headers=auth_headers,
+            json={"name": "Reusable Name", "detail": "new"},
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["name"] == "Reusable Name"
+
     def test_create_todo_name_too_long(self, client, auth_headers):
         """タスク名が100文字を超える場合は422エラー"""
         long_name = "a" * 101
@@ -428,6 +450,30 @@ class TestUpdateTodo:
         assert len(data["errors"]) == 1
         assert data["errors"][0]["field"] == "name"
         assert data["errors"][0]["reason"] == "unique_violation"
+
+    def test_update_name_can_match_completed_task_name(
+        self, client, auth_headers, test_user, test_db
+    ):
+        completed = Todo(
+            name="Completed Name",
+            detail="done",
+            owner_id=test_user.id,
+            is_completed=True,
+        )
+        editing = Todo(name="Editing Task", detail="todo", owner_id=test_user.id)
+        test_db.add_all([completed, editing])
+        test_db.commit()
+        test_db.refresh(editing)
+
+        response = client.put(
+            f"/api/todo/{editing.id}/",
+            headers=auth_headers,
+            json={"name": "Completed Name", "detail": "updated"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["name"] == "Completed Name"
 
     def test_update_same_name_succeeds(self, client, auth_headers, test_user, test_db):
         """同じ名前のまま他フィールドを更新して成功"""
