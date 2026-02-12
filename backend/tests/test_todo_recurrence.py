@@ -1,6 +1,8 @@
 from datetime import date
 
 from app.models.todo import Todo
+from app.models.user import User
+from app.services.auth import create_access_token
 
 
 class FixedDate(date):
@@ -51,6 +53,39 @@ class TestTodoRecurrenceValidation:
 
 
 class TestTodoRecurrenceGeneration:
+    def test_daily_recurrence_generates_next_due_date_from_completion_date(
+        self, client, auth_headers, test_user, test_db, monkeypatch
+    ):
+        monkeypatch.setattr("app.services.todo.date", FixedDate)
+        original = Todo(
+            name="Daily Backup",
+            detail="Run incremental backup",
+            owner_id=test_user.id,
+            due_date=date(2026, 1, 28),
+            recurrence_type="daily",
+            is_completed=False,
+        )
+        test_db.add(original)
+        test_db.commit()
+        test_db.refresh(original)
+
+        response = client.put(
+            f"/api/todo/{original.id}/",
+            headers=auth_headers,
+            json={"isCompleted": True},
+        )
+
+        assert response.status_code == 200
+        successor = (
+            test_db.query(Todo).filter(Todo.previous_todo_id == original.id).first()
+        )
+        assert successor is not None
+        assert successor.name == "Daily Backup"
+        assert successor.detail == "Run incremental backup"
+        assert successor.recurrence_type == "daily"
+        assert successor.is_completed is False
+        assert successor.due_date == date(2026, 2, 1)
+
     def test_complete_recurring_todo_generates_next_todo(
         self, client, auth_headers, test_user, test_db, monkeypatch
     ):
@@ -213,6 +248,111 @@ class TestTodoRecurrenceGeneration:
 
         assert disable_response.status_code == 200
         assert complete_response.status_code == 200
+        successors = (
+            test_db.query(Todo).filter(Todo.previous_todo_id == original.id).all()
+        )
+        assert len(successors) == 0
+
+    def test_recurrence_type_change_applies_to_next_generation(
+        self, client, auth_headers, test_user, test_db, monkeypatch
+    ):
+        monkeypatch.setattr("app.services.todo.date", FixedDate)
+        original = Todo(
+            name="Recurring Cleanup",
+            detail="Cleanup old logs",
+            owner_id=test_user.id,
+            due_date=date(2026, 1, 14),
+            recurrence_type="weekly",
+            is_completed=False,
+        )
+        test_db.add(original)
+        test_db.commit()
+        test_db.refresh(original)
+
+        change_response = client.put(
+            f"/api/todo/{original.id}/",
+            headers=auth_headers,
+            json={"recurrenceType": "monthly"},
+        )
+        complete_response = client.put(
+            f"/api/todo/{original.id}/",
+            headers=auth_headers,
+            json={"isCompleted": True},
+        )
+
+        assert change_response.status_code == 200
+        assert complete_response.status_code == 200
+
+        successor = (
+            test_db.query(Todo).filter(Todo.previous_todo_id == original.id).first()
+        )
+        assert successor is not None
+        assert successor.recurrence_type == "monthly"
+        assert successor.due_date == date(2026, 2, 28)
+
+    def test_other_user_cannot_complete_recurring_todo(
+        self, client, test_user, test_db, monkeypatch
+    ):
+        monkeypatch.setattr("app.services.todo.date", FixedDate)
+        original = Todo(
+            name="Private Recurrence",
+            detail="Owner only",
+            owner_id=test_user.id,
+            due_date=date(2026, 1, 20),
+            recurrence_type="weekly",
+            is_completed=False,
+        )
+        test_db.add(original)
+
+        other_user = User(username="otheruser-recurrence", email="other@example.com")
+        other_user.set_password("otherpassword")
+        test_db.add(other_user)
+        test_db.commit()
+        test_db.refresh(original)
+        test_db.refresh(other_user)
+
+        token = create_access_token(data={"sub": str(other_user.id)})
+        other_headers = {"Authorization": f"Bearer {token}"}
+
+        response = client.put(
+            f"/api/todo/{original.id}/",
+            headers=other_headers,
+            json={"isCompleted": True},
+        )
+
+        assert response.status_code == 404
+        successors = (
+            test_db.query(Todo).filter(Todo.previous_todo_id == original.id).all()
+        )
+        assert len(successors) == 0
+
+    def test_delete_recurring_todo_prevents_future_successor_generation(
+        self, client, auth_headers, test_user, test_db
+    ):
+        original = Todo(
+            name="Deletable Recurrence",
+            detail="",
+            owner_id=test_user.id,
+            due_date=date(2026, 1, 20),
+            recurrence_type="weekly",
+            is_completed=False,
+        )
+        test_db.add(original)
+        test_db.commit()
+        test_db.refresh(original)
+
+        delete_response = client.delete(
+            f"/api/todo/{original.id}/",
+            headers=auth_headers,
+        )
+        get_response = client.get(
+            f"/api/todo/{original.id}/",
+            headers=auth_headers,
+        )
+
+        assert delete_response.status_code == 204
+        assert get_response.status_code == 404
+
         successors = (
             test_db.query(Todo).filter(Todo.previous_todo_id == original.id).all()
         )
