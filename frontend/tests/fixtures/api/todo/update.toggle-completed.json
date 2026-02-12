@@ -3,5 +3,6 @@
   "name": "Test Todo 1",
   "detail": "Detail 1",
   "dueDate": null,
-  "isCompleted": true
+  "isCompleted": true,
+  "recurrenceType": "none"
 }

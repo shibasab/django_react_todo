@@ -43,6 +43,7 @@ describe('DashboardPage', () => {
         expect(within(container).getByRole('button', { name: '追加' })).toBeInTheDocument()
         expect(within(container).getByRole('button', { name: '詳細入力を開く' })).toBeInTheDocument()
         expect(within(container).getByRole('button', { name: 'クリア' })).toBeInTheDocument()
+        expect(within(container).getByText('繰り返し: 毎週')).toBeInTheDocument()
         expect(within(container).queryByLabelText('Task')).not.toBeInTheDocument()
       })
     })
@@ -88,6 +89,7 @@ describe('DashboardPage', () => {
             detail: '',
             dueDate: '2026-02-20',
             isCompleted: false,
+            recurrenceType: 'none',
           },
         })
       })
@@ -129,6 +131,7 @@ describe('DashboardPage', () => {
             detail: '',
             dueDate: null,
             isCompleted: false,
+            recurrenceType: 'none',
           },
         })
       })
@@ -153,6 +156,7 @@ describe('DashboardPage', () => {
       await waitFor(() => {
         expect(within(container).getByLabelText('Task')).toBeInTheDocument()
         expect(within(container).getByLabelText('Detail')).toBeInTheDocument()
+        expect(within(container).getByLabelText('Recurrence')).toBeInTheDocument()
         expect(within(container).getByLabelText('Due Date')).toBeInTheDocument()
       })
 
@@ -162,6 +166,33 @@ describe('DashboardPage', () => {
       await waitFor(() => {
         expect(within(container).queryByLabelText('Task')).not.toBeInTheDocument()
       })
+    })
+
+    it('繰り返し指定時に期限未入力だとバリデーションエラーになる', async () => {
+      const { apiClient, requestLog, clearRequests } = setupAuthenticatedDashboard()
+
+      const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
+
+      await waitFor(() => {
+        expect(within(container).getByText('Test Todo 1')).toBeInTheDocument()
+      })
+
+      const openButton = within(container).getByRole('button', { name: '詳細入力を開く' })
+      fireEvent.click(openButton)
+
+      await waitFor(() => {
+        expect(within(container).getByLabelText('Task')).toBeInTheDocument()
+      })
+      clearRequests()
+
+      fireEvent.change(within(container).getByLabelText('Task'), { target: { value: 'Recurring Todo' } })
+      fireEvent.change(within(container).getByLabelText('Recurrence'), { target: { value: 'weekly' } })
+      fireEvent.click(within(container).getByRole('button', { name: 'Submit' }))
+
+      await waitFor(() => {
+        expect(within(container).getByText('期限を入力してください')).toBeInTheDocument()
+      })
+      expect(requestLog).toHaveLength(0)
     })
   })
 
@@ -271,6 +302,7 @@ describe('DashboardPage', () => {
       await waitFor(() => {
         expect(within(container).getByLabelText('タスク名')).toBeInTheDocument()
         expect(within(container).getByLabelText('詳細')).toBeInTheDocument()
+        expect(within(container).getByLabelText('繰り返し')).toBeInTheDocument()
         expect(within(container).getByRole('button', { name: /save/i })).toBeInTheDocument()
         expect(within(container).getByRole('button', { name: /cancel/i })).toBeInTheDocument()
       })
@@ -308,8 +340,10 @@ describe('DashboardPage', () => {
       // 値を変更
       const nameInput = within(container).getByLabelText('タスク名')
       const detailInput = within(container).getByLabelText('詳細')
+      const recurrenceInput = within(container).getByLabelText('繰り返し')
       fireEvent.change(nameInput, { target: { value: 'Updated Todo' } })
       fireEvent.change(detailInput, { target: { value: 'Updated Detail' } })
+      fireEvent.change(recurrenceInput, { target: { value: 'none' } })
 
       // 保存ボタンをクリック
       const saveButton = within(container).getByRole('button', { name: /save/i })
