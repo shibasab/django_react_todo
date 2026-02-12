@@ -20,6 +20,14 @@ class DuplicateError(AppError):
         self.field = field
 
 
+class RequiredFieldError(AppError):
+    """必須フィールドが不足している場合のエラー"""
+
+    def __init__(self, message: str = "Field is required", field: str = "unknown"):
+        super().__init__(message)
+        self.field = field
+
+
 class AuthenticationError(AppError):
     """認証に失敗した場合のエラー"""
 

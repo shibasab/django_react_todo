@@ -1,14 +1,14 @@
 from datetime import datetime, date
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Literal
 
 from sqlalchemy import (
     Boolean,
     Date,
     DateTime,
     ForeignKey,
+    Index,
     String,
     Text,
-    UniqueConstraint,
     text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -22,7 +22,15 @@ from app.database import Base
 
 class Todo(Base):
     __tablename__ = "todos"
-    __table_args__ = (UniqueConstraint("owner_id", "name", name="uq_todo_owner_name"),)
+    __table_args__ = (
+        Index(
+            "ix_todo_owner_name_incomplete_unique",
+            "owner_id",
+            "name",
+            unique=True,
+            sqlite_where=text("is_completed = 0"),
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -35,5 +43,24 @@ class Todo(Base):
     is_completed: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default=text("0"), nullable=False
     )
+    recurrence_type: Mapped[Literal["none", "daily", "weekly", "monthly"]] = (
+        mapped_column(
+            String(20),
+            default="none",
+            server_default="none",
+            nullable=False,
+        )
+    )
+    previous_todo_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("todos.id", ondelete="SET NULL"),
+        nullable=True,
+        unique=True,
+    )
 
     owner: Mapped["User"] = relationship("User", backref="todos")
+    previous_todo: Mapped[Optional["Todo"]] = relationship(
+        "Todo",
+        remote_side=[id],
+        foreign_keys=[previous_todo_id],
+        uselist=False,
+    )
