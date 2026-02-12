@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 
 import type { ValidationError, ValidationErrorResponse } from '../models/error'
-import type { CreateTodoRequest, Todo } from '../models/todo'
+import type { CreateTodoRequest, Todo, TodoRecurrenceType } from '../models/todo'
 import type { TodoSearchParams, TodoSearchState } from './todoSearch'
 
 import { useApiClient } from '../contexts/ApiContext'
@@ -23,12 +23,27 @@ const getTodoDetailErrors = (value: string): readonly ValidationError[] => {
   return removeNulls([validateMaxLength('detail', value, TODO_DETAIL_MAX_LENGTH)])
 }
 
+const getTodoDueDateErrors = (
+  dueDate: string | null,
+  recurrenceType: TodoRecurrenceType,
+): readonly ValidationError[] => {
+  if (recurrenceType === 'none' || dueDate != null) {
+    return []
+  }
+  return [{ field: 'dueDate', reason: 'required' }]
+}
+
 /**
  * Todoフォームのバリデーション
  * @returns バリデーションエラーの配列（エラーがなければ空配列）
  */
-const validateTodoForm = (name: string, detail: string): readonly ValidationError[] => {
-  return [...getTodoNameErrors(name), ...getTodoDetailErrors(detail)]
+const validateTodoForm = (
+  name: string,
+  detail: string,
+  dueDate: string | null,
+  recurrenceType: TodoRecurrenceType,
+): readonly ValidationError[] => {
+  return [...getTodoNameErrors(name), ...getTodoDetailErrors(detail), ...getTodoDueDateErrors(dueDate, recurrenceType)]
 }
 
 type ErrorsUpdater = (update: (prev: readonly ValidationError[]) => readonly ValidationError[]) => void
@@ -69,7 +84,12 @@ type TodoService = Readonly<{
   updateTodo: (todo: Todo) => Promise<readonly ValidationError[] | undefined>
   toggleTodoCompletion: (todo: Todo) => Promise<void>
   removeTodo: (id: number) => Promise<void>
-  validateTodo: (name: string, detail: string) => readonly ValidationError[]
+  validateTodo: (
+    name: string,
+    detail: string,
+    dueDate: string | null,
+    recurrenceType: TodoRecurrenceType,
+  ) => readonly ValidationError[]
 }>
 
 const buildTodoSearchParams = (criteria?: TodoSearchState): TodoSearchParams | undefined => {
@@ -115,7 +135,7 @@ export const useTodo = (): TodoService => {
   const addTodo = useCallback(
     async (data: CreateTodoRequest): Promise<readonly ValidationError[] | undefined> => {
       // クライアントバリデーション
-      const clientErrors = validateTodoForm(data.name, data.detail)
+      const clientErrors = validateTodoForm(data.name, data.detail, data.dueDate, data.recurrenceType)
       if (clientErrors.length > 0) {
         return clientErrors
       }
@@ -135,7 +155,7 @@ export const useTodo = (): TodoService => {
   const updateTodo = useCallback(
     async (todo: Todo): Promise<readonly ValidationError[] | undefined> => {
       // クライアントバリデーション
-      const clientErrors = validateTodoForm(todo.name, todo.detail)
+      const clientErrors = validateTodoForm(todo.name, todo.detail, todo.dueDate, todo.recurrenceType)
       if (clientErrors.length > 0) {
         return clientErrors
       }
