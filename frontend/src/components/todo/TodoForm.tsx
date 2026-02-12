@@ -3,7 +3,7 @@ import { useCallback, useState, type FormEvent, type ChangeEvent } from 'react'
 import type { ValidationError } from '../../models/error'
 
 import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH, useTodoFieldValidation } from '../../hooks/useTodo'
-import { Todo } from '../../models/todo'
+import { Todo, TodoRecurrenceType } from '../../models/todo'
 import { mergeValidationErrors } from '../../services/validation'
 import { FieldError } from '../FieldError'
 import { ValidatedInput } from '../ValidatedInput'
@@ -16,6 +16,7 @@ type FormState = Readonly<{
   name: string
   detail: string
   dueDate: string
+  recurrenceType: TodoRecurrenceType
 }>
 
 export const TodoForm = ({ onSubmit }: TodoFormProps) => {
@@ -23,6 +24,7 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
     name: '',
     detail: '',
     dueDate: '',
+    recurrenceType: 'none',
   })
   const [errors, setErrors] = useState<readonly ValidationError[]>([])
 
@@ -32,7 +34,7 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
 
   const { validateName, validateDetail } = useTodoFieldValidation((update) => setErrors(update))
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormState((prev) => ({ ...prev, [name]: value }))
   }
@@ -45,12 +47,13 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
       detail: formState.detail,
       dueDate,
       isCompleted: false,
+      recurrenceType: formState.recurrenceType,
     })
     if (validationErrors != null && validationErrors.length > 0) {
       mergeErrors(validationErrors)
       return
     }
-    setFormState({ name: '', detail: '', dueDate: '' })
+    setFormState({ name: '', detail: '', dueDate: '', recurrenceType: 'none' })
     setErrors([])
   }
 
@@ -82,6 +85,23 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
           validate={validateDetail}
           errors={errors}
         />
+        <div className="mb-4">
+          <label htmlFor="todo-recurrenceType" className="block text-sm font-medium text-gray-700 mb-2">
+            Recurrence
+          </label>
+          <select
+            id="todo-recurrenceType"
+            name="recurrenceType"
+            onChange={handleChange}
+            value={formState.recurrenceType}
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"
+          >
+            <option value="none">なし</option>
+            <option value="daily">毎日</option>
+            <option value="weekly">毎週</option>
+            <option value="monthly">毎月</option>
+          </select>
+        </div>
         <div className="mb-4">
           <label htmlFor="todo-dueDate" className="block text-sm font-medium text-gray-700 mb-2">
             Due Date
