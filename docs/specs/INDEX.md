@@ -11,7 +11,7 @@
 
 ## Ready
 
-- [繰り返しタスク設定](./007_recurring_task_management/spec.md) (recurring_task_management) - 2026-02-11 - Ready
+
 
 ## In progress
 
@@ -24,5 +24,6 @@
 - [タスクの更新機能](./001_update_task/spec.md) (update_task) - 2026-01-14 - Done
 - [期限設定 (Deadline)](./003_task_deadline/spec.md) (task_deadline) - 2026-01-19 - Done
 - [タスク完了ステータス](./004_task_completion_status/spec.md) (task_completion_status) - 2026-01-20 - Done
+- [繰り返しタスク設定](./007_recurring_task_management/spec.md) (recurring_task_management) - 2026-02-14 - Done
 
 ## Abandoned
