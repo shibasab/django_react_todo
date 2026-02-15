@@ -46,7 +46,7 @@ export const TodoForm = ({ onSubmit }: TodoFormProps) => {
       name: formState.name.trim(),
       detail: formState.detail,
       dueDate,
-      isCompleted: false,
+      progressStatus: 'not_started',
       recurrenceType: formState.recurrenceType,
     })
     if (validationErrors != null && validationErrors.length > 0) {

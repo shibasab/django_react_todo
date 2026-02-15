@@ -7,8 +7,9 @@ import { SelectBox, type SelectOption } from '../SelectBox'
 
 const STATUS_OPTIONS = [
   { value: 'all', label: 'すべて' },
+  { value: 'not_started', label: '着手前' },
+  { value: 'in_progress', label: '進行中' },
   { value: 'completed', label: '完了' },
-  { value: 'incomplete', label: '未完了' },
 ] as const satisfies readonly SelectOption<TodoStatusFilter>[]
 
 const DUE_DATE_OPTIONS = [

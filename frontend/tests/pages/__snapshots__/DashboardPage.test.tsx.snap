@@ -15,8 +15,8 @@ exports[`DashboardPage > TODO更新 > チェックボックスクリックで完
     "body": {
       "detail": "Detail 1",
       "dueDate": null,
-      "isCompleted": true,
       "name": "Test Todo 1",
+      "progressStatus": "completed",
       "recurrenceType": "none",
     },
     "method": "PUT",
@@ -31,8 +31,8 @@ exports[`DashboardPage > TODO更新 > 値変更→保存ボタンでPUT APIが�
     "body": {
       "detail": "Updated Detail",
       "dueDate": null,
-      "isCompleted": false,
       "name": "Updated Todo",
+      "progressStatus": "not_started",
       "recurrenceType": "none",
     },
     "method": "PUT",
@@ -57,7 +57,7 @@ exports[`DashboardPage > 検索・フィルタ > 検索条件の変更後にデ�
     "query": {
       "due_date": "today",
       "keyword": "Test",
-      "status": "completed",
+      "progress_status": "completed",
     },
     "url": "/todo/",
   },

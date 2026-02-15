@@ -33,6 +33,11 @@ export const TodoList = ({ todos, hasSearchCriteria, onDelete, onEdit, onToggleC
     weekly: '毎週',
     monthly: '毎月',
   }
+  const progressStatusLabel: Record<Todo['progressStatus'], string> = {
+    not_started: '着手前',
+    in_progress: '進行中',
+    completed: '完了',
+  }
 
   const handleEditClick = (todo: Todo) => {
     setEditState({
@@ -40,7 +45,7 @@ export const TodoList = ({ todos, hasSearchCriteria, onDelete, onEdit, onToggleC
       name: todo.name,
       detail: todo.detail,
       dueDate: todo.dueDate ?? '',
-      isCompleted: todo.isCompleted,
+      progressStatus: todo.progressStatus,
       recurrenceType: todo.recurrenceType,
       errors: [],
     })
@@ -94,6 +99,7 @@ export const TodoList = ({ todos, hasSearchCriteria, onDelete, onEdit, onToggleC
         ) : (
           todos.map((todo) => {
             const isEditing = editState?.id === todo.id
+            const isCompleted = todo.progressStatus === 'completed'
 
             if (isEditing) {
               return (
@@ -143,6 +149,25 @@ export const TodoList = ({ todos, hasSearchCriteria, onDelete, onEdit, onToggleC
                     </select>
                   </div>
                   <div className="mb-3">
+                    <label
+                      htmlFor={`edit-progressStatus-${todo.id}`}
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      進捗
+                    </label>
+                    <select
+                      id={`edit-progressStatus-${todo.id}`}
+                      name="progressStatus"
+                      value={editState.progressStatus}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"
+                    >
+                      <option value="not_started">着手前</option>
+                      <option value="in_progress">進行中</option>
+                      <option value="completed">完了</option>
+                    </select>
+                  </div>
+                  <div className="mb-3">
                     <label htmlFor={`edit-dueDate-${todo.id}`} className="block text-sm font-medium text-gray-700 mb-1">
                       期限
                     </label>
@@ -180,30 +205,33 @@ export const TodoList = ({ todos, hasSearchCriteria, onDelete, onEdit, onToggleC
               <div
                 key={todo.id}
                 className={`rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-200 border border-gray-100 overflow-hidden ${
-                  todo.isCompleted ? 'bg-gray-50' : 'bg-white'
+                  isCompleted ? 'bg-gray-50' : 'bg-white'
                 }`}
               >
                 <div className="flex justify-between items-start gap-4">
                   <div className="flex items-start gap-3 flex-1 min-w-0">
                     <input
                       type="checkbox"
-                      checked={todo.isCompleted}
+                      checked={isCompleted}
                       onChange={() => onToggleCompletion(todo)}
                       className="mt-1.5 w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300 cursor-pointer"
                     />
                     <div className="min-w-0">
                       <h5
                         className={`text-lg font-semibold break-all overflow-hidden ${
-                          todo.isCompleted ? 'text-gray-400 line-through' : 'text-gray-800'
+                          isCompleted ? 'text-gray-400 line-through' : 'text-gray-800'
                         }`}
                       >
                         {todo.name}
                       </h5>
-                      <p className={`text-sm mt-1 ${todo.isCompleted ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <p className={`text-sm mt-1 ${isCompleted ? 'text-gray-400' : 'text-gray-500'}`}>
                         期限: {todo.dueDate ?? '-'}
                       </p>
+                      <p className={`text-sm mt-1 ${isCompleted ? 'text-gray-400' : 'text-indigo-700'}`}>
+                        進捗: {progressStatusLabel[todo.progressStatus]}
+                      </p>
                       {todo.recurrenceType !== 'none' ? (
-                        <p className={`text-sm mt-1 ${todo.isCompleted ? 'text-gray-400' : 'text-cyan-700'}`}>
+                        <p className={`text-sm mt-1 ${isCompleted ? 'text-gray-400' : 'text-cyan-700'}`}>
                           繰り返し: {recurrenceTypeLabel[todo.recurrenceType]}
                         </p>
                       ) : null}
@@ -228,7 +256,7 @@ export const TodoList = ({ todos, hasSearchCriteria, onDelete, onEdit, onToggleC
                   <div className="mt-3 pt-3 border-t border-gray-100">
                     <p
                       className={`break-all whitespace-pre-wrap overflow-hidden ${
-                        todo.isCompleted ? 'text-gray-400' : 'text-gray-600'
+                        isCompleted ? 'text-gray-400' : 'text-gray-600'
                       }`}
                     >
                       {todo.detail}
