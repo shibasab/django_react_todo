@@ -208,3 +208,88 @@
 1. カンバン列内並び順は `created_at desc` 固定
 2. DnDキーボード操作は初期リリース範囲外
 
+## 10. PR分割（実装順）
+
+### PR-1: Backend API契約を `progress_status` へ移行（Breaking）
+
+- 対応タスク:
+  - B-1
+  - B-2（API契約・状態更新の部分）
+  - B-5（API系テスト）
+- 主な変更:
+  - `is_completed` / `isCompleted` をモデル・スキーマ・APIから削除
+  - `progress_status` / `progressStatus` のみ受け付ける
+  - 状態フィルタを `progress_status` に統一
+- 自動テスト:
+  - 新規:
+    - `backend/tests/test_todo_progress_status.py`（API契約と状態更新）
+  - 既存更新:
+    - `backend/tests/test_todo.py`
+    - `backend/tests/test_todo_completion.py`
+    - `backend/tests/test_todo_recurrence.py`
+  - 補足:
+    - 認証系など非関連機能は既存テストで十分なため新規追加不要
+- 検証コマンド:
+  - `cd backend && uv run pytest tests/test_todo.py tests/test_todo_completion.py tests/test_todo_recurrence.py tests/test_todo_progress_status.py`
+
+### PR-2: Frontend型/一覧UIを `progressStatus` へ移行
+
+- 対応タスク:
+  - F-1
+  - F-2（一覧編集UIの部分）
+  - F-3（一覧系テスト更新）
+- 主な変更:
+  - `Todo` 型から `isCompleted` を削除し `progressStatus` を導入
+  - 一覧編集フォームで `progressStatus` を更新可能にする
+  - API payloadを `progressStatus` のみに統一
+- 自動テスト:
+  - 新規:
+    - なし（このPRは既存一覧系テスト更新でカバー）
+  - 既存更新:
+    - `frontend/tests/pages/DashboardPage.test.tsx`
+    - `frontend/tests/fixtures/api/todo/*.json`
+- 検証コマンド:
+  - `cd frontend && npm run test -- tests/pages/DashboardPage.test.tsx`
+  - `cd frontend && npm run typecheck`
+
+### PR-3: カンバンUI実装と一覧連動
+
+- 対応タスク:
+  - F-2（カンバン部分）
+  - F-3（カンバン系テスト）
+- 主な変更:
+  - `TodoKanbanBoard` 追加
+  - 列移動で `progressStatus` を更新
+  - 一覧/カンバンを同一状態ソースで連動
+- 自動テスト:
+  - 新規:
+    - `frontend/tests/components/TodoKanbanBoard.test.tsx`
+    - `frontend/tests/pages/DashboardPage.kanban.test.tsx`
+  - 既存更新:
+    - `frontend/tests/pages/DashboardPage.test.tsx`（回帰確認分）
+- 検証コマンド:
+  - `cd frontend && npm run test -- tests/components/TodoKanbanBoard.test.tsx tests/pages/DashboardPage.kanban.test.tsx tests/pages/DashboardPage.test.tsx`
+
+### PR-4: DB migration実装 + 運用ドキュメント + migration自動テスト
+
+- 対応タスク:
+  - B-3
+  - B-4
+  - B-5（migrationテスト）
+- 主な変更:
+  - `migrate_task_progress_schema.py` 実装
+  - `task-progress-migration.md` 作成
+  - `is_completed -> progress_status` 変換と `is_completed` 物理削除
+- 自動テスト:
+  - 新規:
+    - `backend/tests/test_migrate_task_progress_schema.py`
+  - 既存流用:
+    - `backend/tests/test_todo_progress_status.py`（移行後スキーマ前提の回帰）
+  - 補足:
+    - 運用手順書自体への新規テストは不要（スクリプトテストで担保）
+- 検証コマンド:
+  - `cd backend && uv run pytest tests/test_migrate_task_progress_schema.py tests/test_todo_progress_status.py`
+
+### PR外作業（リリース手順）
+
+- R-1（ステージングmigrationリハーサル）とR-2（本番実施）は、PRマージ後の運用タスクとして実施する。
