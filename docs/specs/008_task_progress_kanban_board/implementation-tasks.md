@@ -1,0 +1,210 @@
+# Implementation Tasks: タスク進捗カンバンボード
+
+## 0. 前提
+
+- 対象Spec: `docs/specs/008_task_progress_kanban_board/spec.md`
+- 対象設計: `docs/specs/008_task_progress_kanban_board/design.md`
+- 方針:
+  - `is_completed` / `isCompleted` は削除する
+  - 進捗は `progress_status` / `progressStatus` のみで管理する
+  - 本番反映前にデータマイグレーションを必ず実施する
+
+## 1. フェーズ構成
+
+1. Backend Refactor
+2. Frontend Refactor
+3. Migration Implementation
+4. Test / Quality Gate
+5. Pre-production Migration Rehearsal
+6. Verification
+
+## 2. Backend Tasks
+
+### B-1: モデル・スキーマを `progress_status` 単一化
+
+- 対象ファイル:
+  - `backend/app/models/todo.py`
+  - `backend/app/schemas/todo.py`
+- 実装内容:
+  - `progress_status` カラム/フィールド追加
+  - `is_completed` / `isCompleted` を削除
+  - Pydantic入出力を `progressStatus` のみに統一
+- DoD:
+  - APIレスポンスに `isCompleted` が存在しない
+  - 不正な `progressStatus` は422になる
+
+### B-2: Repository/Service/Routerを新状態モデルへ移行
+
+- 対象ファイル:
+  - `backend/app/repositories/todo.py`
+  - `backend/app/services/todo.py`
+  - `backend/app/routers/todo.py`
+- 実装内容:
+  - 状態フィルタを `progress_status` に統一
+  - 繰り返しタスク生成条件を `progress_status == completed` に置換
+  - `status` クエリや `isCompleted` 更新経路を削除
+- DoD:
+  - 一覧/更新/検索が `progress_status` で成立する
+  - 既存の繰り返しタスク挙動が回帰しない
+
+### B-3: DBマイグレーションスクリプト実装（本番前必須）
+
+- 対象ファイル:
+  - `backend/scripts/migrate_task_progress_schema.py`（新規）
+- 実装内容:
+  - DBバックアップ作成
+  - `todos` テーブル再作成で `is_completed` を物理削除
+  - 既存データ移行（`is_completed -> progress_status`）
+  - 新インデックス/制約を再作成
+  - 移行後整合チェックを実装
+- DoD:
+  - 移行後スキーマに `is_completed` が存在しない
+  - 再実行時の冪等性または安全停止が保証される
+
+### B-4: Migration運用ドキュメント作成
+
+- 対象ファイル:
+  - `backend/docs/task-progress-migration.md`（新規）
+- 実装内容:
+  - 実行手順
+  - 事前チェック項目
+  - ロールバック手順
+  - 本番実施タイミングと責任者確認項目
+- DoD:
+  - 手順のみで第三者が実施できる
+
+### B-5: Backendテスト更新
+
+- 対象ファイル:
+  - `backend/tests/test_todo.py`
+  - `backend/tests/test_todo_completion.py`
+  - `backend/tests/test_todo_recurrence.py`
+  - `backend/tests/test_todo_progress_status.py`（新規）
+  - `backend/tests/test_migrate_task_progress_schema.py`（新規）
+- 実装内容:
+  - `progressStatus` ベースのAPIテストへ更新
+  - migration結果検証テストを追加
+  - `isCompleted` 非存在を検証
+- DoD:
+  - 関連テストがすべて成功
+
+## 3. Frontend Tasks
+
+### F-1: 型とAPI連携を `progressStatus` のみに統一
+
+- 対象ファイル:
+  - `frontend/src/models/todo.ts`
+  - `frontend/src/hooks/useTodo.ts`
+- 実装内容:
+  - `isCompleted` を削除
+  - `progressStatus` を追加
+  - 更新時は `progressStatus` のみ送信
+- DoD:
+  - 型チェックが通る
+  - 旧フィールド参照が残らない
+
+### F-2: 一覧/カンバンUI更新
+
+- 対象ファイル:
+  - `frontend/src/pages/DashboardPage.tsx`
+  - `frontend/src/components/todo/TodoList.tsx`
+  - `frontend/src/components/todo/TodoKanbanBoard.tsx`（新規）
+  - `frontend/src/components/todo/TodoSearchControls.tsx`
+- 実装内容:
+  - 一覧/カンバン切替UI
+  - 一覧編集フォームに `progressStatus` 入力
+  - カンバン列移動で `progressStatus` 更新
+  - 成功時局所反映/失敗時再同期
+- DoD:
+  - 一覧とカンバンで同一状態を表示
+  - 列移動と一覧編集が相互に反映される
+
+### F-3: Frontendテスト/fixture更新
+
+- 対象ファイル:
+  - `frontend/tests/pages/DashboardPage.test.tsx`
+  - `frontend/tests/pages/DashboardPage.kanban.test.tsx`（新規）
+  - `frontend/tests/components/TodoKanbanBoard.test.tsx`（新規）
+  - `frontend/tests/fixtures/api/todo/*.json`
+- 実装内容:
+  - `progressStatus` 前提のfixtureへ更新
+  - 一覧/カンバン整合のテスト追加
+  - `isCompleted` 参照を削除
+- DoD:
+  - 既存/追加テストが成功
+
+## 4. Migration Rollout Tasks（本番前作業）
+
+### R-1: ステージングでマイグレーションリハーサル
+
+- 実施内容:
+  - 本番同等データで `migrate_task_progress_schema.py` 実行
+  - APIスモークテスト
+  - UIスモークテスト
+- DoD:
+  - 重大不整合なし
+  - 所要時間とロールバック時間を記録
+
+### R-2: 本番反映時の実施タスク
+
+- 実施内容:
+  - メンテナンス時間確保
+  - DBバックアップ
+  - migration実行
+  - デプロイ
+  - 事後検証
+- DoD:
+  - `is_completed` が本番DBから削除済み
+  - `progress_status` で正常稼働確認
+
+## 5. Test / Quality Gate
+
+### T-1: Backend
+
+- `cd backend && uv run pytest`
+- `cd backend && uv run ruff format`
+- `cd backend && uv run ruff check`
+- `cd backend && uv run pyrefly check`
+
+### T-2: Frontend
+
+- `cd frontend && npm run test`
+- `cd frontend && npm run format`
+- `cd frontend && npm run lint`
+- `cd frontend && npm run typecheck`
+
+## 6. Verification（Specシナリオ）
+
+- Scenario 1: カンバン3列表示
+- Scenario 2: 列移動で更新
+- Scenario 3: カンバン変更が一覧へ反映
+- Scenario 4: 一覧変更がカンバンへ反映
+- Scenario 5: 再表示後も状態保持
+
+## 7. 依存関係と実装順
+
+1. B-1 -> B-2 -> B-5（単体）
+2. F-1 -> F-2 -> F-3
+3. B-3 -> B-4 -> B-5（migration系）
+4. T-1/T-2
+5. R-1 -> R-2
+6. Scenario 1-5 の受け入れ確認
+
+## 8. 要件トレース（要件ID -> タスク）
+
+| 要件ID | 実装タスク | 検証タスク |
+| --- | --- | --- |
+| FR-001 | B-1, B-2, F-1 | B-5, F-3 |
+| FR-002 | F-2 | F-3, Scenario 1 |
+| FR-003 | B-2, F-2 | F-3, Scenario 2 |
+| FR-004 | F-2 | Scenario 3, Scenario 4 |
+| FR-005 | B-3, F-2 | Scenario 5 |
+| FR-006 | B-3, R-1, R-2 | migration mapping検証 |
+| NFR-001 | F-2 | request log検証 |
+| NFR-002 | B-2, F-2 | 一貫性検証 |
+
+## 9. 決定済み事項
+
+1. カンバン列内並び順は `created_at desc` 固定
+2. DnDキーボード操作は初期リリース範囲外
+
