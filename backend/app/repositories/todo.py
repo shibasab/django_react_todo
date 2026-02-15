@@ -14,7 +14,7 @@ class TodoRepository:
         self,
         owner_id: int,
         keyword: str | None = None,
-        status: str | None = None,
+        progress_status: str | None = None,
         due_date: str | None = None,
     ) -> List[Todo]:
         db_query = self.db.query(Todo).filter(Todo.owner_id == owner_id)
@@ -27,11 +27,8 @@ class TodoRepository:
                 )
             )
 
-        if status and status != "all":
-            if status == "completed":
-                db_query = db_query.filter(Todo.is_completed.is_(True))
-            elif status == "incomplete":
-                db_query = db_query.filter(Todo.is_completed.is_(False))
+        if progress_status:
+            db_query = db_query.filter(Todo.progress_status == progress_status)
 
         if due_date and due_date != "all":
             today = date.today()
@@ -71,7 +68,7 @@ class TodoRepository:
                 detail=source_todo.detail,
                 owner_id=source_todo.owner_id,
                 due_date=next_due_date,
-                is_completed=False,
+                progress_status="not_started",
                 recurrence_type=source_todo.recurrence_type,
                 previous_todo_id=source_todo.id,
             )
@@ -98,7 +95,7 @@ class TodoRepository:
         query = self.db.query(Todo).filter(
             Todo.owner_id == owner_id,
             Todo.name == name,
-            Todo.is_completed.is_(False),
+            Todo.progress_status != "completed",
         )
         if exclude_id is not None:
             query = query.filter(Todo.id != exclude_id)

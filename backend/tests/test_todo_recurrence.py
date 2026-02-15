@@ -63,7 +63,7 @@ class TestTodoRecurrenceGeneration:
             owner_id=test_user.id,
             due_date=date(2026, 1, 28),
             recurrence_type="daily",
-            is_completed=False,
+            progress_status="not_started",
         )
         test_db.add(original)
         test_db.commit()
@@ -72,7 +72,7 @@ class TestTodoRecurrenceGeneration:
         response = client.put(
             f"/api/todo/{original.id}/",
             headers=auth_headers,
-            json={"isCompleted": True},
+            json={"progressStatus": "completed"},
         )
 
         assert response.status_code == 200
@@ -83,7 +83,7 @@ class TestTodoRecurrenceGeneration:
         assert successor.name == "Daily Backup"
         assert successor.detail == "Run incremental backup"
         assert successor.recurrence_type == "daily"
-        assert successor.is_completed is False
+        assert successor.progress_status == "not_started"
         assert successor.due_date == date(2026, 2, 1)
 
     def test_complete_recurring_todo_generates_next_todo(
@@ -96,7 +96,7 @@ class TestTodoRecurrenceGeneration:
             owner_id=test_user.id,
             due_date=date(2026, 1, 20),
             recurrence_type="weekly",
-            is_completed=False,
+            progress_status="not_started",
         )
         test_db.add(original)
         test_db.commit()
@@ -105,13 +105,13 @@ class TestTodoRecurrenceGeneration:
         response = client.put(
             f"/api/todo/{original.id}/",
             headers=auth_headers,
-            json={"isCompleted": True},
+            json={"progressStatus": "completed"},
         )
 
         assert response.status_code == 200
         completed = test_db.query(Todo).filter(Todo.id == original.id).first()
         assert completed is not None
-        assert completed.is_completed is True
+        assert completed.progress_status == "completed"
 
         successors = (
             test_db.query(Todo)
@@ -123,7 +123,7 @@ class TestTodoRecurrenceGeneration:
         assert successor.name == "Weekly Report"
         assert successor.detail == "Prepare status report"
         assert successor.recurrence_type == "weekly"
-        assert successor.is_completed is False
+        assert successor.progress_status == "not_started"
         assert successor.due_date == date(2026, 2, 7)
 
     def test_duplicate_completion_requests_do_not_generate_multiple_successors(
@@ -136,7 +136,7 @@ class TestTodoRecurrenceGeneration:
             owner_id=test_user.id,
             due_date=date(2026, 1, 31),
             recurrence_type="daily",
-            is_completed=False,
+            progress_status="not_started",
         )
         test_db.add(original)
         test_db.commit()
@@ -145,12 +145,12 @@ class TestTodoRecurrenceGeneration:
         first = client.put(
             f"/api/todo/{original.id}/",
             headers=auth_headers,
-            json={"isCompleted": True},
+            json={"progressStatus": "completed"},
         )
         second = client.put(
             f"/api/todo/{original.id}/",
             headers=auth_headers,
-            json={"isCompleted": True},
+            json={"progressStatus": "completed"},
         )
 
         assert first.status_code == 200
@@ -171,7 +171,7 @@ class TestTodoRecurrenceGeneration:
             owner_id=test_user.id,
             due_date=date(2026, 1, 31),
             recurrence_type="monthly",
-            is_completed=False,
+            progress_status="not_started",
         )
         test_db.add(original)
         test_db.commit()
@@ -180,7 +180,7 @@ class TestTodoRecurrenceGeneration:
         response = client.put(
             f"/api/todo/{original.id}/",
             headers=auth_headers,
-            json={"isCompleted": True},
+            json={"progressStatus": "completed"},
         )
 
         assert response.status_code == 200
@@ -200,7 +200,7 @@ class TestTodoRecurrenceGeneration:
             owner_id=test_user.id,
             due_date=date(2024, 1, 31),
             recurrence_type="monthly",
-            is_completed=False,
+            progress_status="not_started",
         )
         test_db.add(original)
         test_db.commit()
@@ -209,7 +209,7 @@ class TestTodoRecurrenceGeneration:
         response = client.put(
             f"/api/todo/{original.id}/",
             headers=auth_headers,
-            json={"isCompleted": True},
+            json={"progressStatus": "completed"},
         )
 
         assert response.status_code == 200
@@ -229,7 +229,7 @@ class TestTodoRecurrenceGeneration:
             owner_id=test_user.id,
             due_date=date(2026, 1, 25),
             recurrence_type="weekly",
-            is_completed=False,
+            progress_status="not_started",
         )
         test_db.add(original)
         test_db.commit()
@@ -243,7 +243,7 @@ class TestTodoRecurrenceGeneration:
         complete_response = client.put(
             f"/api/todo/{original.id}/",
             headers=auth_headers,
-            json={"isCompleted": True},
+            json={"progressStatus": "completed"},
         )
 
         assert disable_response.status_code == 200
@@ -263,7 +263,7 @@ class TestTodoRecurrenceGeneration:
             owner_id=test_user.id,
             due_date=date(2026, 1, 14),
             recurrence_type="weekly",
-            is_completed=False,
+            progress_status="not_started",
         )
         test_db.add(original)
         test_db.commit()
@@ -277,7 +277,7 @@ class TestTodoRecurrenceGeneration:
         complete_response = client.put(
             f"/api/todo/{original.id}/",
             headers=auth_headers,
-            json={"isCompleted": True},
+            json={"progressStatus": "completed"},
         )
 
         assert change_response.status_code == 200
@@ -300,7 +300,7 @@ class TestTodoRecurrenceGeneration:
             owner_id=test_user.id,
             due_date=date(2026, 1, 20),
             recurrence_type="weekly",
-            is_completed=False,
+            progress_status="not_started",
         )
         test_db.add(original)
 
@@ -317,7 +317,7 @@ class TestTodoRecurrenceGeneration:
         response = client.put(
             f"/api/todo/{original.id}/",
             headers=other_headers,
-            json={"isCompleted": True},
+            json={"progressStatus": "completed"},
         )
 
         assert response.status_code == 404
@@ -335,7 +335,7 @@ class TestTodoRecurrenceGeneration:
             owner_id=test_user.id,
             due_date=date(2026, 1, 20),
             recurrence_type="weekly",
-            is_completed=False,
+            progress_status="not_started",
         )
         test_db.add(original)
         test_db.commit()

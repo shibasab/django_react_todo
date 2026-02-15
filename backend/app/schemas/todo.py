@@ -61,10 +61,13 @@ ValidatedDate = Annotated[Optional[date], WrapValidator(validate_date_format)]
 # - OptionalRequiredStr は「値を送れば必須の検証を行うが、未送信なら許容する」を表す
 OptionalRequiredStr = Annotated[Optional[RequiredStr], BeforeValidator(reject_null)]
 OptionalStr = Annotated[Optional[str], BeforeValidator(reject_null)]
-OptionalBool = Annotated[Optional[bool], BeforeValidator(reject_null)]
 TodoRecurrenceType = Literal["none", "daily", "weekly", "monthly"]
+TodoProgressStatus = Literal["not_started", "in_progress", "completed"]
 OptionalRecurrenceType = Annotated[
     Optional[TodoRecurrenceType], BeforeValidator(reject_null)
+]
+OptionalProgressStatus = Annotated[
+    Optional[TodoProgressStatus], BeforeValidator(reject_null)
 ]
 
 
@@ -72,25 +75,33 @@ class TodoBase(BaseModel):
     name: RequiredStr = Field(..., max_length=TODO_NAME_MAX_LENGTH)
     detail: str = Field(default="", max_length=TODO_DETAIL_MAX_LENGTH)
     due_date: ValidatedDate = Field(default=None, alias="dueDate")
-    is_completed: bool = Field(default=False, alias="isCompleted")
+    progress_status: TodoProgressStatus = Field(
+        default="not_started", alias="progressStatus"
+    )
     recurrence_type: TodoRecurrenceType = Field(default="none", alias="recurrenceType")
 
 
 class TodoCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     name: RequiredStr = Field(..., max_length=TODO_NAME_MAX_LENGTH)
     detail: str = Field(default="", max_length=TODO_DETAIL_MAX_LENGTH)
     due_date: ValidatedDate = Field(default=None, alias="dueDate")
-    is_completed: bool = Field(default=False, alias="isCompleted")
+    progress_status: TodoProgressStatus = Field(
+        default="not_started", alias="progressStatus"
+    )
     recurrence_type: TodoRecurrenceType = Field(default="none", alias="recurrenceType")
 
 
 class TodoUpdate(BaseModel):
-    model_config = ConfigDict(validate_default=False)
+    model_config = ConfigDict(validate_default=False, extra="forbid")
 
     name: OptionalRequiredStr = Field(default=None, max_length=TODO_NAME_MAX_LENGTH)
     detail: OptionalStr = Field(default=None, max_length=TODO_DETAIL_MAX_LENGTH)
     due_date: ValidatedDate = Field(default=None, alias="dueDate")
-    is_completed: OptionalBool = Field(default=None, alias="isCompleted")
+    progress_status: OptionalProgressStatus = Field(
+        default=None, alias="progressStatus"
+    )
     recurrence_type: OptionalRecurrenceType = Field(
         default=None, alias="recurrenceType"
     )
@@ -101,7 +112,9 @@ class TodoResponse(BaseModel):
     name: RequiredStr = Field(..., max_length=TODO_NAME_MAX_LENGTH)
     detail: str = Field(default="", max_length=TODO_DETAIL_MAX_LENGTH)
     due_date: ValidatedDate = Field(default=None, alias="dueDate")
-    is_completed: bool = Field(default=False, alias="isCompleted")
+    progress_status: TodoProgressStatus = Field(
+        default="not_started", alias="progressStatus"
+    )
     recurrence_type: TodoRecurrenceType = Field(default="none", alias="recurrenceType")
     owner: Optional[int] = Field(default=None, validation_alias="owner_id")
     created_at: datetime

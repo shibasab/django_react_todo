@@ -64,7 +64,7 @@ class TestCreateTodo:
             name="Reusable Name",
             detail="done",
             owner_id=test_user.id,
-            is_completed=True,
+            progress_status="completed",
         )
         test_db.add(completed)
         test_db.commit()
@@ -226,21 +226,21 @@ class TestTodoSearchFilters:
             name="Completed Task",
             detail="",
             owner_id=test_user.id,
-            is_completed=True,
+            progress_status="completed",
             due_date=within_week,
         )
         todo_incomplete_overdue = Todo(
             name="Overdue Task",
             detail="",
             owner_id=test_user.id,
-            is_completed=False,
+            progress_status="not_started",
             due_date=overdue,
         )
         todo_no_due = Todo(
             name="No Due Task",
             detail="",
             owner_id=test_user.id,
-            is_completed=False,
+            progress_status="not_started",
             due_date=None,
         )
         test_db.add_all([todo_completed, todo_incomplete_overdue, todo_no_due])
@@ -249,7 +249,7 @@ class TestTodoSearchFilters:
         response_completed = client.get(
             "/api/todo/",
             headers=auth_headers,
-            params={"status": "completed"},
+            params={"progress_status": "completed"},
         )
 
         assert response_completed.status_code == 200
@@ -365,7 +365,7 @@ class TestTodoSearchFilters:
             headers=auth_headers,
             params={
                 "keyword": "My",
-                "status": "all",
+                "progress_status": "completed",
                 "due_date": "all",
             },
         )
@@ -458,7 +458,7 @@ class TestUpdateTodo:
             name="Completed Name",
             detail="done",
             owner_id=test_user.id,
-            is_completed=True,
+            progress_status="completed",
         )
         editing = Todo(name="Editing Task", detail="todo", owner_id=test_user.id)
         test_db.add_all([completed, editing])
