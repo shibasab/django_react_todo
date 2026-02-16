@@ -2,7 +2,7 @@ from typing import List, Literal
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.models.user import User
-from app.schemas.todo import TodoCreate, TodoResponse, TodoUpdate
+from app.schemas.todo import TodoCreate, TodoResponse, TodoUpdate, TodoProgressStatus
 from app.dependencies.auth import get_current_user
 from app.dependencies.container import get_todo_service
 from app.services.todo import TodoService
@@ -14,9 +14,9 @@ router = APIRouter()
 @router.get("/", response_model=List[TodoResponse])
 def list_todos(
     keyword_param: str | None = Query(default=None, alias="keyword"),
-    status_param: Literal["all", "completed", "incomplete"] | None = Query(
+    progress_status_param: TodoProgressStatus | None = Query(
         default=None,
-        alias="status",
+        alias="progress_status",
     ),
     due_date_param: Literal["all", "today", "this_week", "overdue", "none"] | None = (
         Query(
@@ -31,7 +31,7 @@ def list_todos(
     todos = service.get_todos(
         current_user.id,  # pyrefly: ignore[bad-argument-type]
         keyword=keyword_param,
-        status=status_param,
+        progress_status=progress_status_param,
         due_date=due_date_param,
     )
     return [TodoResponse.model_validate(todo) for todo in todos]

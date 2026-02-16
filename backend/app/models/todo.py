@@ -1,8 +1,8 @@
-from datetime import datetime, date
-from typing import TYPE_CHECKING, Optional, Literal
+from datetime import date, datetime
+from typing import TYPE_CHECKING, Literal, Optional
 
 from sqlalchemy import (
-    Boolean,
+    CheckConstraint,
     Date,
     DateTime,
     ForeignKey,
@@ -23,12 +23,22 @@ from app.database import Base
 class Todo(Base):
     __tablename__ = "todos"
     __table_args__ = (
+        CheckConstraint(
+            "progress_status IN ('not_started', 'in_progress', 'completed')",
+            name="ck_todos_progress_status",
+        ),
         Index(
             "ix_todo_owner_name_incomplete_unique",
             "owner_id",
             "name",
             unique=True,
-            sqlite_where=text("is_completed = 0"),
+            sqlite_where=text("progress_status != 'completed'"),
+        ),
+        Index(
+            "ix_todo_owner_progress_status_created_at",
+            "owner_id",
+            "progress_status",
+            "created_at",
         ),
     )
 
@@ -40,8 +50,13 @@ class Todo(Base):
     )
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     due_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
-    is_completed: Mapped[bool] = mapped_column(
-        Boolean, default=False, server_default=text("0"), nullable=False
+    progress_status: Mapped[Literal["not_started", "in_progress", "completed"]] = (
+        mapped_column(
+            String(20),
+            default="not_started",
+            server_default="not_started",
+            nullable=False,
+        )
     )
     recurrence_type: Mapped[Literal["none", "daily", "weekly", "monthly"]] = (
         mapped_column(

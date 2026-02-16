@@ -4,7 +4,12 @@ from typing import List, NewType, cast
 from sqlalchemy.orm import Session
 
 from app.models.todo import Todo
-from app.schemas.todo import TodoCreate, TodoUpdate, TodoRecurrenceType
+from app.schemas.todo import (
+    TodoCreate,
+    TodoUpdate,
+    TodoProgressStatus,
+    TodoRecurrenceType,
+)
 from app.repositories.todo import TodoRepository
 from app.exceptions import NotFoundError, DuplicateError, RequiredFieldError
 
@@ -24,14 +29,14 @@ class TodoService:
         self,
         owner_id: int,
         keyword: str | None = None,
-        status: str | None = None,
+        progress_status: TodoProgressStatus | None = None,
         due_date: str | None = None,
     ) -> List[Todo]:
         normalized_keyword = self._normalize_search_term(keyword)
         return self.repo.get_by_owner(
             owner_id,
             keyword=normalized_keyword,
-            status=status,
+            progress_status=progress_status,
             due_date=due_date,
         )
 
@@ -90,7 +95,8 @@ class TodoService:
             )
 
     def _is_completion_transition(self, todo: Todo, was_completed: bool) -> bool:
-        is_completed = bool(todo.is_completed)
+        progress_status = cast(TodoProgressStatus, todo.progress_status)
+        is_completed = progress_status == "completed"
         recurrence_type = cast(TodoRecurrenceType, todo.recurrence_type)
         due_date = cast(date | None, todo.due_date)
         return (
@@ -126,7 +132,7 @@ class TodoService:
             detail=data.detail or "",
             due_date=data.due_date,
             owner_id=owner_id,
-            is_completed=data.is_completed,
+            progress_status=data.progress_status,
             recurrence_type=data.recurrence_type,
         )
 
@@ -138,8 +144,11 @@ class TodoService:
             todo.detail = data.detail or ""
         if "due_date" in data.model_fields_set:
             todo.due_date = data.due_date
-        if "is_completed" in data.model_fields_set and data.is_completed is not None:
-            todo.is_completed = data.is_completed
+        if (
+            "progress_status" in data.model_fields_set
+            and data.progress_status is not None
+        ):
+            todo.progress_status = data.progress_status
         if (
             "recurrence_type" in data.model_fields_set
             and data.recurrence_type is not None
@@ -163,7 +172,7 @@ class TodoService:
 
     def update_todo(self, todo_id: int, data: TodoUpdate, owner_id: int) -> Todo:
         todo = self.get_todo(todo_id, owner_id)
-        was_completed = bool(todo.is_completed)
+        was_completed = cast(TodoProgressStatus, todo.progress_status) == "completed"
 
         update_data = self._validate_update(owner_id, data, todo, exclude_id=todo_id)
         self._apply_update(todo, update_data)
