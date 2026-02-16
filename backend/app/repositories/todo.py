@@ -4,6 +4,7 @@ from sqlalchemy import or_
 from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.orm import Session
 from app.models.todo import Todo
+from app.schemas.todo import TodoProgressStatus
 
 
 class TodoRepository:
@@ -14,7 +15,7 @@ class TodoRepository:
         self,
         owner_id: int,
         keyword: str | None = None,
-        progress_status: str | None = None,
+        progress_status: TodoProgressStatus | None = None,
         due_date: str | None = None,
     ) -> List[Todo]:
         db_query = self.db.query(Todo).filter(Todo.owner_id == owner_id)

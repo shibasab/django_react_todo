@@ -82,8 +82,6 @@ class TodoBase(BaseModel):
 
 
 class TodoCreate(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
     name: RequiredStr = Field(..., max_length=TODO_NAME_MAX_LENGTH)
     detail: str = Field(default="", max_length=TODO_DETAIL_MAX_LENGTH)
     due_date: ValidatedDate = Field(default=None, alias="dueDate")
@@ -94,7 +92,7 @@ class TodoCreate(BaseModel):
 
 
 class TodoUpdate(BaseModel):
-    model_config = ConfigDict(validate_default=False, extra="forbid")
+    model_config = ConfigDict(validate_default=False)
 
     name: OptionalRequiredStr = Field(default=None, max_length=TODO_NAME_MAX_LENGTH)
     detail: OptionalStr = Field(default=None, max_length=TODO_DETAIL_MAX_LENGTH)

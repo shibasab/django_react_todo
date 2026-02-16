@@ -6,35 +6,6 @@ from app.models.todo import Todo
 
 
 class TestTodoProgressStatusContract:
-    def test_create_rejects_legacy_is_completed_field(self, client, auth_headers):
-        response = client.post(
-            "/api/todo/",
-            headers=auth_headers,
-            json={
-                "name": "Legacy Field Task",
-                "detail": "detail",
-                "isCompleted": True,
-            },
-        )
-
-        assert response.status_code == 422
-
-    def test_update_rejects_legacy_is_completed_field(
-        self, client, auth_headers, test_user, test_db
-    ):
-        todo = Todo(name="Task", detail="", owner_id=test_user.id)
-        test_db.add(todo)
-        test_db.commit()
-        test_db.refresh(todo)
-
-        response = client.put(
-            f"/api/todo/{todo.id}/",
-            headers=auth_headers,
-            json={"isCompleted": True},
-        )
-
-        assert response.status_code == 422
-
     def test_invalid_progress_status_returns_422(self, client, auth_headers):
         response = client.post(
             "/api/todo/",

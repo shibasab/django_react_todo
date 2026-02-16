@@ -176,7 +176,11 @@ class TestTodoProgressStatus:
         response = client.put(
             f"/api/todo/{other_todo.id}/",
             headers=auth_headers,
-            json={"progressStatus": "completed"},
+            json={
+                "name": "Other's Task",
+                "detail": "Other's detail",
+                "progressStatus": "completed",
+            },
         )
 
         assert response.status_code == 404
