@@ -98,12 +98,12 @@ const buildTodoSearchParams = (criteria?: TodoSearchState): TodoSearchParams | u
   }
 
   const keyword = criteria.keyword.trim()
-  const status = criteria.status === 'all' ? undefined : criteria.status
+  const progress_status = criteria.status === 'all' ? undefined : criteria.status
   const due_date = criteria.dueDate === 'all' ? undefined : criteria.dueDate
 
   const params: TodoSearchParams = {
     ...(keyword === '' ? {} : { keyword }),
-    ...(status ? { status } : {}),
+    ...(progress_status ? { progress_status } : {}),
     ...(due_date ? { due_date } : {}),
   }
 
@@ -178,7 +178,7 @@ export const useTodo = (): TodoService => {
       // 現在の状態を反転させて更新
       const validationErrors = await updateTodo({
         ...todo,
-        isCompleted: !todo.isCompleted,
+        progressStatus: todo.progressStatus === 'completed' ? 'not_started' : 'completed',
       })
       if (validationErrors) {
         // TODO: エラー対応（toast表示など）を行う

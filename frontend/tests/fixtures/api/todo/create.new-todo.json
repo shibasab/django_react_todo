@@ -3,6 +3,6 @@
   "name": "New Todo",
   "detail": "New Detail",
   "dueDate": null,
-  "isCompleted": false,
+  "progressStatus": "not_started",
   "recurrenceType": "none"
 }

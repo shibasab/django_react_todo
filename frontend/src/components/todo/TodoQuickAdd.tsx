@@ -39,7 +39,7 @@ export const TodoQuickAdd = ({ onSubmit }: TodoQuickAddProps) => {
       name: parsed.name,
       detail: '',
       dueDate: parsed.dueDate,
-      isCompleted: false,
+      progressStatus: 'not_started',
       recurrenceType: 'none',
     })
     if (validationErrors != null && validationErrors.length > 0) {

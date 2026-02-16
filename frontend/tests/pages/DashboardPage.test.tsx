@@ -88,7 +88,7 @@ describe('DashboardPage', () => {
             name: 'New Todo',
             detail: '',
             dueDate: '2026-02-20',
-            isCompleted: false,
+            progressStatus: 'not_started',
             recurrenceType: 'none',
           },
         })
@@ -130,7 +130,7 @@ describe('DashboardPage', () => {
             name: '通常のメモだけ',
             detail: '',
             dueDate: null,
-            isCompleted: false,
+            progressStatus: 'not_started',
             recurrenceType: 'none',
           },
         })
