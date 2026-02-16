@@ -168,9 +168,9 @@ export const useTodo = (): TodoService => {
       if (!result.ok) {
         return result.error.errors
       }
-      setTodos((prev) => prev.map((current) => (current.id === result.data.id ? result.data : current)))
+      await fetchTodos(lastSearchRef.current)
     },
-    [apiClient],
+    [apiClient, fetchTodos],
   )
 
   const toggleTodoCompletion = useCallback(
