@@ -1,4 +1,4 @@
-import { waitFor, fireEvent, within, act } from '@testing-library/react'
+import { waitFor, fireEvent, within } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 
 import { setupHttpFixtureTest } from '../helpers/httpMock'
@@ -218,7 +218,7 @@ describe('DashboardPage', () => {
   })
 
   describe('検索・フィルタ', () => {
-    it('検索条件の変更後にデバウンスしてGET APIが呼ばれる', async () => {
+    it('検索条件の変更ごとに都度GET APIが呼ばれる', async () => {
       const { apiClient, requestLog, clearRequests } = setupAuthenticatedDashboard()
 
       const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
@@ -236,18 +236,20 @@ describe('DashboardPage', () => {
       fireEvent.change(statusSelect, { target: { value: 'completed' } })
       fireEvent.change(dueDateSelect, { target: { value: 'today' } })
 
-      expect(requestLog.length).toBe(0)
-
-      await act(async () => {
-        await new Promise((resolve) => {
-          setTimeout(resolve, 350)
-        })
-      })
-
       await waitFor(() => {
-        expect(requestLog).toMatchSnapshot('api-requests-search')
+        expect(requestLog.length).toBeGreaterThanOrEqual(1)
       })
-      expect(requestLog).toHaveLength(1)
+      // 最終的な検索条件でAPIが呼ばれていることを検証
+      const lastRequest = requestLog[requestLog.length - 1]
+      expect(lastRequest).toMatchObject({
+        method: 'GET',
+        url: '/todo/',
+        query: {
+          due_date: 'today',
+          keyword: 'Test',
+          progress_status: 'completed',
+        },
+      })
     })
   })
 

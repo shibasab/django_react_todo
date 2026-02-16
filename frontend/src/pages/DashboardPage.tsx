@@ -1,5 +1,4 @@
 import { Fragment, useCallback, useEffect, useState } from 'react'
-import { useDebounce } from 'use-debounce'
 
 import { TodoForm } from '../components/todo/TodoForm'
 import { TodoList } from '../components/todo/TodoList'
@@ -12,15 +11,14 @@ export const DashboardPage = () => {
   const { todos, isLoading, fetchTodos, addTodo, updateTodo, removeTodo, toggleTodoCompletion } = useTodo()
   const [searchState, setSearchState] = useState<TodoSearchState>(DEFAULT_TODO_SEARCH_STATE)
   const [isDetailFormOpen, setIsDetailFormOpen] = useState(false)
-  const [debouncedSearchState] = useDebounce(searchState, 300)
   const searchHasCriteria = hasSearchCriteria(searchState)
 
-  // 仕様(FR-007): 検索・フィルタの変更は即時に反映する（入力中はデバウンス）
+  // 仕様(FR-007): 検索・フィルタの変更は即時に反映する（都度APIリクエスト）
   useEffect(() => {
     // TODO: Promiseが浮いているため、適切なエラーハンドリングまたはvoid演算子の使用を検討する
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    fetchTodos(debouncedSearchState)
-  }, [fetchTodos, debouncedSearchState])
+    fetchTodos(searchState)
+  }, [fetchTodos, searchState])
 
   const handleSearchChange = useCallback((next: TodoSearchState) => {
     setSearchState(next)

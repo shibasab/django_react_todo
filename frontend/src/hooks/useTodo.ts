@@ -1,3 +1,4 @@
+import { isCancel } from 'axios'
 import { useCallback, useRef, useState } from 'react'
 
 import type { ValidationError, ValidationErrorResponse } from '../models/error'
@@ -120,14 +121,21 @@ export const useTodo = (): TodoService => {
     async (criteria?: TodoSearchState) => {
       lastSearchRef.current = criteria
       const params = buildTodoSearchParams(criteria)
-      const data = await apiClient.get('/todo/', {
-        ...(params ? { params } : {}),
-        options: {
-          key: 'todo-search',
-          mode: 'latestOnly',
-        },
-      })
-      setTodos(data)
+      try {
+        const data = await apiClient.get('/todo/', {
+          ...(params ? { params } : {}),
+          options: {
+            key: 'todo-search',
+            mode: 'latestOnly',
+          },
+        })
+        setTodos(data)
+      } catch (error) {
+        // latestOnly により abort された場合は無視（新しい検索が既に実行されている）
+        if (!isCancel(error)) {
+          throw error
+        }
+      }
     },
     [apiClient],
   )
