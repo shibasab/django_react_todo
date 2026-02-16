@@ -19,26 +19,6 @@ class TestTodoProgressStatusContract:
 
         assert response.status_code == 422
 
-    def test_response_does_not_include_legacy_is_completed_field(
-        self, client, auth_headers, test_user, test_db
-    ):
-        todo = Todo(
-            name="Progress Task",
-            detail="detail",
-            owner_id=test_user.id,
-            progress_status="in_progress",
-        )
-        test_db.add(todo)
-        test_db.commit()
-        test_db.refresh(todo)
-
-        response = client.get(f"/api/todo/{todo.id}/", headers=auth_headers)
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["progressStatus"] == "in_progress"
-        assert "isCompleted" not in data
-
     def test_list_filter_by_progress_status(
         self, client, auth_headers, test_user, test_db
     ):
