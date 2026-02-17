@@ -139,8 +139,8 @@ npm run typecheck
 
 ### Commit & Pull Request Guidelines
 
-- Create commits with committer "<msg>" <file...>; avoid manual staging.
-- Follow Conventional Commits + action-oriented subjects (e.g. feat(cli): add --verbose to send).
+- Create commits with `committer "<msg>" <file...>;` avoid manual staging.
+- Follow Conventional Commits + action-oriented subjects (e.g. `feat(cli): add --verbose to send).`
 - Group related changes; avoid bundling unrelated refactors.
 - PRs should summarize scope, note testing performed, and mention any user-facing changes or new flags.
 - PR review flow: when given a PR link, review via gh pr view / gh pr diff and do not change branches.
