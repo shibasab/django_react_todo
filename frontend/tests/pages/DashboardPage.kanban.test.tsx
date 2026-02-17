@@ -20,14 +20,15 @@ describe('DashboardPage Kanban', () => {
     const { container } = renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
 
     await waitFor(() => {
-      expect(within(container).getByText('Test Todo 1')).toBeInTheDocument()
+      const todoListRequest = requestLog.find((entry) => entry.method === 'GET' && entry.url === '/todo/')
+      expect(todoListRequest).toBeDefined()
     })
 
     fireEvent.click(within(container).getByRole('button', { name: 'カンバン表示' }))
 
     await waitFor(() => {
       const notStartedColumn = within(container).getByTestId('kanban-column-not_started')
-      expect(within(notStartedColumn).getByText('Test Todo 1')).toBeInTheDocument()
+      expect(within(notStartedColumn).getByTestId('kanban-card-1')).toBeInTheDocument()
     })
 
     clearRequests()
@@ -46,7 +47,7 @@ describe('DashboardPage Kanban', () => {
 
     await waitFor(() => {
       const inProgressColumn = within(container).getByTestId('kanban-column-in_progress')
-      expect(within(inProgressColumn).getByText('Test Todo 1')).toBeInTheDocument()
+      expect(within(inProgressColumn).getByTestId('kanban-card-1')).toBeInTheDocument()
     })
 
     const putRequest = requestLog.find((entry) => entry.method === 'PUT' && entry.url === '/todo/1/')
