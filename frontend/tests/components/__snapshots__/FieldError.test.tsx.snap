@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FieldError > 対象フィールドにエラーがなければ何も表示しない 1`] = `null`;
+
+exports[`FieldError > 対象フィールドのエラーメッセージを理由ごとに表示する 1`] = `
+<div>
+  <div
+    class="mt-1 text-sm text-red-600"
+  >
+    <p>
+      タスク名を入力してください
+    </p>
+    <p>
+      このタスク名は既に使用されています
+    </p>
+    <p>
+      タスク名は20文字以内で入力してください
+    </p>
+    <p>
+      タスク名は3文字以上で入力してください
+    </p>
+    <p>
+      タスク名の形式が正しくありません
+    </p>
+  </div>
+</div>
+`;

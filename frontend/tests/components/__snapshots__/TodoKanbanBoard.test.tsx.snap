@@ -137,3 +137,46 @@ exports[`TodoKanbanBoard > progressStatusごとに3列へ表示する 1`] = `
   </section>
 </div>
 `;
+
+exports[`TodoKanbanBoard > 同じ列へのドロップは移動せず、dragOverでドロップ可能状態になる 1`] = `
+<section
+  class="rounded-lg border border-gray-200 bg-gray-50 p-3"
+  data-testid="kanban-column-not_started"
+>
+  <header
+    class="mb-3 flex items-center justify-between"
+  >
+    <h5
+      class="text-sm font-semibold text-gray-700"
+    >
+      着手前
+    </h5>
+    <span
+      class="rounded-full bg-white px-2 py-0.5 text-xs text-gray-600"
+    >
+      1
+    </span>
+  </header>
+  <div
+    class="space-y-2"
+  >
+    <article
+      class="cursor-grab rounded-md border border-gray-200 bg-white p-3 shadow-sm active:cursor-grabbing"
+      data-testid="kanban-card-1"
+      draggable="true"
+    >
+      <h6
+        class="text-sm font-semibold text-gray-800"
+      >
+        Backlog Task
+      </h6>
+      <p
+        class="mt-2 text-xs text-gray-500"
+      >
+        期限: 
+        -
+      </p>
+    </article>
+  </div>
+</section>
+`;
