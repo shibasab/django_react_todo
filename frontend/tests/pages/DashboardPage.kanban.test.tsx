@@ -44,13 +44,26 @@ describe('DashboardPage Kanban', () => {
       expect(putRequest).toBeDefined()
     })
 
+    await waitFor(() => {
+      const inProgressColumn = within(container).getByTestId('kanban-column-in_progress')
+      expect(within(inProgressColumn).getByText('Test Todo 1')).toBeInTheDocument()
+    })
+
     const putRequest = requestLog.find((entry) => entry.method === 'PUT' && entry.url === '/todo/1/')
     expect(putRequest).toMatchSnapshot('kanban-move-put-request')
 
     fireEvent.click(within(container).getByRole('button', { name: '一覧表示' }))
 
-    await waitFor(() => {
-      expect(within(container).getByText('進捗: 進行中')).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        const todoName = within(container).getByRole('heading', { name: 'Test Todo 1' })
+        const todoCard = todoName.closest('div')
+        if (todoCard == null) {
+          throw new Error('TODOカード要素が見つかりません')
+        }
+        expect(within(todoCard).getByText((text) => text.replace(/\s+/g, ' ') === '進捗: 進行中')).toBeInTheDocument()
+      },
+      { timeout: 3000 },
+    )
   })
 })
