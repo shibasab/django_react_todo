@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DashboardPage Kanban > カンバンで列移動するとPUTされ、一覧表示へ反映される > kanban-move-api-requests 1`] = `
+[
+  {
+    "body": {
+      "detail": "Detail 1",
+      "dueDate": null,
+      "name": "Test Todo 1",
+      "progressStatus": "in_progress",
+      "recurrenceType": "none",
+    },
+    "method": "PUT",
+    "url": "/todo/1/",
+  },
+]
+`;

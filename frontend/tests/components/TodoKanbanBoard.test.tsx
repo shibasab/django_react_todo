@@ -34,7 +34,7 @@ const todos: readonly Todo[] = [
 
 describe('TodoKanbanBoard', () => {
   it('progressStatusごとに3列へ表示する', () => {
-    render(<TodoKanbanBoard todos={todos} hasSearchCriteria={false} onMoveTodo={vi.fn()} />)
+    const { container } = render(<TodoKanbanBoard todos={todos} hasSearchCriteria={false} onMoveTodo={vi.fn()} />)
 
     const notStartedColumn = screen.getByTestId('kanban-column-not_started')
     const inProgressColumn = screen.getByTestId('kanban-column-in_progress')
@@ -43,6 +43,8 @@ describe('TodoKanbanBoard', () => {
     expect(within(notStartedColumn).getByText('Backlog Task')).toBeInTheDocument()
     expect(within(inProgressColumn).getByText('Doing Task')).toBeInTheDocument()
     expect(within(completedColumn).getByText('Done Task')).toBeInTheDocument()
+
+    expect(container).toMatchSnapshot()
   })
 
   it('カードを別列へドロップするとonMoveTodoを呼ぶ', async () => {
