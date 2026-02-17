@@ -5,7 +5,6 @@ import type { CreateTodoRequest, Todo, TodoRecurrenceType } from '../models/todo
 import type { TodoSearchParams, TodoSearchState } from './todoSearch'
 
 import { useApiClient } from '../contexts/ApiContext'
-import { err } from '../models/result'
 import { validateRequired, validateMaxLength } from '../services/validation'
 
 // バリデーション制約値（バックエンドと同期）
@@ -163,13 +162,9 @@ export const useTodo = (): TodoService => {
 
       const { id, ...body } = todo
       // API 呼び出し（unique_violation 等はサーバーでのみ検出）
-      const result = await apiClient
-        .put<Todo, ValidationErrorResponse>(`/todo/${id}/`, {
-          ...body,
-        })
-        .catch((): { ok: false; error: ValidationErrorResponse } =>
-          err({ errors: [], status: 500, type: 'validation_error' }),
-        )
+      const result = await apiClient.put<Todo, ValidationErrorResponse>(`/todo/${id}/`, {
+        ...body,
+      })
       if (!result.ok) {
         return result.error.errors
       }
