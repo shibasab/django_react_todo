@@ -23,6 +23,37 @@ FastAPI と React を使用した Todo アプリケーション
 - バックエンド: Python 3.13+ & uv
 - フロントエンド: Node.js & npm
 
+## 事前インストール
+
+### バックエンド開発に必要なツール
+
+バックエンドのセットアップには **Python** と **uv** のインストールが必要です。
+
+```bash
+# Pythonのバージョン確認（3.13以上を推奨）
+python3 --version
+
+# uvのインストール（macOS / Linux）
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# uvのバージョン確認
+uv --version
+```
+
+### フロントエンド開発に必要なツール
+
+フロントエンドのセットアップには **Node.js** と **npm** のインストールが必要です。
+
+```bash
+# Node.jsとnpmのバージョン確認
+node --version
+npm --version
+```
+
+Node.jsを未インストールの場合は、公式サイトからLTS版をインストールしてください。
+
+- Node.js: https://nodejs.org/
+
 ## セットアップ手順
 
 ### 1. リポジトリのクローン
