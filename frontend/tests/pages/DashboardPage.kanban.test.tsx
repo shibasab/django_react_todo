@@ -44,7 +44,8 @@ describe('DashboardPage Kanban', () => {
       expect(putRequest).toBeDefined()
     })
 
-    expect(requestLog).toMatchSnapshot('kanban-move-api-requests')
+    const putRequest = requestLog.find((entry) => entry.method === 'PUT' && entry.url === '/todo/1/')
+    expect(putRequest).toMatchSnapshot('kanban-move-put-request')
 
     fireEvent.click(within(container).getByRole('button', { name: '一覧表示' }))
 
