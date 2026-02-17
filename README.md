@@ -8,12 +8,9 @@ FastAPI と React を使用した Todo アプリケーション
 - Python 3.13+
 - FastAPI
 - SQLAlchemy
-- JWT認証（python-jose）
-- SQLite
 
 ### フロントエンド
 - React
-- Redux
 - React Router
 - Axios
 - Vite
