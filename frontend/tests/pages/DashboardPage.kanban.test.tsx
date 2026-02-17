@@ -11,7 +11,7 @@ describe('DashboardPage Kanban', () => {
       routes: [
         {
           method: 'PUT',
-          url: '/todo/1/',
+          url: /\/todo\/1\/?$/,
           responseFixture: 'api/todo/update.to-in-progress.json',
         },
       ],

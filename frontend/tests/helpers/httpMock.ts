@@ -8,7 +8,7 @@ type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 type FixtureRoute = Readonly<{
   method: HttpMethod
-  url: string
+  url: string | RegExp
   status?: number
   response?: unknown
   responseFixture?: string
