@@ -1,0 +1,61 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`createApiClient > DELETE: レスポンスデータを返す 1`] = `
+{
+  "ok": true,
+}
+`;
+
+exports[`createApiClient > GET: latestOnly指定時は同一キーの前回リクエストをabortする > latest-only-abort-states 1`] = `
+[
+  true,
+  false,
+]
+`;
+
+exports[`createApiClient > GET: paramsオブジェクトをそのままクエリに渡して結果を返す > get-call 1`] = `
+[MockFunction] {
+  "calls": [
+    [
+      "/todo/",
+      {
+        "params": {
+          "keyword": "todo",
+        },
+        "signal": undefined,
+      },
+    ],
+  ],
+  "results": [
+    {
+      "type": "return",
+      "value": Promise {},
+    },
+  ],
+}
+`;
+
+exports[`createApiClient > GET: paramsオブジェクトをそのままクエリに渡して結果を返す > get-response 1`] = `
+[
+  {
+    "id": 1,
+    "name": "todo",
+  },
+]
+`;
+
+exports[`createApiClient > POST: 422エラーをResult.errとして返す 1`] = `
+{
+  "error": {
+    "errors": [
+      {
+        "field": "name",
+        "reason": "required",
+      },
+    ],
+    "status": 422,
+    "type": "validation_error",
+  },
+  "ok": false,
+}
+`;

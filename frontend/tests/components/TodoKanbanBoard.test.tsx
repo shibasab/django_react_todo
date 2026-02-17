@@ -62,4 +62,22 @@ describe('TodoKanbanBoard', () => {
       expect(onMoveTodo).toHaveBeenCalledWith(todos[0], 'in_progress')
     })
   })
+
+  it('同じ列へのドロップは移動せず、dragOverでドロップ可能状態になる', async () => {
+    const onMoveTodo = vi.fn(async () => {})
+    render(<TodoKanbanBoard todos={todos} hasSearchCriteria={false} onMoveTodo={onMoveTodo} />)
+
+    const card = screen.getByTestId('kanban-card-1')
+    const sameColumn = screen.getByTestId('kanban-column-not_started')
+    const dataTransfer = { setData: vi.fn(), effectAllowed: 'move' } as unknown as DataTransfer
+
+    fireEvent.dragStart(card, { dataTransfer })
+    fireEvent.dragOver(sameColumn)
+    fireEvent.drop(sameColumn)
+
+    await waitFor(() => {
+      expect(onMoveTodo).not.toHaveBeenCalled()
+    })
+    expect(screen.getByTestId('kanban-column-not_started')).toMatchSnapshot()
+  })
 })
