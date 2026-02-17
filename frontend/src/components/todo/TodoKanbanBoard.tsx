@@ -61,11 +61,7 @@ export const TodoKanbanBoard = ({ todos, hasSearchCriteria, onMoveTodo }: TodoKa
     }
 
     setIsMoving(true)
-    try {
-      await onMoveTodo(target, nextStatus)
-    } finally {
-      setIsMoving(false)
-    }
+    await onMoveTodo(target, nextStatus).finally(() => setIsMoving(false))
   }
 
   return (

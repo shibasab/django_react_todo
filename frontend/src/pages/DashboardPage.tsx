@@ -40,18 +40,14 @@ export const DashboardPage = () => {
 
   const handleKanbanMove = useCallback(
     async (todo: Todo, nextStatus: TodoProgressStatus) => {
-      try {
-        const validationErrors = await updateTodo({
-          ...todo,
-          progressStatus: nextStatus,
-        })
-        if (validationErrors == null) {
-          return
-        }
-        await fetchTodos(searchState)
-      } catch {
-        await fetchTodos(searchState)
+      const validationErrors = await updateTodo({
+        ...todo,
+        progressStatus: nextStatus,
+      })
+      if (validationErrors == null) {
+        return
       }
+      await fetchTodos(searchState)
     },
     [fetchTodos, searchState, updateTodo],
   )
