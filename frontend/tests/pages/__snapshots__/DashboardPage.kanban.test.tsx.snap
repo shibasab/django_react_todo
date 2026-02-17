@@ -13,5 +13,9 @@ exports[`DashboardPage Kanban > カンバンで列移動するとPUTされ、一
     "method": "PUT",
     "url": "/todo/1/",
   },
+  {
+    "method": "GET",
+    "url": "/todo/",
+  },
 ]
 `;

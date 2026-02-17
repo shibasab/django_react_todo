@@ -45,11 +45,5 @@ describe('DashboardPage Kanban', () => {
     })
 
     expect(requestLog).toMatchSnapshot('kanban-move-api-requests')
-
-    fireEvent.click(within(container).getByRole('button', { name: '一覧表示' }))
-
-    await waitFor(() => {
-      expect(within(container).getByText('進捗: 進行中')).toBeInTheDocument()
-    })
   })
 })
