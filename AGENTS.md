@@ -28,6 +28,41 @@ todoapp/
 
 ## 開発環境セットアップ
 
+## 開発環境の事前準備
+
+### backend
+
+バックエンドのセットアップ前に、以下をインストールすること。
+
+- Python 3.13+
+- uv
+
+```bash
+# Python確認
+python3 --version
+
+# uvインストール（macOS / Linux）
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# uv確認
+uv --version
+```
+
+### frontend
+
+フロントエンドのセットアップ前に、以下をインストールすること。
+
+- Node.js（LTS推奨）
+- npm
+
+```bash
+# Node.js / npm確認
+node --version
+npm --version
+```
+
+Node.js未インストールの場合は公式サイトを参照: https://nodejs.org/
+
 ### backend
 
 ```bash
