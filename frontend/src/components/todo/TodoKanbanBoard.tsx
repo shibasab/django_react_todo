@@ -14,7 +14,7 @@ type TodoColumn = Readonly<{
   emptyMessage: string
 }>
 
-const TODO_COLUMNS: readonly TodoColumn[] = [
+const TODO_COLUMNS = [
   {
     status: 'not_started',
     title: '着手前',
@@ -30,7 +30,7 @@ const TODO_COLUMNS: readonly TodoColumn[] = [
     title: '完了',
     emptyMessage: '完了タスクはありません',
   },
-] as const
+] as const satisfies readonly TodoColumn[]
 
 export const TodoKanbanBoard = ({ todos, hasSearchCriteria, onMoveTodo }: TodoKanbanBoardProps) => {
   const [draggingTodoId, setDraggingTodoId] = useState<number | null>(null)

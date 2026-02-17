@@ -42,16 +42,9 @@ describe('DashboardPage Kanban', () => {
     await waitFor(() => {
       const putRequest = requestLog.find((entry) => entry.method === 'PUT' && entry.url === '/todo/1/')
       expect(putRequest).toBeDefined()
-      expect(putRequest).toMatchObject({
-        body: {
-          name: 'Test Todo 1',
-          detail: 'Detail 1',
-          dueDate: null,
-          progressStatus: 'in_progress',
-          recurrenceType: 'none',
-        },
-      })
     })
+
+    expect(requestLog).toMatchSnapshot('kanban-move-api-requests')
 
     fireEvent.click(within(container).getByRole('button', { name: '一覧表示' }))
 
