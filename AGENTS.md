@@ -137,10 +137,18 @@ npm run typecheck
   - 変更とそのテストは一つのPRにまとめる
 - コミットメッセージは簡潔で明確に
 
+### Commit & Pull Request Guidelines
+
+- Create commits with committer "<msg>" <file...>; avoid manual staging.
+- Follow Conventional Commits + action-oriented subjects (e.g. feat(cli): add --verbose to send).
+- Group related changes; avoid bundling unrelated refactors.
+- PRs should summarize scope, note testing performed, and mention any user-facing changes or new flags.
+- PR review flow: when given a PR link, review via gh pr view / gh pr diff and do not change branches.
+
+
 ### ブランチ戦略
 
 - **メインブランチ**: `master`（または`main`）
-- 機能開発はブランチを切って作業し、マージ前にレビューを実施
 
 ## 仕様管理
 
