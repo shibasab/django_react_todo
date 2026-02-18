@@ -1,0 +1,137 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TodoQuickAdd > サーバーのバリデーションエラー表示後に入力変更するとエラーをクリアする 1`] = `
+<div>
+  <section
+    class="mb-6 rounded-lg border border-cyan-100 bg-white p-4 shadow-md"
+  >
+    <h4
+      class="mb-3 text-lg font-bold"
+    >
+      クイック追加
+    </h4>
+    <form
+      class="flex flex-col gap-3 md:flex-row md:items-start"
+    >
+      <div
+        class="flex-1"
+      >
+        <label
+          class="mb-1 block text-sm font-medium text-gray-700"
+          for="todo-quick-add-input"
+        >
+          クイック入力
+        </label>
+        <input
+          class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"
+          id="todo-quick-add-input"
+          maxlength="100"
+          name="quickAdd"
+          placeholder="例: 来週金曜 リリース準備"
+          type="text"
+          value="来週木曜 定例MTG資料"
+        />
+      </div>
+      <button
+        class="w-full rounded-md bg-cyan-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-cyan-700 md:mt-7 md:w-auto"
+        type="submit"
+      >
+        追加
+      </button>
+    </form>
+  </section>
+</div>
+`;
+
+exports[`TodoQuickAdd > 入力して送信成功すると入力欄をクリアする 1`] = `
+<div>
+  <section
+    class="mb-6 rounded-lg border border-cyan-100 bg-white p-4 shadow-md"
+  >
+    <h4
+      class="mb-3 text-lg font-bold"
+    >
+      クイック追加
+    </h4>
+    <form
+      class="flex flex-col gap-3 md:flex-row md:items-start"
+    >
+      <div
+        class="flex-1"
+      >
+        <label
+          class="mb-1 block text-sm font-medium text-gray-700"
+          for="todo-quick-add-input"
+        >
+          クイック入力
+        </label>
+        <input
+          class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"
+          id="todo-quick-add-input"
+          maxlength="100"
+          name="quickAdd"
+          placeholder="例: 来週金曜 リリース準備"
+          type="text"
+          value=""
+        />
+      </div>
+      <button
+        class="w-full rounded-md bg-cyan-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-cyan-700 md:mt-7 md:w-auto"
+        type="submit"
+      >
+        追加
+      </button>
+    </form>
+  </section>
+</div>
+`;
+
+exports[`TodoQuickAdd > 空文字で送信すると必須エラーを表示する 1`] = `
+<div>
+  <section
+    class="mb-6 rounded-lg border border-cyan-100 bg-white p-4 shadow-md"
+  >
+    <h4
+      class="mb-3 text-lg font-bold"
+    >
+      クイック追加
+    </h4>
+    <form
+      class="flex flex-col gap-3 md:flex-row md:items-start"
+    >
+      <div
+        class="flex-1"
+      >
+        <label
+          class="mb-1 block text-sm font-medium text-gray-700"
+          for="todo-quick-add-input"
+        >
+          クイック入力
+        </label>
+        <input
+          class="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 border-red-500"
+          id="todo-quick-add-input"
+          maxlength="100"
+          name="quickAdd"
+          placeholder="例: 来週金曜 リリース準備"
+          type="text"
+          value=""
+        />
+        <div
+          class="mt-1 text-sm text-red-600"
+        >
+          <p>
+            タスク名を入力してください
+          </p>
+        </div>
+      </div>
+      <button
+        class="w-full rounded-md bg-cyan-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-cyan-700 md:mt-7 md:w-auto"
+        type="submit"
+      >
+        追加
+      </button>
+    </form>
+  </section>
+</div>
+`;

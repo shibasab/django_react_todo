@@ -1,0 +1,141 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TodoList > 空配列時は空メッセージを表示する > text 1`] = `"Todo List タスクはありません"`;
+
+exports[`TodoList > 編集保存でバリデーションエラーが返ると編集状態を維持してエラーを表示する > form 1`] = `
+[
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "name",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "text",
+    "value": "実装する",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "detail",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "text",
+    "value": "詳細あり",
+  },
+  {
+    "disabled": false,
+    "kind": "select",
+    "name": "",
+    "options": [
+      {
+        "selected": false,
+        "text": "なし",
+        "value": "none",
+      },
+      {
+        "selected": true,
+        "text": "毎日",
+        "value": "daily",
+      },
+      {
+        "selected": false,
+        "text": "毎週",
+        "value": "weekly",
+      },
+      {
+        "selected": false,
+        "text": "毎月",
+        "value": "monthly",
+      },
+    ],
+    "required": false,
+    "value": "daily",
+  },
+  {
+    "disabled": false,
+    "kind": "select",
+    "name": "",
+    "options": [
+      {
+        "selected": true,
+        "text": "着手前",
+        "value": "not_started",
+      },
+      {
+        "selected": false,
+        "text": "進行中",
+        "value": "in_progress",
+      },
+      {
+        "selected": false,
+        "text": "完了",
+        "value": "completed",
+      },
+    ],
+    "required": false,
+    "value": "not_started",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "dueDate",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "date",
+    "value": "2026-02-01",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "button",
+    "textContent": "Save",
+    "type": "submit",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "button",
+    "textContent": "Cancel",
+    "type": "submit",
+  },
+]
+`;
+
+exports[`TodoList > 編集保存でバリデーションエラーが返ると編集状態を維持してエラーを表示する > text 1`] = `"Todo List タスク名 詳細 繰り返し なし 毎日 毎週 毎月 進捗 着手前 進行中 完了 期限 期限の形式が正しくありません Save Cancel"`;
+
+exports[`TodoList > 表示モードでトグル・削除が動作し、編集保存成功で表示モードへ戻る > form 1`] = `
+[
+  {
+    "checked": false,
+    "disabled": false,
+    "kind": "inputChoice",
+    "labelText": "",
+    "name": "",
+    "required": false,
+    "type": "checkbox",
+    "value": "on",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "button",
+    "textContent": "Edit",
+    "type": "submit",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "button",
+    "textContent": "Delete",
+    "type": "submit",
+  },
+]
+`;
+
+exports[`TodoList > 表示モードでトグル・削除が動作し、編集保存成功で表示モードへ戻る > text 1`] = `"Todo List 実装する 期限: 2026-02-01 進捗: 着手前 繰り返し: 毎日 Edit Delete 詳細あり"`;

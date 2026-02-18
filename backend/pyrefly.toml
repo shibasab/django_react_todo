@@ -16,16 +16,10 @@ site-package-path = []
 
 ###### configuring your python environment
 
-# assume we're running on linux, regardless of the actual current platform
-python-platform = "linux"
-# assume the Python version we're using is 3.13, without querying an interpreter
+# 固定のPython仕様で型チェックする（パッチバージョン差異の影響を避ける）
 python-version = "3.13"
-# is Pyrefly disallowed from querying for an interpreter to automatically determine your
-# `python-platform`, `python-version`, and extra entries to `site-package-path`?
+# インタープリタに問い合わせて実行環境のsite-packagesを解決する
 skip-interpreter-query = false
-# query the default Python interpreter on your system, if installed and `python_platform`,
-# `python-version`, or `site-package-path` are unset.
-python-interpreter-path = "./.venv/Scripts/python.exe"
 
 #### configuring your type check settings
 

@@ -19,3 +19,23 @@ exports[`DashboardPage Kanban > カンバンで列移動するとPUTされ、一
   },
 ]
 `;
+
+exports[`DashboardPage Kanban > カンバン移動でバリデーションエラー時は再取得GETを実行する > kanban-move-validation-error-requests 1`] = `
+[
+  {
+    "body": {
+      "detail": "Detail 1",
+      "dueDate": null,
+      "name": "Test Todo 1",
+      "progressStatus": "in_progress",
+      "recurrenceType": "none",
+    },
+    "method": "PUT",
+    "url": "/todo/1/",
+  },
+  {
+    "method": "GET",
+    "url": "/todo/",
+  },
+]
+`;
