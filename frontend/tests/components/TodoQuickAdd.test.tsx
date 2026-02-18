@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { ValidationError } from '../../src/models/error'
 
 import { TodoQuickAdd } from '../../src/components/todo/TodoQuickAdd'
+import { summarizeFormControls, summarizeText } from '../helpers/domSnapshot'
 
 describe('TodoQuickAdd', () => {
   it('空文字で送信すると必須エラーを表示する', async () => {
@@ -16,7 +17,8 @@ describe('TodoQuickAdd', () => {
       expect(screen.getByText('タスク名を入力してください')).toBeInTheDocument()
     })
     expect(onSubmit).not.toHaveBeenCalled()
-    expect(container).toMatchSnapshot()
+    expect(summarizeFormControls(container)).toMatchSnapshot('form')
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 
   it('入力して送信成功すると入力欄をクリアする', async () => {
@@ -34,7 +36,8 @@ describe('TodoQuickAdd', () => {
     await waitFor(() => {
       expect(input.value).toBe('')
     })
-    expect(container).toMatchSnapshot()
+    expect(summarizeFormControls(container)).toMatchSnapshot('form')
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 
   it('サーバーのバリデーションエラー表示後に入力変更するとエラーをクリアする', async () => {
@@ -62,6 +65,7 @@ describe('TodoQuickAdd', () => {
       expect(screen.queryByText('タスク名を入力してください')).not.toBeInTheDocument()
       expect(screen.queryByText('期限の形式が正しくありません')).not.toBeInTheDocument()
     })
-    expect(container).toMatchSnapshot()
+    expect(summarizeFormControls(container)).toMatchSnapshot('form')
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 })

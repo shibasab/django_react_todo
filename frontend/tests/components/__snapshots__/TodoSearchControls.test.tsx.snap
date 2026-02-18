@@ -1,241 +1,177 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`TodoSearchControls > キーワード・状態・期限の変更をonChangeへ通知する 1`] = `
-<div>
-  <section
-    class="mb-6 rounded-lg border border-gray-100 bg-white p-4 shadow-md"
-  >
-    <h4
-      class="mb-3 text-lg font-bold"
-    >
-      検索・フィルタ
-    </h4>
-    <div
-      class="flex flex-col gap-4 md:flex-row md:items-end"
-    >
-      <div
-        class="flex-1"
-      >
-        <label
-          class="mb-1 block text-sm font-medium text-gray-700"
-          for="todo-search-keyword"
-        >
-          検索
-        </label>
-        <input
-          class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          id="todo-search-keyword"
-          placeholder="タスク名・詳細で検索"
-          type="text"
-          value="abc"
-        />
-      </div>
-      <div
-        class="w-full md:w-48"
-      >
-        <label
-          class="mb-1 block text-sm font-medium text-gray-700"
-          for="todo-search-status"
-        >
-          状態
-        </label>
-        <select
-          class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          id="todo-search-status"
-        >
-          <option
-            value="all"
-          >
-            すべて
-          </option>
-          <option
-            value="not_started"
-          >
-            着手前
-          </option>
-          <option
-            value="in_progress"
-          >
-            進行中
-          </option>
-          <option
-            value="completed"
-          >
-            完了
-          </option>
-        </select>
-      </div>
-      <div
-        class="w-full md:w-48"
-      >
-        <label
-          class="mb-1 block text-sm font-medium text-gray-700"
-          for="todo-search-due-date"
-        >
-          期限
-        </label>
-        <select
-          class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          id="todo-search-due-date"
-        >
-          <option
-            value="all"
-          >
-            すべて
-          </option>
-          <option
-            value="today"
-          >
-            今日
-          </option>
-          <option
-            value="this_week"
-          >
-            今週
-          </option>
-          <option
-            value="overdue"
-          >
-            期限切れ
-          </option>
-          <option
-            value="none"
-          >
-            期限なし
-          </option>
-        </select>
-      </div>
-      <div
-        class="flex w-full md:w-auto"
-      >
-        <button
-          class="w-full rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          type="button"
-        >
-          クリア
-        </button>
-      </div>
-    </div>
-  </section>
-</div>
+exports[`TodoSearchControls > キーワード・状態・期限の変更をonChangeへ通知する > form 1`] = `
+[
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "",
+    "placeholder": "タスク名・詳細で検索",
+    "readOnly": false,
+    "required": false,
+    "type": "text",
+    "value": "abc",
+  },
+  {
+    "disabled": false,
+    "kind": "select",
+    "name": "",
+    "options": [
+      {
+        "selected": false,
+        "text": "すべて",
+        "value": "all",
+      },
+      {
+        "selected": false,
+        "text": "着手前",
+        "value": "not_started",
+      },
+      {
+        "selected": true,
+        "text": "進行中",
+        "value": "in_progress",
+      },
+      {
+        "selected": false,
+        "text": "完了",
+        "value": "completed",
+      },
+    ],
+    "required": false,
+    "value": "in_progress",
+  },
+  {
+    "disabled": false,
+    "kind": "select",
+    "name": "",
+    "options": [
+      {
+        "selected": false,
+        "text": "すべて",
+        "value": "all",
+      },
+      {
+        "selected": true,
+        "text": "今日",
+        "value": "today",
+      },
+      {
+        "selected": false,
+        "text": "今週",
+        "value": "this_week",
+      },
+      {
+        "selected": false,
+        "text": "期限切れ",
+        "value": "overdue",
+      },
+      {
+        "selected": false,
+        "text": "期限なし",
+        "value": "none",
+      },
+    ],
+    "required": false,
+    "value": "today",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "button",
+    "textContent": "クリア",
+    "type": "button",
+  },
+]
 `;
 
-exports[`TodoSearchControls > クリアボタンでデフォルト値に戻す 1`] = `
-<div>
-  <section
-    class="mb-6 rounded-lg border border-gray-100 bg-white p-4 shadow-md"
-  >
-    <h4
-      class="mb-3 text-lg font-bold"
-    >
-      検索・フィルタ
-    </h4>
-    <div
-      class="flex flex-col gap-4 md:flex-row md:items-end"
-    >
-      <div
-        class="flex-1"
-      >
-        <label
-          class="mb-1 block text-sm font-medium text-gray-700"
-          for="todo-search-keyword"
-        >
-          検索
-        </label>
-        <input
-          class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          id="todo-search-keyword"
-          placeholder="タスク名・詳細で検索"
-          type="text"
-          value="abc"
-        />
-      </div>
-      <div
-        class="w-full md:w-48"
-      >
-        <label
-          class="mb-1 block text-sm font-medium text-gray-700"
-          for="todo-search-status"
-        >
-          状態
-        </label>
-        <select
-          class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          id="todo-search-status"
-        >
-          <option
-            value="all"
-          >
-            すべて
-          </option>
-          <option
-            value="not_started"
-          >
-            着手前
-          </option>
-          <option
-            value="in_progress"
-          >
-            進行中
-          </option>
-          <option
-            value="completed"
-          >
-            完了
-          </option>
-        </select>
-      </div>
-      <div
-        class="w-full md:w-48"
-      >
-        <label
-          class="mb-1 block text-sm font-medium text-gray-700"
-          for="todo-search-due-date"
-        >
-          期限
-        </label>
-        <select
-          class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          id="todo-search-due-date"
-        >
-          <option
-            value="all"
-          >
-            すべて
-          </option>
-          <option
-            value="today"
-          >
-            今日
-          </option>
-          <option
-            value="this_week"
-          >
-            今週
-          </option>
-          <option
-            value="overdue"
-          >
-            期限切れ
-          </option>
-          <option
-            value="none"
-          >
-            期限なし
-          </option>
-        </select>
-      </div>
-      <div
-        class="flex w-full md:w-auto"
-      >
-        <button
-          class="w-full rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          type="button"
-        >
-          クリア
-        </button>
-      </div>
-    </div>
-  </section>
-</div>
+exports[`TodoSearchControls > キーワード・状態・期限の変更をonChangeへ通知する > text 1`] = `"検索・フィルタ 検索 状態 すべて 着手前 進行中 完了 期限 すべて 今日 今週 期限切れ 期限なし クリア"`;
+
+exports[`TodoSearchControls > クリアボタンでデフォルト値に戻す > form 1`] = `
+[
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "",
+    "placeholder": "タスク名・詳細で検索",
+    "readOnly": false,
+    "required": false,
+    "type": "text",
+    "value": "abc",
+  },
+  {
+    "disabled": false,
+    "kind": "select",
+    "name": "",
+    "options": [
+      {
+        "selected": false,
+        "text": "すべて",
+        "value": "all",
+      },
+      {
+        "selected": false,
+        "text": "着手前",
+        "value": "not_started",
+      },
+      {
+        "selected": true,
+        "text": "進行中",
+        "value": "in_progress",
+      },
+      {
+        "selected": false,
+        "text": "完了",
+        "value": "completed",
+      },
+    ],
+    "required": false,
+    "value": "in_progress",
+  },
+  {
+    "disabled": false,
+    "kind": "select",
+    "name": "",
+    "options": [
+      {
+        "selected": false,
+        "text": "すべて",
+        "value": "all",
+      },
+      {
+        "selected": true,
+        "text": "今日",
+        "value": "today",
+      },
+      {
+        "selected": false,
+        "text": "今週",
+        "value": "this_week",
+      },
+      {
+        "selected": false,
+        "text": "期限切れ",
+        "value": "overdue",
+      },
+      {
+        "selected": false,
+        "text": "期限なし",
+        "value": "none",
+      },
+    ],
+    "required": false,
+    "value": "today",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "button",
+    "textContent": "クリア",
+    "type": "button",
+  },
+]
 `;
+
+exports[`TodoSearchControls > クリアボタンでデフォルト値に戻す > text 1`] = `"検索・フィルタ 検索 状態 すべて 着手前 進行中 完了 期限 すべて 今日 今週 期限切れ 期限なし クリア"`;

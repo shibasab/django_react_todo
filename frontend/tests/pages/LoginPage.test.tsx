@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 
 import type { Auth } from '../../src/models/auth'
 
+import { summarizeFormControls, summarizeText } from '../helpers/domSnapshot'
 import { loadFixture } from '../helpers/fixtures'
 import { setupHttpFixtureTest } from '../helpers/httpMock'
 import { localStorageMock, resetLocalStorageMock } from '../helpers/localStorageMock'
@@ -34,7 +35,8 @@ describe('ログインフロー', () => {
       expect(within(container).getAllByRole('link', { name: /register/i }).length).toBeGreaterThan(0)
 
       // DOMスナップショット
-      expect(container).toMatchSnapshot('login-page-initial')
+      expect(summarizeFormControls(container)).toMatchSnapshot('login-page-initial-form')
+      expect(summarizeText(container)).toMatchSnapshot('login-page-initial-text')
     })
   })
 

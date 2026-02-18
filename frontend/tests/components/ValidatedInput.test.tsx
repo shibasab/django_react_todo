@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { ValidationError } from '../../src/models/error'
 
 import { ValidatedInput } from '../../src/components/ValidatedInput'
+import { summarizeFormControls, summarizeText } from '../helpers/domSnapshot'
 
 describe('ValidatedInput', () => {
   it('初期表示では通常スタイルで、blur後はバリデーションが実行される', () => {
@@ -27,7 +28,8 @@ describe('ValidatedInput', () => {
     fireEvent.blur(input, { target: { value: 'abc' } })
 
     expect(validate).toHaveBeenCalledWith('abc')
-    expect(container).toMatchSnapshot()
+    expect(summarizeFormControls(container)).toMatchSnapshot('form')
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 
   it('エラー時はエラースタイルとエラーメッセージを表示し、touch済みなら入力時にもvalidateする', () => {
@@ -54,6 +56,7 @@ describe('ValidatedInput', () => {
 
     expect(validate).toHaveBeenNthCalledWith(1, '')
     expect(validate).toHaveBeenNthCalledWith(2, 'new value')
-    expect(container).toMatchSnapshot()
+    expect(summarizeFormControls(container)).toMatchSnapshot('form')
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 })

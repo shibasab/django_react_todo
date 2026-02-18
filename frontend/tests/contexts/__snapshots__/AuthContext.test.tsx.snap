@@ -1,85 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`AuthContext > login/register/logoutの振る舞いで認証状態が遷移する 1`] = `
-<div>
-  <div>
-    <p
-      data-testid="status"
-    >
-      unauthenticated
-    </p>
-    <button>
-      login
-    </button>
-    <button>
-      register
-    </button>
-    <button>
-      logout
-    </button>
-  </div>
-</div>
-`;
+exports[`AuthContext > login/register/logoutの振る舞いで認証状態が遷移する > text 1`] = `"unauthenticated login register logout"`;
 
-exports[`AuthContext > login/register失敗時は認証状態を変更しない 1`] = `
-<div>
-  <div>
-    <p
-      data-testid="status"
-    >
-      unauthenticated
-    </p>
-    <button>
-      login
-    </button>
-    <button>
-      register
-    </button>
-    <button>
-      logout
-    </button>
-  </div>
-</div>
-`;
+exports[`AuthContext > login/register失敗時は認証状態を変更しない > text 1`] = `"unauthenticated login register logout"`;
 
-exports[`AuthContext > トークンありでユーザー取得失敗時はトークン削除して未認証に戻る 1`] = `
-<div>
-  <div>
-    <p
-      data-testid="status"
-    >
-      unauthenticated
-    </p>
-    <button>
-      login
-    </button>
-    <button>
-      register
-    </button>
-    <button>
-      logout
-    </button>
-  </div>
-</div>
-`;
+exports[`AuthContext > トークンありでユーザー取得失敗時はトークン削除して未認証に戻る > text 1`] = `"unauthenticated login register logout"`;
 
-exports[`AuthContext > トークン無しでは未認証状態になる 1`] = `
-<div>
-  <div>
-    <p
-      data-testid="status"
-    >
-      unauthenticated
-    </p>
-    <button>
-      login
-    </button>
-    <button>
-      register
-    </button>
-    <button>
-      logout
-    </button>
-  </div>
-</div>
-`;
+exports[`AuthContext > トークン無しでは未認証状態になる > text 1`] = `"unauthenticated login register logout"`;
