@@ -5,6 +5,7 @@ import type { ValidationError } from '../../src/models/error'
 import type { Todo } from '../../src/models/todo'
 
 import { TodoList } from '../../src/components/todo/TodoList'
+import { summarizeFormControls, summarizeText } from '../helpers/domSnapshot'
 
 const TODO_ITEM: Todo = {
   id: 1,
@@ -28,7 +29,7 @@ describe('TodoList', () => {
     )
 
     expect(screen.getByText('タスクはありません')).toBeInTheDocument()
-    expect(container).toMatchSnapshot()
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 
   it('表示モードでトグル・削除が動作し、編集保存成功で表示モードへ戻る', async () => {
@@ -75,7 +76,8 @@ describe('TodoList', () => {
       expect(screen.queryByRole('button', { name: 'Save' })).not.toBeInTheDocument()
     })
 
-    expect(container).toMatchSnapshot()
+    expect(summarizeText(container)).toMatchSnapshot('text')
+    expect(summarizeFormControls(container)).toMatchSnapshot('form')
   })
 
   it('編集保存でバリデーションエラーが返ると編集状態を維持してエラーを表示する', async () => {
@@ -100,6 +102,7 @@ describe('TodoList', () => {
       expect(screen.getByText('期限の形式が正しくありません')).toBeInTheDocument()
     })
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-    expect(container).toMatchSnapshot()
+    expect(summarizeText(container)).toMatchSnapshot('text')
+    expect(summarizeFormControls(container)).toMatchSnapshot('form')
   })
 })

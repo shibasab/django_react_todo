@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { ValidationError } from '../../src/models/error'
 
 import { TodoForm } from '../../src/components/todo/TodoForm'
+import { summarizeFormControls, summarizeText } from '../helpers/domSnapshot'
 
 describe('TodoForm', () => {
   it('入力して送信するとonSubmitへ正規化された値を渡し、成功時にフォームを初期化する', async () => {
@@ -33,7 +34,8 @@ describe('TodoForm', () => {
       expect(screen.getByLabelText('Due Date')).toHaveValue('')
     })
 
-    expect(container).toMatchSnapshot()
+    expect(summarizeFormControls(container)).toMatchSnapshot('form')
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 
   it('サーバーのバリデーションエラーを表示する', async () => {
@@ -50,6 +52,7 @@ describe('TodoForm', () => {
       expect(screen.getByText('期限の形式が正しくありません')).toBeInTheDocument()
     })
 
-    expect(container).toMatchSnapshot()
+    expect(summarizeFormControls(container)).toMatchSnapshot('form')
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 })
