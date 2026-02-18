@@ -22,8 +22,12 @@ dev = [
     "pre-commit>=4.0.0",
     "pyrefly>=0.47.0",
     "pytest>=8.0.0",
+    "pytest-cov>=6.0.0",
     "httpx>=0.28.0",
 ]
+
+[tool.pytest.ini_options]
+addopts = "--cov=app --cov-report=term-missing"
 
 [tool.uv.sources]
 
