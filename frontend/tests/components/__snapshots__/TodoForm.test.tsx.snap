@@ -1,238 +1,153 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`TodoForm > サーバーのバリデーションエラーを表示する 1`] = `
-<div>
-  <div
-    class="bg-white rounded-lg shadow-md p-6 my-6"
-  >
-    <h2
-      class="text-xl font-bold mb-4"
-    >
-      Add Todo
-    </h2>
-    <form>
-      <div
-        class="mb-4"
-      >
-        <label
-          class="block text-sm font-medium text-gray-700 mb-2"
-          for="todo-name"
-        >
-          Task
-        </label>
-        <input
-          class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300 "
-          id="todo-name"
-          maxlength="100"
-          name="name"
-          type="text"
-          value="タスクB"
-        />
-      </div>
-      <div
-        class="mb-4"
-      >
-        <label
-          class="block text-sm font-medium text-gray-700 mb-2"
-          for="todo-detail"
-        >
-          Detail
-        </label>
-        <input
-          class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300 "
-          id="todo-detail"
-          maxlength="500"
-          name="detail"
-          type="text"
-          value=""
-        />
-      </div>
-      <div
-        class="mb-4"
-      >
-        <label
-          class="block text-sm font-medium text-gray-700 mb-2"
-          for="todo-recurrenceType"
-        >
-          Recurrence
-        </label>
-        <select
-          class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"
-          id="todo-recurrenceType"
-          name="recurrenceType"
-        >
-          <option
-            value="none"
-          >
-            なし
-          </option>
-          <option
-            value="daily"
-          >
-            毎日
-          </option>
-          <option
-            value="weekly"
-          >
-            毎週
-          </option>
-          <option
-            value="monthly"
-          >
-            毎月
-          </option>
-        </select>
-      </div>
-      <div
-        class="mb-4"
-      >
-        <label
-          class="block text-sm font-medium text-gray-700 mb-2"
-          for="todo-dueDate"
-        >
-          Due Date
-        </label>
-        <input
-          class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-red-500"
-          id="todo-dueDate"
-          name="dueDate"
-          type="date"
-          value=""
-        />
-        <div
-          class="mt-1 text-sm text-red-600"
-        >
-          <p>
-            期限の形式が正しくありません
-          </p>
-        </div>
-      </div>
-      <div
-        class="mb-4"
-      >
-        <button
-          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          type="submit"
-        >
-          Submit
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
+exports[`TodoForm > サーバーのバリデーションエラーを表示する > form 1`] = `
+[
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "name",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "text",
+    "value": "タスクB",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "detail",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "text",
+    "value": "",
+  },
+  {
+    "disabled": false,
+    "kind": "select",
+    "name": "recurrenceType",
+    "options": [
+      {
+        "selected": true,
+        "text": "なし",
+        "value": "none",
+      },
+      {
+        "selected": false,
+        "text": "毎日",
+        "value": "daily",
+      },
+      {
+        "selected": false,
+        "text": "毎週",
+        "value": "weekly",
+      },
+      {
+        "selected": false,
+        "text": "毎月",
+        "value": "monthly",
+      },
+    ],
+    "required": false,
+    "value": "none",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "dueDate",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "date",
+    "value": "",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "button",
+    "textContent": "Submit",
+    "type": "submit",
+  },
+]
 `;
 
-exports[`TodoForm > 入力して送信するとonSubmitへ正規化された値を渡し、成功時にフォームを初期化する 1`] = `
-<div>
-  <div
-    class="bg-white rounded-lg shadow-md p-6 my-6"
-  >
-    <h2
-      class="text-xl font-bold mb-4"
-    >
-      Add Todo
-    </h2>
-    <form>
-      <div
-        class="mb-4"
-      >
-        <label
-          class="block text-sm font-medium text-gray-700 mb-2"
-          for="todo-name"
-        >
-          Task
-        </label>
-        <input
-          class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300 "
-          id="todo-name"
-          maxlength="100"
-          name="name"
-          type="text"
-          value=""
-        />
-      </div>
-      <div
-        class="mb-4"
-      >
-        <label
-          class="block text-sm font-medium text-gray-700 mb-2"
-          for="todo-detail"
-        >
-          Detail
-        </label>
-        <input
-          class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300 "
-          id="todo-detail"
-          maxlength="500"
-          name="detail"
-          type="text"
-          value=""
-        />
-      </div>
-      <div
-        class="mb-4"
-      >
-        <label
-          class="block text-sm font-medium text-gray-700 mb-2"
-          for="todo-recurrenceType"
-        >
-          Recurrence
-        </label>
-        <select
-          class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"
-          id="todo-recurrenceType"
-          name="recurrenceType"
-        >
-          <option
-            value="none"
-          >
-            なし
-          </option>
-          <option
-            value="daily"
-          >
-            毎日
-          </option>
-          <option
-            value="weekly"
-          >
-            毎週
-          </option>
-          <option
-            value="monthly"
-          >
-            毎月
-          </option>
-        </select>
-      </div>
-      <div
-        class="mb-4"
-      >
-        <label
-          class="block text-sm font-medium text-gray-700 mb-2"
-          for="todo-dueDate"
-        >
-          Due Date
-        </label>
-        <input
-          class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"
-          id="todo-dueDate"
-          name="dueDate"
-          type="date"
-          value=""
-        />
-      </div>
-      <div
-        class="mb-4"
-      >
-        <button
-          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          type="submit"
-        >
-          Submit
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
+exports[`TodoForm > サーバーのバリデーションエラーを表示する > text 1`] = `"Add Todo Task Detail Recurrence なし 毎日 毎週 毎月 Due Date 期限の形式が正しくありません Submit"`;
+
+exports[`TodoForm > 入力して送信するとonSubmitへ正規化された値を渡し、成功時にフォームを初期化する > form 1`] = `
+[
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "name",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "text",
+    "value": "",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "detail",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "text",
+    "value": "",
+  },
+  {
+    "disabled": false,
+    "kind": "select",
+    "name": "recurrenceType",
+    "options": [
+      {
+        "selected": true,
+        "text": "なし",
+        "value": "none",
+      },
+      {
+        "selected": false,
+        "text": "毎日",
+        "value": "daily",
+      },
+      {
+        "selected": false,
+        "text": "毎週",
+        "value": "weekly",
+      },
+      {
+        "selected": false,
+        "text": "毎月",
+        "value": "monthly",
+      },
+    ],
+    "required": false,
+    "value": "none",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "dueDate",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "date",
+    "value": "",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "button",
+    "textContent": "Submit",
+    "type": "submit",
+  },
+]
 `;
+
+exports[`TodoForm > 入力して送信するとonSubmitへ正規化された値を渡し、成功時にフォームを初期化する > text 1`] = `"Add Todo Task Detail Recurrence なし 毎日 毎週 毎月 Due Date Submit"`;
