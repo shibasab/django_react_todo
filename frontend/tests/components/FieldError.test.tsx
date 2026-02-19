@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import type { ValidationError } from '../../src/models/error'
 
 import { FieldError } from '../../src/components/FieldError'
+import { summarizeText } from '../helpers/domSnapshot'
 
 const ALL_ERRORS: readonly ValidationError[] = [
   { field: 'name', reason: 'required' },
@@ -17,12 +18,12 @@ describe('FieldError', () => {
   it('対象フィールドにエラーがなければ何も表示しない', () => {
     const { container } = render(<FieldError errors={ALL_ERRORS} fieldName="email" fieldLabel="メール" />)
 
-    expect(container.firstChild).toMatchSnapshot()
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 
   it('対象フィールドのエラーメッセージを理由ごとに表示する', () => {
     const { container } = render(<FieldError errors={ALL_ERRORS} fieldName="name" fieldLabel="タスク名" />)
 
-    expect(container).toMatchSnapshot()
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 })

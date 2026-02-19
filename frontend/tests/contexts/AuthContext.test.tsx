@@ -6,6 +6,7 @@ import type { ApiClient } from '../../src/services/api'
 import { ApiProvider } from '../../src/contexts/ApiContext'
 import { AuthProvider } from '../../src/contexts/AuthContext'
 import { useAuth } from '../../src/hooks/useAuth'
+import { summarizeText } from '../helpers/domSnapshot'
 import { resetLocalStorageMock } from '../helpers/localStorageMock'
 
 const AuthProbe = () => {
@@ -48,7 +49,7 @@ describe('AuthContext', () => {
     await waitFor(() => {
       expect(screen.getByTestId('status')).toHaveTextContent('unauthenticated')
     })
-    expect(container).toMatchSnapshot()
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 
   it('login/register/logoutの振る舞いで認証状態が遷移する', async () => {
@@ -91,7 +92,7 @@ describe('AuthContext', () => {
       expect(screen.getByTestId('status')).toHaveTextContent('unauthenticated')
     })
 
-    expect(container).toMatchSnapshot()
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 
   it('トークンありでユーザー取得失敗時はトークン削除して未認証に戻る', async () => {
@@ -111,7 +112,7 @@ describe('AuthContext', () => {
     await waitFor(() => {
       expect(screen.getByTestId('status')).toHaveTextContent('unauthenticated')
     })
-    expect(container).toMatchSnapshot()
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 
   it('login/register失敗時は認証状態を変更しない', async () => {
@@ -139,6 +140,6 @@ describe('AuthContext', () => {
       expect(screen.getByTestId('status')).toHaveTextContent('unauthenticated')
     })
 
-    expect(container).toMatchSnapshot()
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 })

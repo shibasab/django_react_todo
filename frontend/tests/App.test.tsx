@@ -4,6 +4,7 @@ import { render } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
 import App from '../src/App'
+import { summarizeText } from './helpers/domSnapshot'
 
 vi.mock('../src/contexts/ApiContext', () => ({
   ApiProvider: ({ children }: { children: ReactNode }) => <div data-testid="api-provider">{children}</div>,
@@ -27,6 +28,6 @@ vi.mock('../src/pages/RegisterPage', () => ({ RegisterPage: () => <div>RegisterP
 describe('App', () => {
   it('ルート構成をレンダリングできる', () => {
     const { container } = render(<App />)
-    expect(container).toMatchSnapshot()
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 })

@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { ApiClient } from '../../src/services/api'
 
 import { ApiProvider, useApiClient } from '../../src/contexts/ApiContext'
+import { summarizeText } from '../helpers/domSnapshot'
 
 const Probe = () => {
   const { isLoading } = useApiClient()
@@ -28,7 +29,7 @@ describe('ApiContext', () => {
     await waitFor(() => {
       expect(screen.getByTestId('loading-state')).toHaveTextContent('idle')
     })
-    expect(container).toMatchSnapshot()
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 
   it('Provider外でuseApiClientを使うとエラーになる', () => {

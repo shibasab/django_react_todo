@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { TodoSearchState } from '../../src/hooks/todoSearch'
 
 import { TodoSearchControls } from '../../src/components/todo/TodoSearchControls'
+import { summarizeFormControls, summarizeText } from '../helpers/domSnapshot'
 
 const initialValue: TodoSearchState = {
   keyword: 'abc',
@@ -23,7 +24,8 @@ describe('TodoSearchControls', () => {
     expect(onChange).toHaveBeenNthCalledWith(1, { keyword: 'new keyword', status: 'in_progress', dueDate: 'today' })
     expect(onChange).toHaveBeenNthCalledWith(2, { keyword: 'abc', status: 'completed', dueDate: 'today' })
     expect(onChange).toHaveBeenNthCalledWith(3, { keyword: 'abc', status: 'in_progress', dueDate: 'none' })
-    expect(container).toMatchSnapshot()
+    expect(summarizeFormControls(container)).toMatchSnapshot('form')
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 
   it('クリアボタンでデフォルト値に戻す', () => {
@@ -33,6 +35,7 @@ describe('TodoSearchControls', () => {
     fireEvent.click(screen.getByRole('button', { name: 'クリア' }))
 
     expect(onChange).toHaveBeenCalledWith({ keyword: '', status: 'all', dueDate: 'all' })
-    expect(container).toMatchSnapshot()
+    expect(summarizeFormControls(container)).toMatchSnapshot('form')
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 })

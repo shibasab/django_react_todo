@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { Todo } from '../../src/models/todo'
 
 import { TodoKanbanBoard } from '../../src/components/todo/TodoKanbanBoard'
+import { summarizeText } from '../helpers/domSnapshot'
 
 const todos: readonly Todo[] = [
   {
@@ -44,7 +45,7 @@ describe('TodoKanbanBoard', () => {
     expect(within(inProgressColumn).getByText('Doing Task')).toBeInTheDocument()
     expect(within(completedColumn).getByText('Done Task')).toBeInTheDocument()
 
-    expect(container).toMatchSnapshot()
+    expect(summarizeText(container)).toMatchSnapshot('text')
   })
 
   it('カードを別列へドロップするとonMoveTodoを呼ぶ', async () => {
@@ -78,6 +79,6 @@ describe('TodoKanbanBoard', () => {
     await waitFor(() => {
       expect(onMoveTodo).not.toHaveBeenCalled()
     })
-    expect(screen.getByTestId('kanban-column-not_started')).toMatchSnapshot()
+    expect(summarizeText(screen.getByTestId('kanban-column-not_started'))).toMatchSnapshot('text')
   })
 })

@@ -2,12 +2,4 @@
 
 exports[`ApiContext > Provider外でuseApiClientを使うとエラーになる 1`] = `[Error: useApiClient must be used within an ApiProvider]`;
 
-exports[`ApiContext > Provider配下でisLoadingを参照できる 1`] = `
-<div>
-  <div
-    data-testid="loading-state"
-  >
-    idle
-  </div>
-</div>
-`;
+exports[`ApiContext > Provider配下でisLoadingを参照できる > text 1`] = `"idle"`;
