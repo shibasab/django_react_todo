@@ -4,13 +4,13 @@
 
 ## Idea
 
-- [サブタスク作成機能](./000_backlog/subtask-creation.md) (subtask_creation) - 2026-02-16 - Idea
 - [タスク一覧操作の効率化](./000_backlog/task-list-operations.md) (task_list_operations) - 2026-02-08 - Idea
 - [タスク優先度設定](./000_backlog/task-priority.md) (task_priority) - 2026-01-20 - Idea
 - [タスクカテゴリ・タグ](./000_backlog/task-category-tag.md) (task_category_tag) - 2026-01-20 - Idea
 
 ## Ready
 
+- [サブタスク作成機能](./009_subtask_creation/spec.md) (subtask_creation) - 2026-02-19 - Ready
 - [タスク進捗カンバンボード](./008_task_progress_kanban_board/spec.md) (task_progress_kanban_board) - 2026-02-14 - Ready
 
 
