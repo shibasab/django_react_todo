@@ -54,6 +54,7 @@ class TestCreateSubtask:
         )
 
         assert response.status_code == 409
+        assert response.json()["detail"] == "サブタスクを親として指定できません"
 
     def test_create_subtask_with_empty_name_returns_422(
         self, client, auth_headers, test_user, test_db

@@ -34,7 +34,7 @@ class AuthenticationError(AppError):
     pass
 
 
-class ConflictError(AppError):
-    """ドメイン制約の競合が発生した場合のエラー"""
+class InvalidParentTodoError(AppError):
+    """サブタスク作成時の親タスク指定が不正な場合のエラー"""
 
     pass

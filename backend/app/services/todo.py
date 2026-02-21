@@ -15,7 +15,7 @@ from app.exceptions import (
     NotFoundError,
     DuplicateError,
     RequiredFieldError,
-    ConflictError,
+    InvalidParentTodoError,
 )
 
 
@@ -77,7 +77,7 @@ class TodoService:
         if parent is None:
             raise NotFoundError("Parent todo not found")
         if parent.parent_id is not None:
-            raise ConflictError("Subtask cannot be set as parent")
+            raise InvalidParentTodoError("サブタスクを親として指定できません")
         return parent
 
     def _validate_update(
