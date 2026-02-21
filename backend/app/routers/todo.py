@@ -6,7 +6,7 @@ from app.schemas.todo import TodoCreate, TodoResponse, TodoUpdate, TodoProgressS
 from app.dependencies.auth import get_current_user
 from app.dependencies.container import get_todo_service
 from app.services.todo import TodoService
-from app.exceptions import NotFoundError
+from app.exceptions import NotFoundError, ConflictError
 
 router = APIRouter()
 
@@ -44,11 +44,16 @@ def create_todo(
     service: TodoService = Depends(get_todo_service),
 ):
     """Todoを作成"""
-    todo = service.create_todo(
-        todo_data,
-        current_user.id,  # pyrefly: ignore[bad-argument-type]
-    )
-    return TodoResponse.model_validate(todo)
+    try:
+        todo = service.create_todo(
+            todo_data,
+            current_user.id,  # pyrefly: ignore[bad-argument-type]
+        )
+        return TodoResponse.model_validate(todo)
+    except NotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
+    except ConflictError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e)) from e
 
 
 @router.get("/{todo_id}/", response_model=TodoResponse)

@@ -84,6 +84,7 @@ class TodoBase(BaseModel):
 class TodoCreate(BaseModel):
     name: RequiredStr = Field(..., max_length=TODO_NAME_MAX_LENGTH)
     detail: str = Field(default="", max_length=TODO_DETAIL_MAX_LENGTH)
+    parent_id: Optional[int] = Field(default=None, alias="parentId")
     due_date: ValidatedDate = Field(default=None, alias="dueDate")
     progress_status: TodoProgressStatus = Field(
         default="not_started", alias="progressStatus"
@@ -114,6 +115,7 @@ class TodoResponse(BaseModel):
         default="not_started", alias="progressStatus"
     )
     recurrence_type: TodoRecurrenceType = Field(default="none", alias="recurrenceType")
+    parent_id: Optional[int] = Field(default=None, alias="parentId")
     owner: Optional[int] = Field(default=None, validation_alias="owner_id")
     created_at: datetime
 

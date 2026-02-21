@@ -32,3 +32,9 @@ class AuthenticationError(AppError):
     """認証に失敗した場合のエラー"""
 
     pass
+
+
+class ConflictError(AppError):
+    """ドメイン制約の競合が発生した場合のエラー"""
+
+    pass

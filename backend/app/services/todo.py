@@ -11,7 +11,12 @@ from app.schemas.todo import (
     TodoRecurrenceType,
 )
 from app.repositories.todo import TodoRepository
-from app.exceptions import NotFoundError, DuplicateError, RequiredFieldError
+from app.exceptions import (
+    NotFoundError,
+    DuplicateError,
+    RequiredFieldError,
+    ConflictError,
+)
 
 
 # ビジネスバリデーション完了済みのTODOデータを表す型
@@ -61,7 +66,19 @@ class TodoService:
         """TODOデータのバリデーションを行い、バリデーション済みデータを返す"""
         self._validate_recurrence_due_date(data.due_date, data.recurrence_type)
         self._ensure_name_unique(owner_id, data.name, exclude_id=exclude_id)
+        self._validate_parent(owner_id, data.parent_id)
         return ValidatedTodoData(data)
+
+    def _validate_parent(self, owner_id: int, parent_id: int | None) -> Todo | None:
+        if parent_id is None:
+            return None
+
+        parent = self.repo.get(parent_id, owner_id)
+        if parent is None:
+            raise NotFoundError("Parent todo not found")
+        if parent.parent_id is not None:
+            raise ConflictError("Subtask cannot be set as parent")
+        return parent
 
     def _validate_update(
         self, owner_id: int, data: TodoUpdate, todo: Todo, exclude_id: int
@@ -134,6 +151,7 @@ class TodoService:
             owner_id=owner_id,
             progress_status=data.progress_status,
             recurrence_type=data.recurrence_type,
+            parent_id=data.parent_id,
         )
 
     def _apply_update(self, todo: Todo, data: ValidatedTodoUpdate) -> None:
