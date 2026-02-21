@@ -40,6 +40,7 @@ class Todo(Base):
             "progress_status",
             "created_at",
         ),
+        Index("idx_todos_parent_id", "parent_id"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
@@ -71,6 +72,10 @@ class Todo(Base):
         nullable=True,
         unique=True,
     )
+    parent_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("todos.id", ondelete="CASCADE"),
+        nullable=True,
+    )
 
     owner: Mapped["User"] = relationship("User", backref="todos")
     previous_todo: Mapped[Optional["Todo"]] = relationship(
@@ -78,4 +83,16 @@ class Todo(Base):
         remote_side=[id],
         foreign_keys=[previous_todo_id],
         uselist=False,
+    )
+    parent: Mapped[Optional["Todo"]] = relationship(
+        "Todo",
+        remote_side=[id],
+        foreign_keys=[parent_id],
+        back_populates="subtasks",
+    )
+    subtasks: Mapped[list["Todo"]] = relationship(
+        "Todo",
+        foreign_keys=[parent_id],
+        back_populates="parent",
+        cascade="all, delete-orphan",
     )

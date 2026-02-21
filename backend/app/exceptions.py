@@ -32,3 +32,9 @@ class AuthenticationError(AppError):
     """認証に失敗した場合のエラー"""
 
     pass
+
+
+class InvalidParentTodoError(AppError):
+    """サブタスク作成時の親タスク指定が不正な場合のエラー"""
+
+    pass
