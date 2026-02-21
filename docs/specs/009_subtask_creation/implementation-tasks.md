@@ -21,10 +21,12 @@
   - `backend/tests/*migration*.py`
 - 変更
   - `parent_id` + FK + index追加
+  - 中間互換スキーマを置かず、最終スキーマへ一括移行
 - 先行テスト（Red）
   - マイグレーション後にカラム/制約/index存在
 - DoD
-  - 既存データが保持され、スキーマ検証テストが成功
+  - 最終スキーマ（FK/index/制約）が一回のmigrationで確定
+  - スキーマ検証テストが成功
 
 #### B-2: サブタスク作成API
 
@@ -148,13 +150,13 @@
 
 ## 4. PR分割（実装順）
 
-### PR-1: Backendスキーマ + サブタスク作成API
+### PR-1: Backend最終スキーマ確定 + サブタスク作成API
 
 - 変更
   - B-1, B-2
 - 自動テスト
   - 新規: `test_todo_subtask_create.py`
-  - 新規/更新: migration検証テスト
+  - 新規/更新: 一括migration検証テスト（中間互換なし）
 - 検証コマンド
   - `cd backend && uv run pytest tests/test_todo_subtask_create.py tests/*migration*.py`
 
