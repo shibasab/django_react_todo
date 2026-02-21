@@ -196,6 +196,7 @@ sequenceDiagram
 
 - 外部キー: `FOREIGN KEY(parent_id) REFERENCES todos(id) ON DELETE CASCADE`
 - インデックス: `CREATE INDEX idx_todos_parent_id ON todos(parent_id)`
+  - 主用途（1親に紐づく複数子の一覧・進捗集計）で `WHERE parent_id = ?` が多発するため必須とする。
 - アプリ制約:
   - `id == parent_id` 禁止
   - 親がサブタスクである設定禁止（多階層禁止）
