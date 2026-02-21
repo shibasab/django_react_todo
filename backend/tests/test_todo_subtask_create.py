@@ -21,7 +21,7 @@ class TestCreateSubtask:
         assert data["name"] == "子タスク"
         assert data["parentId"] == parent.id
 
-    def test_create_subtask_with_nonexistent_parent_returns_404(
+    def test_create_subtask_with_nonexistent_parent_returns_409(
         self, client, auth_headers
     ):
         response = client.post(
@@ -30,7 +30,8 @@ class TestCreateSubtask:
             json={"name": "子タスク", "parentId": 99999},
         )
 
-        assert response.status_code == 404
+        assert response.status_code == 409
+        assert response.json()["detail"] == "親タスクが存在しません"
 
     def test_create_subtask_with_subtask_parent_returns_409(
         self, client, auth_headers, test_user, test_db

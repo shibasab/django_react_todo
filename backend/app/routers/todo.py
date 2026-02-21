@@ -50,8 +50,6 @@ def create_todo(
             current_user.id,  # pyrefly: ignore[bad-argument-type]
         )
         return TodoResponse.model_validate(todo)
-    except NotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
     except InvalidParentTodoError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e)) from e
 

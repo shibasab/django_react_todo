@@ -75,7 +75,7 @@ class TodoService:
 
         parent = self.repo.get(parent_id, owner_id)
         if parent is None:
-            raise NotFoundError("Parent todo not found")
+            raise InvalidParentTodoError("親タスクが存在しません")
         if parent.parent_id is not None:
             raise InvalidParentTodoError("サブタスクを親として指定できません")
         return parent
