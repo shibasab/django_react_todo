@@ -5,7 +5,7 @@
 - 対象Spec: `docs/specs/009_subtask_creation/spec.md`
 - 対象Design: `docs/specs/009_subtask_creation/design.md`
 - 作成日: 2026-02-19
-- 更新日: 2026-02-19
+- 更新日: 2026-02-21
 - 粒度: PR単位 + 検証可能タスク単位
 - 実装方針: t_wadaのTDD（Failing Test -> Minimal Implementation -> Refactor）
 
@@ -69,6 +69,21 @@
 - DoD
   - FR-009/NFR-002を満たす
 
+
+#### B-5: 繰り返しタスクとの整合ルール実装
+
+- 対象ファイル（予定）
+  - `backend/app/services/todo_service.py`
+  - `backend/tests/test_todo_subtask_recurrence_rules.py`（新規）
+- 変更
+  - サブタスクへの `recurrence_type != none` を409で拒否
+  - 繰り返し親完了時の次回生成でサブタスク非複製を保証
+- 先行テスト（Red）
+  - サブタスク作成/更新で繰り返し指定時に409
+  - 親完了で生成された次回タスクに子が存在しない
+- DoD
+  - FR-011/FR-012を満たす
+
 ### Phase F (Frontend)
 
 #### F-1: 型/クライアント契約更新
@@ -126,7 +141,7 @@
 
 ## 2. 依存関係
 
-1. B-1 -> B-2 -> B-3 -> B-4
+1. B-1 -> B-2 -> B-3 -> B-4 -> B-5
 2. F-1 -> F-2 -> F-3
 3. B/F完了後にPhase Q
 
@@ -144,6 +159,8 @@
 | FR-008 | B-3 | 親完了拒否 |
 | FR-009 | B-1, B-4 | 親削除カスケード |
 | FR-010 | B-3, F-3 | 拒否理由表示 |
+| FR-011 | B-5 | サブタスク繰り返し拒否 |
+| FR-012 | B-5 | 次回生成で子非複製 |
 | NFR-001 | B-3 | 集計クエリ確認 |
 | NFR-002 | B-1, B-4 | FK/孤立防止 |
 | NFR-003 | F-2 | 視認性確認 |
@@ -160,15 +177,15 @@
 - 検証コマンド
   - `cd backend && uv run pytest tests/test_todo_subtask_create.py tests/*migration*.py`
 
-### PR-2: Backend親完了制御 + 進捗計算 + 親削除
+### PR-2: Backend親完了制御 + 進捗計算 + 親削除 + 繰り返し整合
 
 - 変更
-  - B-3, B-4
+  - B-3, B-4, B-5
 - 自動テスト
   - 新規: `test_todo_subtask_progress.py`
   - 新規/更新: `test_todo_subtask_delete.py`
 - 検証コマンド
-  - `cd backend && uv run pytest tests/test_todo_subtask_progress.py tests/test_todo_subtask_delete.py`
+  - `cd backend && uv run pytest tests/test_todo_subtask_progress.py tests/test_todo_subtask_delete.py tests/test_todo_subtask_recurrence_rules.py`
 
 ### PR-3: Frontend型/サブタスクUI/拒否表示
 

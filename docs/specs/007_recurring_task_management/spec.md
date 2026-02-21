@@ -2,7 +2,7 @@
 Title: 繰り返しタスク設定
 Status: Ready
 Created: 2026-02-11
-Last updated: 2026-02-14
+Last updated: 2026-02-21
 Source: ../000_backlog/recurring-task-management.md
 ---
 
@@ -35,6 +35,7 @@ Source: ../000_backlog/recurring-task-management.md
 - 期限日未設定のタスクは繰り返し設定を有効化できない。
 - 繰り返し設定変更は保存後の次回生成分から適用され、既存の過去タスクには遡及しない。
 - 繰り返し設定済みタスクが削除された場合、そのタスク起点での次回生成は行われない。
+- サブタスク（親参照あり）に対して繰り返し設定を有効化しようとした場合、設定は拒否される。
 
 ## Requirements
 
@@ -52,6 +53,8 @@ Source: ../000_backlog/recurring-task-management.md
 - FR-010: 同一タスクへの重複完了操作や再送があっても、同一サイクルで複数の次回タスクを生成してはならない (MUST)。
 - FR-011: 同一シリーズのタスクは同名で継続生成できなければならない (MUST)。
 - FR-012: 繰り返し設定の作成・更新・削除・完了操作はタスク所有者のみ実行できなければならない。非所有者による対象タスク操作は 404 Not Found として拒否しなければならない (MUST)。
+- FR-013: システムはサブタスク（`parent_id != NULL`）に対して繰り返し設定（`daily`/`weekly`/`monthly`）を許可してはならない (MUST)。
+- FR-014: 繰り返し親タスクの完了で次回タスクを生成する際、サブタスクを複製してはならない。次回タスクはサブタスク0件で開始しなければならない (MUST)。
 
 ### Non-functional Requirements
 
