@@ -99,6 +99,10 @@ class TodoService:
             else todo.recurrence_type,
         )
         self._validate_recurrence_due_date(due_date, recurrence_type)
+
+        if self._is_transitioning_to_completed(todo, data):
+            self._validate_parent_completion(todo, owner_id)
+
         return ValidatedTodoUpdate(data)
 
     def _validate_recurrence_due_date(
@@ -111,6 +115,15 @@ class TodoService:
                 "Due date is required for recurring tasks",
                 field="dueDate",
             )
+
+    def _is_transitioning_to_completed(
+        self, todo: Todo, data: TodoUpdate
+    ) -> bool:
+        """更新データがprogress_statusを未完了→完了に変更しようとしているか"""
+        if "progress_status" not in data.model_fields_set or data.progress_status != "completed":
+            return False
+        current_status = cast(TodoProgressStatus, todo.progress_status)
+        return current_status != "completed"
 
     def _is_completion_transition(self, todo: Todo, was_completed: bool) -> bool:
         progress_status = cast(TodoProgressStatus, todo.progress_status)
@@ -218,13 +231,6 @@ class TodoService:
 
         update_data = self._validate_update(owner_id, data, todo, exclude_id=todo_id)
         self._apply_update(todo, update_data)
-
-        if (
-            "progress_status" in update_data.model_fields_set
-            and update_data.progress_status == "completed"
-            and not was_completed
-        ):
-            self._validate_parent_completion(todo, owner_id)
 
         self.db.flush()
 
