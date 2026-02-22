@@ -38,3 +38,9 @@ class InvalidParentTodoError(AppError):
     """サブタスク作成時の親タスク指定が不正な場合のエラー"""
 
     pass
+
+
+class ParentTodoCompletionBlockedError(AppError):
+    """未完了サブタスクが存在して親タスクを完了できない場合のエラー"""
+
+    pass

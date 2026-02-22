@@ -5,7 +5,7 @@
 - 対象Spec: `docs/specs/009_subtask_creation/spec.md`
 - 対象Design: `docs/specs/009_subtask_creation/design.md`
 - 作成日: 2026-02-19
-- 更新日: 2026-02-22
+- 更新日: 2026-02-23
 - 粒度: PR単位 + 検証可能タスク単位
 - 実装方針: t_wadaのTDD（Failing Test -> Minimal Implementation -> Refactor）
 
@@ -13,7 +13,7 @@
 
 - [x] B-1: `parent_id` スキーマ追加
 - [x] B-2: サブタスク作成API
-- [ ] B-3: 親完了制御 + 進捗計算
+- [x] B-3: 親完了制御 + 進捗計算
 - [ ] B-4: 親削除カスケード
 - [ ] B-5: 繰り返しタスクとの整合ルール実装
 - [ ] F-1: 型/クライアント契約更新
