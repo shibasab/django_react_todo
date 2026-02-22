@@ -120,7 +120,10 @@ class TodoService:
         self, current_todo: Todo, update_data: TodoUpdate
     ) -> bool:
         """更新リクエストがprogress_statusを未完了→完了に変更しようとしているか"""
-        if "progress_status" not in update_data.model_fields_set or update_data.progress_status != "completed":
+        if (
+            "progress_status" not in update_data.model_fields_set
+            or update_data.progress_status != "completed"
+        ):
             return False
         current_status = cast(TodoProgressStatus, current_todo.progress_status)
         return current_status != "completed"
