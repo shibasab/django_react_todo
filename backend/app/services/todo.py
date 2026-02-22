@@ -1,6 +1,7 @@
 import calendar
+from dataclasses import dataclass
 from datetime import date, timedelta
-from typing import List, NewType, cast
+from typing import List, NewType, Union, cast
 from sqlalchemy.orm import Session
 
 from app.models.todo import Todo
@@ -24,6 +25,35 @@ from app.exceptions import (
 # 静的型チェッカーがバリデーション済みかどうかを区別できる
 ValidatedTodoData = NewType("ValidatedTodoData", TodoCreate)
 ValidatedTodoUpdate = NewType("ValidatedTodoUpdate", TodoUpdate)
+
+
+@dataclass
+class SubtaskProgress:
+    """サブタスク進捗の計算結果（イミュータブル）"""
+
+    completed_count: int
+    total_count: int
+    progress_percent: int
+
+
+class TodoWithProgress:
+    """Todoエンティティとサブタスク進捗を組み合わせた読み取り専用ビュー。
+    元のTodoを書き換えず、計算したプロパティを持つ新しいオブジェクトとして返す。
+    """
+
+    def __init__(self, todo: Todo, progress: SubtaskProgress):
+        self._todo = todo
+        self.completed_subtask_count = progress.completed_count
+        self.total_subtask_count = progress.total_count
+        self.subtask_progress_percent = progress.progress_percent
+
+    def __getattr__(self, name: str):  # type: ignore[no-untyped-def]
+        return getattr(self._todo, name)
+
+    @property
+    def entity(self) -> Todo:
+        """内部のTodoエンティティ（更新・削除時に使用）"""
+        return self._todo
 
 
 class TodoService:
@@ -190,18 +220,19 @@ class TodoService:
         ):
             todo.recurrence_type = data.recurrence_type
 
-    def _calculate_subtask_progress(self, todo: Todo, owner_id: int) -> None:
+    def _calculate_subtask_progress(self, todo: Todo, owner_id: int) -> SubtaskProgress:
+        """サブタスク進捗を計算する。元のtodoは書き換えず、計算結果を返す。"""
         todo_id = cast(int, todo.id)
-        total_subtask_count = self.repo.count_subtasks(todo_id, owner_id)
-        completed_subtask_count = self.repo.count_completed_subtasks(todo_id, owner_id)
+        total_count = self.repo.count_subtasks(todo_id, owner_id)
+        completed_count = self.repo.count_completed_subtasks(todo_id, owner_id)
         progress_percent = (
-            int((completed_subtask_count * 100) / total_subtask_count)
-            if total_subtask_count > 0
-            else 0
+            int((completed_count * 100) / total_count) if total_count > 0 else 0
         )
-        todo.completed_subtask_count = completed_subtask_count
-        todo.total_subtask_count = total_subtask_count
-        todo.subtask_progress_percent = progress_percent
+        return SubtaskProgress(
+            completed_count=completed_count,
+            total_count=total_count,
+            progress_percent=progress_percent,
+        )
 
     def _validate_parent_completion(self, todo: Todo, owner_id: int) -> None:
         if todo.parent_id is not None:
@@ -221,18 +252,23 @@ class TodoService:
         self.db.refresh(todo)
         return todo
 
-    def get_todo(self, todo_id: int, owner_id: int) -> Todo:
+    def get_todo(self, todo_id: int, owner_id: int) -> Union[Todo, TodoWithProgress]:
         todo = self.repo.get(todo_id, owner_id)
         if not todo:
             raise NotFoundError("Todo not found")
-        self._calculate_subtask_progress(todo, owner_id)
-        return todo
+        progress = self._calculate_subtask_progress(todo, owner_id)
+        return TodoWithProgress(todo, progress)
 
-    def update_todo(self, todo_id: int, data: TodoUpdate, owner_id: int) -> Todo:
-        todo = self.get_todo(todo_id, owner_id)
+    def update_todo(
+        self, todo_id: int, data: TodoUpdate, owner_id: int
+    ) -> Union[Todo, TodoWithProgress]:
+        todo_with_progress = self.get_todo(todo_id, owner_id)
+        todo = todo_with_progress.entity
         was_completed = cast(TodoProgressStatus, todo.progress_status) == "completed"
 
-        update_data = self._validate_update(owner_id, data, todo, exclude_id=todo_id)
+        update_data = self._validate_update(
+            owner_id, data, todo_with_progress, exclude_id=todo_id
+        )
         self._apply_update(todo, update_data)
 
         self.db.flush()
@@ -246,9 +282,10 @@ class TodoService:
 
         self.db.commit()
         self.db.refresh(todo)
-        return todo
+        progress = self._calculate_subtask_progress(todo, owner_id)
+        return TodoWithProgress(todo, progress)
 
     def delete_todo(self, todo_id: int, owner_id: int) -> None:
-        todo = self.get_todo(todo_id, owner_id)
-        self.repo.delete(todo)
+        todo_with_progress = self.get_todo(todo_id, owner_id)
+        self.repo.delete(todo_with_progress.entity)
         self.db.commit()
