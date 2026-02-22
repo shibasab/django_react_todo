@@ -116,6 +116,9 @@ class TodoResponse(BaseModel):
     )
     recurrence_type: TodoRecurrenceType = Field(default="none", alias="recurrenceType")
     parent_id: Optional[int] = Field(default=None, alias="parentId")
+    completed_subtask_count: int = Field(default=0, alias="completedSubtaskCount")
+    total_subtask_count: int = Field(default=0, alias="totalSubtaskCount")
+    subtask_progress_percent: int = Field(default=0, alias="subtaskProgressPercent")
     owner: Optional[int] = Field(default=None, validation_alias="owner_id")
     created_at: datetime
 
