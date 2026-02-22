@@ -117,12 +117,12 @@ class TodoService:
             )
 
     def _is_transitioning_to_completed(
-        self, todo: Todo, data: TodoUpdate
+        self, current_todo: Todo, update_data: TodoUpdate
     ) -> bool:
-        """更新データがprogress_statusを未完了→完了に変更しようとしているか"""
-        if "progress_status" not in data.model_fields_set or data.progress_status != "completed":
+        """更新リクエストがprogress_statusを未完了→完了に変更しようとしているか"""
+        if "progress_status" not in update_data.model_fields_set or update_data.progress_status != "completed":
             return False
-        current_status = cast(TodoProgressStatus, todo.progress_status)
+        current_status = cast(TodoProgressStatus, current_todo.progress_status)
         return current_status != "completed"
 
     def _is_completion_transition(self, todo: Todo, was_completed: bool) -> bool:
