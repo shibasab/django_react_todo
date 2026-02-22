@@ -16,6 +16,7 @@ from app.exceptions import (
     DuplicateError,
     RequiredFieldError,
     InvalidParentTodoError,
+    ParentTodoCompletionBlockedError,
 )
 
 
@@ -98,6 +99,10 @@ class TodoService:
             else todo.recurrence_type,
         )
         self._validate_recurrence_due_date(due_date, recurrence_type)
+
+        if self._is_transitioning_to_completed(todo, data):
+            self._validate_parent_completion(todo, owner_id)
+
         return ValidatedTodoUpdate(data)
 
     def _validate_recurrence_due_date(
@@ -110,6 +115,18 @@ class TodoService:
                 "Due date is required for recurring tasks",
                 field="dueDate",
             )
+
+    def _is_transitioning_to_completed(
+        self, current_todo: Todo, update_data: TodoUpdate
+    ) -> bool:
+        """更新リクエストがprogress_statusを未完了→完了に変更しようとしているか"""
+        if (
+            "progress_status" not in update_data.model_fields_set
+            or update_data.progress_status != "completed"
+        ):
+            return False
+        current_status = cast(TodoProgressStatus, current_todo.progress_status)
+        return current_status != "completed"
 
     def _is_completion_transition(self, todo: Todo, was_completed: bool) -> bool:
         progress_status = cast(TodoProgressStatus, todo.progress_status)
@@ -173,6 +190,28 @@ class TodoService:
         ):
             todo.recurrence_type = data.recurrence_type
 
+    def _calculate_subtask_progress(self, todo: Todo, owner_id: int) -> None:
+        todo_id = cast(int, todo.id)
+        total_subtask_count = self.repo.count_subtasks(todo_id, owner_id)
+        completed_subtask_count = self.repo.count_completed_subtasks(todo_id, owner_id)
+        progress_percent = (
+            int((completed_subtask_count * 100) / total_subtask_count)
+            if total_subtask_count > 0
+            else 0
+        )
+        todo.completed_subtask_count = completed_subtask_count
+        todo.total_subtask_count = total_subtask_count
+        todo.subtask_progress_percent = progress_percent
+
+    def _validate_parent_completion(self, todo: Todo, owner_id: int) -> None:
+        if todo.parent_id is not None:
+            return
+        todo_id = cast(int, todo.id)
+        if self.repo.has_incomplete_subtasks(todo_id, owner_id):
+            raise ParentTodoCompletionBlockedError(
+                "未完了のサブタスクがあるため完了できません"
+            )
+
     def create_todo(self, data: TodoCreate, owner_id: int) -> Todo:
         validated = self._validate_todo(owner_id, data)
 
@@ -186,6 +225,7 @@ class TodoService:
         todo = self.repo.get(todo_id, owner_id)
         if not todo:
             raise NotFoundError("Todo not found")
+        self._calculate_subtask_progress(todo, owner_id)
         return todo
 
     def update_todo(self, todo_id: int, data: TodoUpdate, owner_id: int) -> Todo:
@@ -194,6 +234,7 @@ class TodoService:
 
         update_data = self._validate_update(owner_id, data, todo, exclude_id=todo_id)
         self._apply_update(todo, update_data)
+
         self.db.flush()
 
         if self._is_completion_transition(todo, was_completed):

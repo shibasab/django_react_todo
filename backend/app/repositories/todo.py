@@ -77,6 +77,36 @@ class TodoRepository:
         )
         self.db.execute(stmt)
 
+    def count_subtasks(self, parent_id: int, owner_id: int) -> int:
+        return (
+            self.db.query(Todo)
+            .filter(Todo.parent_id == parent_id, Todo.owner_id == owner_id)
+            .count()
+        )
+
+    def count_completed_subtasks(self, parent_id: int, owner_id: int) -> int:
+        return (
+            self.db.query(Todo)
+            .filter(
+                Todo.parent_id == parent_id,
+                Todo.owner_id == owner_id,
+                Todo.progress_status == "completed",
+            )
+            .count()
+        )
+
+    def has_incomplete_subtasks(self, parent_id: int, owner_id: int) -> bool:
+        return (
+            self.db.query(Todo.id)
+            .filter(
+                Todo.parent_id == parent_id,
+                Todo.owner_id == owner_id,
+                Todo.progress_status != "completed",
+            )
+            .first()
+            is not None
+        )
+
     def delete(self, todo: Todo) -> None:
         self.db.delete(todo)
 
