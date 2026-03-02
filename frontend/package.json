@@ -1,5 +1,5 @@
 {
-  "name": "django_react",
+  "name": "todoapp-frontend",
   "version": "1.0.0",
   "description": "",
   "keywords": [],
@@ -11,19 +11,21 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "oxlint --type-aware -c ../configs/oxlint/browser-react.json",
+    "lint": "oxlint --type-aware -c ../configs/oxlint/browser-vue.json",
     "lint:check": "npm run lint",
-    "lint:fix": "oxlint --fix --type-aware -c ../configs/oxlint/browser-react.json",
+    "lint:fix": "oxlint --fix --type-aware -c ../configs/oxlint/browser-vue.json",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
-    "typecheck": "tsgo",
+    "typecheck": "vue-tsc --noEmit",
     "test": "vitest",
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",
     "@todoapp/shared": "file:../shared",
+    "@vueuse/core": "^14.2.1",
     "axios": "^1.13.6",
+    "pinia": "^3.0.4",
     "prop-types": "^15.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -31,24 +33,30 @@
     "react-toastify": "^9.1.3",
     "react-transition-group": "^4.2.2",
     "tailwindcss": "^4.2.1",
-    "use-debounce": "^10.1.0"
+    "use-debounce": "^10.1.0",
+    "vue": "^3.5.29",
+    "vue-router": "^5.0.3",
+    "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
     "@happy-dom/global-registrator": "^20.0.11",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
+    "@testing-library/vue": "^8.1.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@typescript/native-preview": "^7.0.0-dev.20260228.1",
     "@vitejs/plugin-react": "^5.1.2",
+    "@vitejs/plugin-vue": "^6.0.4",
     "@vitest/coverage-v8": "^4.0.16",
     "axios-mock-adapter": "^2.1.0",
     "oxfmt": "^0.22.0",
     "oxlint": "^1.50.0",
     "oxlint-tsgolint": "^0.11.0",
     "vite": "^7.3.1",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "vue-tsc": "^3.2.5"
   },
   "engines": {
     "node": ">=24.0.0"
