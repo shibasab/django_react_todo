@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import type { Todo, TodoProgressStatus } from '../../src/models/todo'
 
-import TodoKanbanBoard from '../../src/components/todo/TodoKanbanBoard.vue'
+import TodoKanbanBoard from '../../src/components/todo/todo-kanban-board.vue'
 
 const TODO_LIST: readonly Todo[] = [
   {

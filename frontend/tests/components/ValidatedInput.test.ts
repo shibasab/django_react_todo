@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import type { ValidationError } from '../../src/models/error'
 
-import ValidatedInput from '../../src/components/ValidatedInput.vue'
+import ValidatedInput from '../../src/components/validated-input.vue'
 import { summarizeFormControls, summarizeText } from '../helpers/domSnapshot'
 
 describe('ValidatedInput', () => {

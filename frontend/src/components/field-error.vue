@@ -1,3 +1,11 @@
+<template>
+  <div v-if="fieldErrors().length > 0" class="mt-1 text-sm text-red-600">
+    <p v-for="(error, index) in fieldErrors()" :key="error.reason + index">
+      {{ toErrorMessage(error, fieldLabel) }}
+    </p>
+  </div>
+</template>
+
 <script setup lang="ts">
 import type { ValidationError } from '../models/error'
 
@@ -31,11 +39,3 @@ const toErrorMessage = (error: ValidationError, fieldLabel: string): string => {
 
 const fieldErrors = () => props.errors.filter((error) => error.field === props.fieldName)
 </script>
-
-<template>
-  <div v-if="fieldErrors().length > 0" class="mt-1 text-sm text-red-600">
-    <p v-for="(error, index) in fieldErrors()" :key="error.reason + index">
-      {{ toErrorMessage(error, fieldLabel) }}
-    </p>
-  </div>
-</template>

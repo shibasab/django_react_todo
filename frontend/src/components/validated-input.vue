@@ -1,9 +1,32 @@
+<template>
+  <div class="mb-4">
+    <label :for="id" class="block text-sm font-medium text-gray-700 mb-2">
+      {{ label }}
+    </label>
+    <input
+      :id="id"
+      :class="[
+        'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+        hasError() ? 'border-red-500' : 'border-gray-300',
+        className ?? '',
+      ]"
+      :type="type ?? 'text'"
+      :maxlength="maxLength"
+      :name="name"
+      :value="modelValue"
+      @input="handleInput"
+      @blur="handleBlur"
+    />
+    <FieldError :errors="errors" :field-name="name" :field-label="errorLabel" />
+  </div>
+</template>
+
 <script setup lang="ts">
 import { ref } from 'vue'
 
 import type { ValidationError } from '../models/error'
 
-import FieldError from './FieldError.vue'
+import FieldError from './field-error.vue'
 
 const props = defineProps<{
   id: string
@@ -40,26 +63,3 @@ const handleInput = (event: Event) => {
 
 const hasError = () => props.errors.some((e) => e.field === props.name)
 </script>
-
-<template>
-  <div class="mb-4">
-    <label :for="id" class="block text-sm font-medium text-gray-700 mb-2">
-      {{ label }}
-    </label>
-    <input
-      :id="id"
-      :class="[
-        'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
-        hasError() ? 'border-red-500' : 'border-gray-300',
-        className ?? '',
-      ]"
-      :type="type ?? 'text'"
-      :maxlength="maxLength"
-      :name="name"
-      :value="modelValue"
-      @input="handleInput"
-      @blur="handleBlur"
-    />
-    <FieldError :errors="errors" :field-name="name" :field-label="errorLabel" />
-  </div>
-</template>

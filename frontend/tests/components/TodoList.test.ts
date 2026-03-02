@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import type { Todo } from '../../src/models/todo'
 
-import TodoList from '../../src/components/todo/TodoList.vue'
+import TodoList from '../../src/components/todo/todo-list.vue'
 import { summarizeText } from '../helpers/domSnapshot'
 
 const BASE_TODO: Todo = {

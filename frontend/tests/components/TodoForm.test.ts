@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { ValidationError } from '../../src/models/error'
 import type { CreateTodoInput } from '../../src/models/todo'
 
-import TodoForm from '../../src/components/todo/TodoForm.vue'
+import TodoForm from '../../src/components/todo/todo-form.vue'
 import { summarizeFormControls } from '../helpers/domSnapshot'
 
 describe('TodoForm', () => {

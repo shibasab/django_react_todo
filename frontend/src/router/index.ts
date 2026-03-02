@@ -7,17 +7,17 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: () => import('../pages/DashboardPage.vue'),
+      component: () => import('../pages/dashboard-page.vue'),
       meta: { requiresAuth: true },
     },
     {
       path: '/login',
-      component: () => import('../pages/LoginPage.vue'),
+      component: () => import('../pages/login-page.vue'),
       meta: { guestOnly: true },
     },
     {
       path: '/register',
-      component: () => import('../pages/RegisterPage.vue'),
+      component: () => import('../pages/register-page.vue'),
       meta: { guestOnly: true },
     },
   ],

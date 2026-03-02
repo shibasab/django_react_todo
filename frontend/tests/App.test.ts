@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
-import App from '../src/App.vue'
+import App from '../src/app.vue'
 import { _setApiClientFactoryForTesting, _clearApiClientFactoryForTesting } from '../src/stores/api'
 import { summarizeText } from './helpers/domSnapshot'
 import { setupHttpFixtureTest } from './helpers/httpMock'

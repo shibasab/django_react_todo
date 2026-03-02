@@ -1,21 +1,3 @@
-<script setup lang="ts">
-import { reactive } from 'vue'
-import { RouterLink } from 'vue-router'
-
-import { useAuthStore } from '../stores/auth'
-
-const authStore = useAuthStore()
-
-const formState = reactive({
-  username: '',
-  password: '',
-})
-
-const handleSubmit = async () => {
-  await authStore.login(formState.username, formState.password)
-}
-</script>
-
 <template>
   <div class="max-w-md mx-auto mt-8">
     <div class="bg-white rounded-lg shadow-md p-6">
@@ -59,3 +41,21 @@ const handleSubmit = async () => {
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { reactive } from 'vue'
+import { RouterLink } from 'vue-router'
+
+import { useAuthStore } from '../stores/auth'
+
+const authStore = useAuthStore()
+
+const formState = reactive({
+  username: '',
+  password: '',
+})
+
+const handleSubmit = async () => {
+  await authStore.login(formState.username, formState.password)
+}
+</script>

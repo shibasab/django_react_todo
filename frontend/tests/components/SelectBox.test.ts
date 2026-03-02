@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { describe, expect, it } from 'vitest'
 
-import SelectBox, { type SelectOption } from '../../src/components/SelectBox.vue'
+import SelectBox, { type SelectOption } from '../../src/components/select-box.vue'
 
 type TestValue = 'all' | 'completed'
 

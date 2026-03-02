@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/vue'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import TodoSearchControls from '../../src/components/todo/TodoSearchControls.vue'
+import TodoSearchControls from '../../src/components/todo/todo-search-controls.vue'
 import { DEFAULT_TODO_SEARCH_STATE, type TodoSearchState } from '../../src/composables/todoSearch'
 
 describe('TodoSearchControls', () => {
