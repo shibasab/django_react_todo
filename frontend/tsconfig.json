@@ -8,6 +8,5 @@
     "resolveJsonModule": true,
     "isolatedModules": true
   },
-  "include": ["src/**/*.ts", "src/**/*.vue", "tests/**/*.ts", "vite.config.ts"],
-  "exclude": ["src/contexts/**", "src/hooks/useAuth.ts", "src/hooks/useTodo.ts"]
+  "include": ["src/**/*.ts", "src/**/*.vue", "tests/**/*.ts", "vite.config.ts"]
 }

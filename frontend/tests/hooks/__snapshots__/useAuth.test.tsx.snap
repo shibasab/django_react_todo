@@ -1,3 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`useAuth > Provider外で利用するとエラーを投げる 1`] = `[Error: useAuth must be used within an AuthProvider]`;
