@@ -5,7 +5,10 @@ const authStore = useAuthStore()
 </script>
 
 <template>
-  <div v-if="authStore.authState.status === 'loading'" class="flex items-center justify-center min-h-screen text-gray-600">
+  <div
+    v-if="authStore.authState.status === 'loading'"
+    class="flex items-center justify-center min-h-screen text-gray-600"
+  >
     Loading...
   </div>
   <slot v-else />

@@ -1,5 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`TodoKanbanBoard > progressStatusごとに3列へ表示する > text 1`] = `"Todo Kanban 着手前 1 Backlog Task 期限: - 進行中 1 Doing Task 期限: - 完了 1 Done Task 期限: -"`;
-
-exports[`TodoKanbanBoard > 同じ列へのドロップは移動せず、dragOverでドロップ可能状態になる > text 1`] = `"着手前 1 Backlog Task 期限: -"`;

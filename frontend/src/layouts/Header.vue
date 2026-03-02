@@ -10,9 +10,7 @@ const authStore = useAuthStore()
   <nav class="bg-[#1A535C] text-white">
     <div class="container mx-auto px-4">
       <div class="flex items-center justify-between h-16">
-        <RouterLink to="/" class="text-xl font-bold text-white hover:text-gray-200">
-          Todo App
-        </RouterLink>
+        <RouterLink to="/" class="text-xl font-bold text-white hover:text-gray-200"> Todo App </RouterLink>
         <div v-if="authStore.authState.status === 'authenticated'" class="flex items-center space-x-4">
           <span class="text-white font-semibold">Welcome {{ authStore.authState.user.username }}</span>
           <button
@@ -23,12 +21,8 @@ const authStore = useAuthStore()
           </button>
         </div>
         <div v-else-if="authStore.authState.status === 'unauthenticated'" class="flex items-center space-x-4">
-          <RouterLink to="/register" class="text-white hover:text-gray-200 transition-colors">
-            Register
-          </RouterLink>
-          <RouterLink to="/login" class="text-white hover:text-gray-200 transition-colors">
-            Login
-          </RouterLink>
+          <RouterLink to="/register" class="text-white hover:text-gray-200 transition-colors"> Register </RouterLink>
+          <RouterLink to="/login" class="text-white hover:text-gray-200 transition-colors"> Login </RouterLink>
         </div>
       </div>
     </div>

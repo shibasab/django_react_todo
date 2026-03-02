@@ -28,9 +28,7 @@ const handleSubmit = async () => {
       <h2 class="text-2xl font-bold text-center mb-6">Register</h2>
       <form @submit.prevent="handleSubmit">
         <div class="mb-4">
-          <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
-            Username
-          </label>
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-2"> Username </label>
           <input
             id="username"
             v-model="formState.username"
@@ -40,9 +38,7 @@ const handleSubmit = async () => {
           />
         </div>
         <div class="mb-4">
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-            Email
-          </label>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-2"> Email </label>
           <input
             id="email"
             v-model="formState.email"
@@ -52,9 +48,7 @@ const handleSubmit = async () => {
           />
         </div>
         <div class="mb-4">
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-            Password
-          </label>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2"> Password </label>
           <input
             id="password"
             v-model="formState.password"
@@ -64,9 +58,7 @@ const handleSubmit = async () => {
           />
         </div>
         <div class="mb-4">
-          <label for="password2" class="block text-sm font-medium text-gray-700 mb-2">
-            Confirm Password
-          </label>
+          <label for="password2" class="block text-sm font-medium text-gray-700 mb-2"> Confirm Password </label>
           <input
             id="password2"
             v-model="formState.password2"
@@ -85,9 +77,7 @@ const handleSubmit = async () => {
         </div>
         <p class="text-center text-sm text-gray-600">
           Already have an account?
-          <RouterLink to="/login" class="text-blue-600 hover:text-blue-700">
-            Login
-          </RouterLink>
+          <RouterLink to="/login" class="text-blue-600 hover:text-blue-700"> Login </RouterLink>
         </p>
       </form>
     </div>
