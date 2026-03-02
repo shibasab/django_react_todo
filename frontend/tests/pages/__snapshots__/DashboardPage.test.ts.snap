@@ -6,5 +6,9 @@ exports[`DashboardPage > 初期表示 > ページレンダリング時にGET API
     "method": "GET",
     "url": "/auth/user",
   },
+  {
+    "method": "GET",
+    "url": "/auth/user",
+  },
 ]
 `;

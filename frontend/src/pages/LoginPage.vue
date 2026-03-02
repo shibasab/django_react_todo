@@ -22,9 +22,7 @@ const handleSubmit = async () => {
       <h2 class="text-2xl font-bold text-center mb-6">Login</h2>
       <form @submit.prevent="handleSubmit">
         <div class="mb-4">
-          <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
-            Username
-          </label>
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-2"> Username </label>
           <input
             id="username"
             v-model="formState.username"
@@ -35,9 +33,7 @@ const handleSubmit = async () => {
         </div>
 
         <div class="mb-4">
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-            Password
-          </label>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2"> Password </label>
           <input
             id="password"
             v-model="formState.password"
@@ -57,9 +53,7 @@ const handleSubmit = async () => {
         </div>
         <p class="text-center text-sm text-gray-600">
           Don't have an account?
-          <RouterLink to="/register" class="text-blue-600 hover:text-blue-700">
-            Register
-          </RouterLink>
+          <RouterLink to="/register" class="text-blue-600 hover:text-blue-700"> Register </RouterLink>
         </p>
       </form>
     </div>
