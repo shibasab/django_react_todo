@@ -1,4 +1,4 @@
-import { waitFor, within } from '@testing-library/vue'
+import { fireEvent, waitFor, within } from '@testing-library/vue'
 import { describe, it, expect, afterEach } from 'vitest'
 
 import { setupHttpFixtureTest } from '../helpers/httpMock'
@@ -48,6 +48,24 @@ describe('DashboardPage', () => {
         expect(within(container).getByRole('button', { name: '詳細入力を開く' })).toBeInTheDocument()
         expect(within(container).getByRole('button', { name: 'クリア' })).toBeInTheDocument()
       })
+    })
+
+    it('表示モード切り替えと詳細入力フォームの開閉ができる', async () => {
+      const { apiClient } = setupAuthenticatedDashboard()
+      const { container } = await renderApp({ apiClient, initialRoute: '/', isAuthenticated: true })
+
+      await waitFor(() => {
+        expect(within(container).getByRole('button', { name: 'カンバン表示' })).toBeInTheDocument()
+      })
+
+      await fireEvent.click(within(container).getByRole('button', { name: 'カンバン表示' }))
+      expect(within(container).getByText('Todo Kanban')).toBeInTheDocument()
+
+      await fireEvent.click(within(container).getByRole('button', { name: '一覧表示' }))
+      expect(within(container).getByText('Todo List')).toBeInTheDocument()
+
+      await fireEvent.click(within(container).getByRole('button', { name: '詳細入力を開く' }))
+      expect(within(container).getByRole('button', { name: '詳細入力を閉じる' })).toBeInTheDocument()
     })
   })
 })

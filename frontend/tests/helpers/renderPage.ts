@@ -5,7 +5,7 @@ import { createRouter, createMemoryHistory, RouterView } from 'vue-router'
 
 import type { ApiClient } from '../../src/services/api'
 
-import Header from '../../src/layouts/Header.vue'
+import Header from '../../src/layouts/header.vue'
 import { _setApiClientFactoryForTesting, _clearApiClientFactoryForTesting } from '../../src/stores/api'
 import { useAuthStore } from '../../src/stores/auth'
 
@@ -28,17 +28,17 @@ const createTestRouter = (initialRoute: string) => {
     routes: [
       {
         path: '/',
-        component: () => import('../../src/pages/DashboardPage.vue'),
+        component: () => import('../../src/pages/dashboard-page.vue'),
         meta: { requiresAuth: true },
       },
       {
         path: '/login',
-        component: () => import('../../src/pages/LoginPage.vue'),
+        component: () => import('../../src/pages/login-page.vue'),
         meta: { guestOnly: true },
       },
       {
         path: '/register',
-        component: () => import('../../src/pages/RegisterPage.vue'),
+        component: () => import('../../src/pages/register-page.vue'),
         meta: { guestOnly: true },
       },
     ],

@@ -12,7 +12,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html'],
       include: ['src/**/*.{ts,vue}'],
-      exclude: ['src/**/*.d.ts', 'src/main.ts'],
+      exclude: ['src/**/*.d.ts', 'src/main.ts', 'tests/**'],
       thresholds: {
         lines: 85,
         functions: 85,

@@ -1,51 +1,3 @@
-<script setup lang="ts">
-import { ref, watch } from 'vue'
-import { watchDebounced } from '@vueuse/core'
-
-import type { Todo, TodoProgressStatus } from '../models/todo'
-
-import TodoForm from '../components/todo/TodoForm.vue'
-import TodoKanbanBoard from '../components/todo/TodoKanbanBoard.vue'
-import TodoList from '../components/todo/TodoList.vue'
-import TodoQuickAdd from '../components/todo/TodoQuickAdd.vue'
-import TodoSearchControls from '../components/todo/TodoSearchControls.vue'
-import { DEFAULT_TODO_SEARCH_STATE, hasSearchCriteria, type TodoSearchState } from '../composables/todoSearch'
-import { useTodo } from '../composables/useTodo'
-
-const { todos, isLoading, fetchTodos, addTodo, updateTodo, removeTodo, toggleTodoCompletion } = useTodo()
-const searchState = ref<TodoSearchState>(DEFAULT_TODO_SEARCH_STATE)
-const isDetailFormOpen = ref(false)
-const viewMode = ref<'list' | 'kanban'>('list')
-const searchHasCriteria = ref(false)
-
-watch(
-  searchState,
-  (state) => {
-    searchHasCriteria.value = hasSearchCriteria(state)
-  },
-  { immediate: true, deep: true },
-)
-
-watchDebounced(
-  searchState,
-  (state) => {
-    void fetchTodos(state)
-  },
-  { debounce: 300, immediate: true, deep: true },
-)
-
-const handleKanbanMove = async (todo: Todo, nextStatus: TodoProgressStatus) => {
-  const validationErrors = await updateTodo({
-    ...todo,
-    progressStatus: nextStatus,
-  })
-  if (validationErrors == null) {
-    return
-  }
-  await fetchTodos(searchState.value)
-}
-</script>
-
 <template>
   <div v-if="isLoading && todos.length === 0" class="flex items-center justify-center min-h-50 text-gray-600">
     Loading todos...
@@ -103,3 +55,51 @@ const handleKanbanMove = async (todo: Todo, nextStatus: TodoProgressStatus) => {
     <TodoKanbanBoard v-else :todos="todos" :has-search-criteria="searchHasCriteria" :on-move-todo="handleKanbanMove" />
   </template>
 </template>
+
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { watchDebounced } from '@vueuse/core'
+
+import type { Todo, TodoProgressStatus } from '../models/todo'
+
+import TodoForm from '../components/todo/todo-form.vue'
+import TodoKanbanBoard from '../components/todo/todo-kanban-board.vue'
+import TodoList from '../components/todo/todo-list.vue'
+import TodoQuickAdd from '../components/todo/todo-quick-add.vue'
+import TodoSearchControls from '../components/todo/todo-search-controls.vue'
+import { DEFAULT_TODO_SEARCH_STATE, hasSearchCriteria, type TodoSearchState } from '../composables/todoSearch'
+import { useTodo } from '../composables/useTodo'
+
+const { todos, isLoading, fetchTodos, addTodo, updateTodo, removeTodo, toggleTodoCompletion } = useTodo()
+const searchState = ref<TodoSearchState>(DEFAULT_TODO_SEARCH_STATE)
+const isDetailFormOpen = ref(false)
+const viewMode = ref<'list' | 'kanban'>('list')
+const searchHasCriteria = ref(false)
+
+watch(
+  searchState,
+  (state) => {
+    searchHasCriteria.value = hasSearchCriteria(state)
+  },
+  { immediate: true, deep: true },
+)
+
+watchDebounced(
+  searchState,
+  (state) => {
+    void fetchTodos(state)
+  },
+  { debounce: 300, immediate: true, deep: true },
+)
+
+const handleKanbanMove = async (todo: Todo, nextStatus: TodoProgressStatus) => {
+  const validationErrors = await updateTodo({
+    ...todo,
+    progressStatus: nextStatus,
+  })
+  if (validationErrors == null) {
+    return
+  }
+  await fetchTodos(searchState.value)
+}
+</script>

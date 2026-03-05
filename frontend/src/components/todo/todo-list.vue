@@ -1,153 +1,3 @@
-<script setup lang="ts">
-import { reactive, ref } from 'vue'
-
-import type { ValidationError } from '../../models/error'
-import type { CreateTodoInput, Todo } from '../../models/todo'
-import type { SelectOption } from '../SelectBox.vue'
-
-import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH, useTodoFieldValidation } from '../../composables/useTodo'
-import { mergeValidationErrors } from '../../services/validation'
-import FieldError from '../FieldError.vue'
-import SelectBox from '../SelectBox.vue'
-import ValidatedInput from '../ValidatedInput.vue'
-
-const props = defineProps<{
-  todos: readonly Todo[]
-  hasSearchCriteria: boolean
-  onDelete: (id: number) => void
-  onEdit: (todo: Todo) => Promise<readonly ValidationError[] | undefined>
-  onToggleCompletion: (todo: Todo) => Promise<readonly ValidationError[] | undefined>
-  onCreateTodo?: (todo: CreateTodoInput) => Promise<readonly ValidationError[] | undefined>
-}>()
-
-type EditState = Todo &
-  Readonly<{
-    dueDate: string
-    errors: readonly ValidationError[]
-  }>
-
-const editState = ref<EditState | null>(null)
-const childTodoNames = reactive<Record<number, string>>({})
-const createTodoErrorsByParentId = reactive<Record<number, readonly ValidationError[]>>({})
-const toggleErrors = reactive<Record<number, readonly ValidationError[]>>({})
-
-const emptyMessage = () => (props.hasSearchCriteria ? '条件に一致するタスクがありません' : 'タスクはありません')
-
-const recurrenceTypeLabel: Record<Todo['recurrenceType'], string> = {
-  none: 'なし',
-  daily: '毎日',
-  weekly: '毎週',
-  monthly: '毎月',
-}
-
-const progressStatusLabel: Record<Todo['progressStatus'], string> = {
-  not_started: '着手前',
-  in_progress: '進行中',
-  completed: '完了',
-}
-
-const recurrenceTypeOptions: readonly SelectOption<Todo['recurrenceType']>[] = [
-  { value: 'none', label: 'なし' },
-  { value: 'daily', label: '毎日' },
-  { value: 'weekly', label: '毎週' },
-  { value: 'monthly', label: '毎月' },
-]
-
-const progressStatusOptions: readonly SelectOption<Todo['progressStatus']>[] = [
-  { value: 'not_started', label: '着手前' },
-  { value: 'in_progress', label: '進行中' },
-  { value: 'completed', label: '完了' },
-]
-
-const handleEditClick = (todo: Todo) => {
-  editState.value = {
-    id: todo.id,
-    name: todo.name,
-    detail: todo.detail,
-    dueDate: todo.dueDate ?? '',
-    progressStatus: todo.progressStatus,
-    recurrenceType: todo.recurrenceType,
-    errors: [],
-  }
-}
-
-const handleCancelClick = () => {
-  editState.value = null
-}
-
-const handleInputChange = (field: string, value: string) => {
-  if (editState.value == null) return
-  editState.value = { ...editState.value, [field]: value }
-}
-
-const setEditErrors = (update: (prev: readonly ValidationError[]) => readonly ValidationError[]) => {
-  if (editState.value == null) return
-  editState.value = { ...editState.value, errors: update(editState.value.errors) }
-}
-
-const { validateName, validateDetail } = useTodoFieldValidation(setEditErrors)
-
-const handleSaveClick = async () => {
-  if (editState.value == null) return
-  const { errors: _, ...todo } = editState.value
-  const dueDate = editState.value.dueDate === '' ? null : editState.value.dueDate
-  const validationErrors = await props.onEdit({
-    ...todo,
-    name: todo.name.trim(),
-    dueDate,
-  })
-  if (validationErrors) {
-    if (editState.value != null) {
-      editState.value = {
-        ...editState.value,
-        errors: mergeValidationErrors(editState.value.errors, validationErrors),
-      }
-    }
-    return
-  }
-  editState.value = null
-}
-
-const handleChildTodoNameChange = (parentId: number, value: string) => {
-  childTodoNames[parentId] = value
-}
-
-const handleCreateChildTodo = async (parentId: number) => {
-  if (props.onCreateTodo == null) return
-
-  const validationErrors = await props.onCreateTodo({
-    name: (childTodoNames[parentId] ?? '').trim(),
-    detail: '',
-    dueDate: null,
-    progressStatus: 'not_started',
-    recurrenceType: 'none',
-    parentId,
-  })
-
-  if (validationErrors != null && validationErrors.length > 0) {
-    createTodoErrorsByParentId[parentId] = validationErrors
-    return
-  }
-
-  childTodoNames[parentId] = ''
-  createTodoErrorsByParentId[parentId] = []
-}
-
-const handleToggleCompletion = async (todo: Todo) => {
-  const errors = await props.onToggleCompletion(todo)
-  if (errors == null || errors.length === 0) {
-    toggleErrors[todo.id] = []
-    return
-  }
-  toggleErrors[todo.id] = errors
-}
-
-const getSubtasks = (todo: Todo): readonly Todo[] => {
-  if (todo.parentId != null) return []
-  return props.todos.filter((item) => item.parentId === todo.id)
-}
-</script>
-
 <template>
   <div>
     <br />
@@ -351,3 +201,153 @@ const getSubtasks = (todo: Todo): readonly Todo[] => {
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { reactive, ref } from 'vue'
+
+import type { ValidationError } from '../../models/error'
+import type { CreateTodoInput, Todo } from '../../models/todo'
+import type { SelectOption } from '../select-box.vue'
+
+import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH, useTodoFieldValidation } from '../../composables/useTodo'
+import { mergeValidationErrors } from '../../services/validation'
+import FieldError from '../field-error.vue'
+import SelectBox from '../select-box.vue'
+import ValidatedInput from '../validated-input.vue'
+
+const props = defineProps<{
+  todos: readonly Todo[]
+  hasSearchCriteria: boolean
+  onDelete: (id: number) => void
+  onEdit: (todo: Todo) => Promise<readonly ValidationError[] | undefined>
+  onToggleCompletion: (todo: Todo) => Promise<readonly ValidationError[] | undefined>
+  onCreateTodo?: (todo: CreateTodoInput) => Promise<readonly ValidationError[] | undefined>
+}>()
+
+type EditState = Todo &
+  Readonly<{
+    dueDate: string
+    errors: readonly ValidationError[]
+  }>
+
+const editState = ref<EditState | null>(null)
+const childTodoNames = reactive<Record<number, string>>({})
+const createTodoErrorsByParentId = reactive<Record<number, readonly ValidationError[]>>({})
+const toggleErrors = reactive<Record<number, readonly ValidationError[]>>({})
+
+const emptyMessage = () => (props.hasSearchCriteria ? '条件に一致するタスクがありません' : 'タスクはありません')
+
+const recurrenceTypeLabel: Record<Todo['recurrenceType'], string> = {
+  none: 'なし',
+  daily: '毎日',
+  weekly: '毎週',
+  monthly: '毎月',
+}
+
+const progressStatusLabel: Record<Todo['progressStatus'], string> = {
+  not_started: '着手前',
+  in_progress: '進行中',
+  completed: '完了',
+}
+
+const recurrenceTypeOptions: readonly SelectOption<Todo['recurrenceType']>[] = [
+  { value: 'none', label: 'なし' },
+  { value: 'daily', label: '毎日' },
+  { value: 'weekly', label: '毎週' },
+  { value: 'monthly', label: '毎月' },
+]
+
+const progressStatusOptions: readonly SelectOption<Todo['progressStatus']>[] = [
+  { value: 'not_started', label: '着手前' },
+  { value: 'in_progress', label: '進行中' },
+  { value: 'completed', label: '完了' },
+]
+
+const handleEditClick = (todo: Todo) => {
+  editState.value = {
+    id: todo.id,
+    name: todo.name,
+    detail: todo.detail,
+    dueDate: todo.dueDate ?? '',
+    progressStatus: todo.progressStatus,
+    recurrenceType: todo.recurrenceType,
+    errors: [],
+  }
+}
+
+const handleCancelClick = () => {
+  editState.value = null
+}
+
+const handleInputChange = (field: string, value: string) => {
+  if (editState.value == null) return
+  editState.value = { ...editState.value, [field]: value }
+}
+
+const setEditErrors = (update: (prev: readonly ValidationError[]) => readonly ValidationError[]) => {
+  if (editState.value == null) return
+  editState.value = { ...editState.value, errors: update(editState.value.errors) }
+}
+
+const { validateName, validateDetail } = useTodoFieldValidation(setEditErrors)
+
+const handleSaveClick = async () => {
+  if (editState.value == null) return
+  const { errors: _, ...todo } = editState.value
+  const dueDate = editState.value.dueDate === '' ? null : editState.value.dueDate
+  const validationErrors = await props.onEdit({
+    ...todo,
+    name: todo.name.trim(),
+    dueDate,
+  })
+  if (validationErrors) {
+    if (editState.value != null) {
+      editState.value = {
+        ...editState.value,
+        errors: mergeValidationErrors(editState.value.errors, validationErrors),
+      }
+    }
+    return
+  }
+  editState.value = null
+}
+
+const handleChildTodoNameChange = (parentId: number, value: string) => {
+  childTodoNames[parentId] = value
+}
+
+const handleCreateChildTodo = async (parentId: number) => {
+  if (props.onCreateTodo == null) return
+
+  const validationErrors = await props.onCreateTodo({
+    name: (childTodoNames[parentId] ?? '').trim(),
+    detail: '',
+    dueDate: null,
+    progressStatus: 'not_started',
+    recurrenceType: 'none',
+    parentId,
+  })
+
+  if (validationErrors != null && validationErrors.length > 0) {
+    createTodoErrorsByParentId[parentId] = validationErrors
+    return
+  }
+
+  childTodoNames[parentId] = ''
+  createTodoErrorsByParentId[parentId] = []
+}
+
+const handleToggleCompletion = async (todo: Todo) => {
+  const errors = await props.onToggleCompletion(todo)
+  if (errors == null || errors.length === 0) {
+    toggleErrors[todo.id] = []
+    return
+  }
+  toggleErrors[todo.id] = errors
+}
+
+const getSubtasks = (todo: Todo): readonly Todo[] => {
+  if (todo.parentId != null) return []
+  return props.todos.filter((item) => item.parentId === todo.id)
+}
+</script>

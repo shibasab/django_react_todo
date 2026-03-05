@@ -1,55 +1,3 @@
-<script setup lang="ts">
-import { reactive, ref } from 'vue'
-
-import type { ValidationError } from '../../models/error'
-import type { CreateTodoInput, TodoRecurrenceType } from '../../models/todo'
-
-import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH, useTodoFieldValidation } from '../../composables/useTodo'
-import { mergeValidationErrors } from '../../services/validation'
-import FieldError from '../FieldError.vue'
-import ValidatedInput from '../ValidatedInput.vue'
-
-const props = defineProps<{
-  onSubmit: (todo: CreateTodoInput) => Promise<readonly ValidationError[] | undefined>
-}>()
-
-const formState = reactive({
-  name: '',
-  detail: '',
-  dueDate: '',
-  recurrenceType: 'none' as TodoRecurrenceType,
-})
-
-const errors = ref<readonly ValidationError[]>([])
-
-const setErrors = (update: (prev: readonly ValidationError[]) => readonly ValidationError[]) => {
-  errors.value = update(errors.value)
-}
-
-const { validateName, validateDetail } = useTodoFieldValidation(setErrors)
-
-const handleSubmit = async () => {
-  const dueDate = formState.dueDate === '' ? null : formState.dueDate
-  const validationErrors = await props.onSubmit({
-    name: formState.name.trim(),
-    detail: formState.detail,
-    dueDate,
-    progressStatus: 'not_started',
-    recurrenceType: formState.recurrenceType,
-    parentId: null,
-  })
-  if (validationErrors != null && validationErrors.length > 0) {
-    errors.value = mergeValidationErrors(errors.value, validationErrors)
-    return
-  }
-  formState.name = ''
-  formState.detail = ''
-  formState.dueDate = ''
-  formState.recurrenceType = 'none'
-  errors.value = []
-}
-</script>
-
 <template>
   <div class="bg-white rounded-lg shadow-md p-6 my-6">
     <h2 class="text-xl font-bold mb-4">Add Todo</h2>
@@ -114,3 +62,55 @@ const handleSubmit = async () => {
     </form>
   </div>
 </template>
+
+<script setup lang="ts">
+import { reactive, ref } from 'vue'
+
+import type { ValidationError } from '../../models/error'
+import type { CreateTodoInput, TodoRecurrenceType } from '../../models/todo'
+
+import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH, useTodoFieldValidation } from '../../composables/useTodo'
+import { mergeValidationErrors } from '../../services/validation'
+import FieldError from '../field-error.vue'
+import ValidatedInput from '../validated-input.vue'
+
+const props = defineProps<{
+  onSubmit: (todo: CreateTodoInput) => Promise<readonly ValidationError[] | undefined>
+}>()
+
+const formState = reactive({
+  name: '',
+  detail: '',
+  dueDate: '',
+  recurrenceType: 'none' as TodoRecurrenceType,
+})
+
+const errors = ref<readonly ValidationError[]>([])
+
+const setErrors = (update: (prev: readonly ValidationError[]) => readonly ValidationError[]) => {
+  errors.value = update(errors.value)
+}
+
+const { validateName, validateDetail } = useTodoFieldValidation(setErrors)
+
+const handleSubmit = async () => {
+  const dueDate = formState.dueDate === '' ? null : formState.dueDate
+  const validationErrors = await props.onSubmit({
+    name: formState.name.trim(),
+    detail: formState.detail,
+    dueDate,
+    progressStatus: 'not_started',
+    recurrenceType: formState.recurrenceType,
+    parentId: null,
+  })
+  if (validationErrors != null && validationErrors.length > 0) {
+    errors.value = mergeValidationErrors(errors.value, validationErrors)
+    return
+  }
+  formState.name = ''
+  formState.detail = ''
+  formState.dueDate = ''
+  formState.recurrenceType = 'none'
+  errors.value = []
+}
+</script>

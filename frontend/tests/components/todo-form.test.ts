@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { ValidationError } from '../../src/models/error'
 import type { CreateTodoInput } from '../../src/models/todo'
 
-import TodoForm from '../../src/components/todo/TodoForm.vue'
+import TodoForm from '../../src/components/todo/todo-form.vue'
 import { summarizeFormControls } from '../helpers/domSnapshot'
 
 describe('TodoForm', () => {
@@ -35,5 +35,26 @@ describe('TodoForm', () => {
         }),
       )
     })
+  })
+
+  it('Submitでバリデーションエラーが返ると入力値を保持する', async () => {
+    const onSubmit = vi
+      .fn<(todo: CreateTodoInput) => Promise<readonly ValidationError[] | undefined>>()
+      .mockResolvedValue([{ field: 'name', reason: 'required' }])
+    render(TodoForm, { props: { onSubmit } })
+
+    const taskInput = screen.getByLabelText<HTMLInputElement>('Task')
+    await fireEvent.update(taskInput, '  失敗タスク  ')
+    await fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
+
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: '失敗タスク',
+          dueDate: null,
+        }),
+      )
+    })
+    expect(taskInput.value).toBe('  失敗タスク  ')
   })
 })

@@ -1,11 +1,3 @@
-<script setup lang="ts">
-import { RouterLink } from 'vue-router'
-
-import { useAuthStore } from '../stores/auth'
-
-const authStore = useAuthStore()
-</script>
-
 <template>
   <nav class="bg-[#1A535C] text-white">
     <div class="container mx-auto px-4">
@@ -28,3 +20,11 @@ const authStore = useAuthStore()
     </div>
   </nav>
 </template>
+
+<script setup lang="ts">
+import { RouterLink } from 'vue-router'
+
+import { useAuthStore } from '../stores/auth'
+
+const authStore = useAuthStore()
+</script>
