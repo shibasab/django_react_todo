@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
 
 import type { Todo, TodoProgressStatus } from '../../src/models/todo'
@@ -66,5 +66,47 @@ describe('TodoKanbanBoard', () => {
 
     const messages = screen.getAllByText('条件に一致するタスクがありません')
     expect(messages.length).toBe(3)
+  })
+
+  it('カードを別カラムにドロップするとonMoveTodoを呼ぶ', async () => {
+    const onMoveTodo = vi.fn<(todo: Todo, nextStatus: TodoProgressStatus) => Promise<void>>().mockResolvedValue()
+    render(TodoKanbanBoard, {
+      props: { todos: TODO_LIST, hasSearchCriteria: false, onMoveTodo },
+    })
+
+    const card = screen.getByTestId('kanban-card-1')
+    const targetColumn = screen.getByTestId('kanban-column-in_progress')
+    const setData = vi.fn()
+
+    await fireEvent.dragStart(card, {
+      dataTransfer: {
+        setData,
+        effectAllowed: 'move',
+      },
+    })
+    await fireEvent.drop(targetColumn)
+
+    expect(setData).toHaveBeenCalledWith('text/plain', '1')
+    expect(onMoveTodo).toHaveBeenCalledWith(TODO_LIST[0], 'in_progress')
+  })
+
+  it('同じステータスへのドロップではonMoveTodoを呼ばない', async () => {
+    const onMoveTodo = vi.fn<(todo: Todo, nextStatus: TodoProgressStatus) => Promise<void>>().mockResolvedValue()
+    render(TodoKanbanBoard, {
+      props: { todos: TODO_LIST, hasSearchCriteria: false, onMoveTodo },
+    })
+
+    const card = screen.getByTestId('kanban-card-2')
+    const sameColumn = screen.getByTestId('kanban-column-in_progress')
+
+    await fireEvent.dragStart(card, {
+      dataTransfer: {
+        setData: vi.fn(),
+        effectAllowed: 'move',
+      },
+    })
+    await fireEvent.drop(sameColumn)
+
+    expect(onMoveTodo).not.toHaveBeenCalled()
   })
 })
