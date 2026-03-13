@@ -19,10 +19,10 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
-    "@typescript/native-preview": "^7.0.0-dev.20260228.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260313.1",
     "oxfmt": "^0.22.0",
-    "oxlint": "^1.50.0",
-    "oxlint-tsgolint": "^0.11.0",
+    "oxlint": "^1.55.0",
+    "oxlint-tsgolint": "^0.16.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
   },
