@@ -1,6 +1,8 @@
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
+import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
@@ -15,27 +17,48 @@ const getRepoRoot = (): string => {
   return resolve(testFilePath, "../../..");
 };
 
+const getSharedRoot = (): string => resolve(getRepoRoot(), "shared");
+
+const resolveOxlintBinPath = (): string => {
+  const sharedRoot = getSharedRoot();
+  const requireFromShared = createRequire(join(sharedRoot, "package.json"));
+  const oxlintEntryPath = requireFromShared.resolve("oxlint");
+
+  return resolve(dirname(oxlintEntryPath), "../bin/oxlint");
+};
+
 const runSharedLintForCode = (sourceCode: string): LintRunResult => {
-  const repoRoot = getRepoRoot();
-  const tempParentDir = join(repoRoot, "shared/tests/.tmp-fp-guardrails");
-  mkdirSync(tempParentDir, { recursive: true });
-  const tempDir = mkdtempSync(join(tempParentDir, "case-"));
+  const sharedRoot = getSharedRoot();
+  const tempDir = mkdtempSync(join(tmpdir(), "todoapp-shared-fp-guardrails-"));
   const tempFilePath = join(tempDir, "sample.ts");
 
   writeFileSync(tempFilePath, sourceCode, "utf8");
 
-  const oxlintBinPath = resolve(repoRoot, "node_modules/.bin/oxlint");
-  const configPath = resolve(repoRoot, "shared/.oxlintrc.json");
-  const result = spawnSync(oxlintBinPath, ["--type-aware", "-c", configPath, tempFilePath], {
-    cwd: repoRoot,
-    encoding: "utf8",
-  });
+  const oxlintBinPath = resolveOxlintBinPath();
+  const configPath = resolve(sharedRoot, ".oxlintrc.json");
+  const result = spawnSync(
+    process.execPath,
+    [oxlintBinPath, "--type-aware", "-c", configPath, tempFilePath],
+    {
+      cwd: sharedRoot,
+      encoding: "utf8",
+    },
+  );
 
   rmSync(tempDir, { recursive: true, force: true });
 
+  const processError =
+    result.error == null
+      ? ""
+      : `\nspawn error: ${result.error.message}${
+          "code" in result.error && typeof result.error.code === "string"
+            ? ` (${result.error.code})`
+            : ""
+        }`;
+
   return {
     status: result.status ?? 1,
-    output: `${result.stdout}\n${result.stderr}`,
+    output: `${result.stdout ?? ""}\n${result.stderr ?? ""}${processError}`,
   };
 };
 
