@@ -1,0 +1,75 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TodoForm > フォームが正しく表示される > initial-form 1`] = `
+[
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "name",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "text",
+    "value": "",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "detail",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "text",
+    "value": "",
+  },
+  {
+    "disabled": false,
+    "kind": "select",
+    "name": "recurrenceType",
+    "options": [
+      {
+        "selected": true,
+        "text": "なし",
+        "value": "none",
+      },
+      {
+        "selected": false,
+        "text": "毎日",
+        "value": "daily",
+      },
+      {
+        "selected": false,
+        "text": "毎週",
+        "value": "weekly",
+      },
+      {
+        "selected": false,
+        "text": "毎月",
+        "value": "monthly",
+      },
+    ],
+    "required": false,
+    "value": "none",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "dueDate",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "date",
+    "value": "",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "button",
+    "textContent": "Submit",
+    "type": "submit",
+  },
+]
+`;

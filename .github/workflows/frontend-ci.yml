@@ -10,7 +10,7 @@ on:
     paths:
       - "frontend/**"
       - "configs/oxlint/base.json"
-      - "configs/oxlint/browser-react.json"
+      - "configs/oxlint/browser-vue.json"
       - ".github/workflows/frontend-ci.yml"
 
 jobs:

@@ -1,0 +1,37 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ログインフロー > LoginPage 初期表示 > ログインフォームが正しく表示される > login-page-initial-form 1`] = `
+[
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "username",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "text",
+    "value": "",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "password",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "password",
+    "value": "",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "button",
+    "textContent": "Login",
+    "type": "submit",
+  },
+]
+`;
+
+exports[`ログインフロー > LoginPage 初期表示 > ログインフォームが正しく表示される > login-page-initial-text 1`] = `"Todo App Register Login Login Username Password Login Don't have an account? Register"`;

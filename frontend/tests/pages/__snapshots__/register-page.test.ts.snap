@@ -1,0 +1,57 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RegisterPage > 初期表示 > 登録フォームが正しく表示される > register-page-initial-form 1`] = `
+[
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "username",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "text",
+    "value": "",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "email",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "email",
+    "value": "",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "password",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "password",
+    "value": "",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "password2",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "password",
+    "value": "",
+  },
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "button",
+    "textContent": "Register",
+    "type": "submit",
+  },
+]
+`;

@@ -1,3 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`App > ルート構成をレンダリングできる > text 1`] = `"Header DashboardPage"`;

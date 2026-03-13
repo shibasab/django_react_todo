@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DashboardPage > 初期表示 > ページレンダリング時にGET APIが呼ばれ、TODOリストが表示される > api-requests 1`] = `
+[
+  {
+    "method": "GET",
+    "url": "/auth/user",
+  },
+  {
+    "method": "GET",
+    "url": "/auth/user",
+  },
+]
+`;

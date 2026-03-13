@@ -1,0 +1,37 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ValidatedInput > エラー時はエラースタイルとエラーメッセージを表示する > form 1`] = `
+[
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "name",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "text",
+    "value": "",
+  },
+]
+`;
+
+exports[`ValidatedInput > エラー時はエラースタイルとエラーメッセージを表示する > text 1`] = `"タスク名 タスク名を入力してください"`;
+
+exports[`ValidatedInput > 初期表示では通常スタイルで、blur後はバリデーションが実行される > form 1`] = `
+[
+  {
+    "ariaLabel": "",
+    "disabled": false,
+    "kind": "input",
+    "name": "name",
+    "placeholder": "",
+    "readOnly": false,
+    "required": false,
+    "type": "text",
+    "value": "",
+  },
+]
+`;
+
+exports[`ValidatedInput > 初期表示では通常スタイルで、blur後はバリデーションが実行される > text 1`] = `"タスク名"`;
