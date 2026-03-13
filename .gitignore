@@ -14,7 +14,5 @@ local_settings.py
 *.py[cod]
 .env
 
-# 以下はビルド時に自動生成されるものなので管理対象外
-backend/frontend/static/frontend/main.js
-backend/frontend/static/frontend/index.html
-backend/frontend/static/frontend/assets/
+# frontend build の生成物は管理対象外
+backend/frontend/static/frontend/
