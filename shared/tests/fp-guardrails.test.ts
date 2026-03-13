@@ -1,11 +1,10 @@
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
-import { describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
 
 type LintRunResult = Readonly<{
   status: number;
@@ -18,6 +17,7 @@ const getRepoRoot = (): string => {
 };
 
 const getSharedRoot = (): string => resolve(getRepoRoot(), "shared");
+const tempParentDir = join(getSharedRoot(), ".tmp-fp-guardrails");
 
 const resolveOxlintBinPath = (): string => {
   const sharedRoot = getSharedRoot();
@@ -29,7 +29,8 @@ const resolveOxlintBinPath = (): string => {
 
 const runSharedLintForCode = (sourceCode: string): LintRunResult => {
   const sharedRoot = getSharedRoot();
-  const tempDir = mkdtempSync(join(tmpdir(), "todoapp-shared-fp-guardrails-"));
+  mkdirSync(tempParentDir, { recursive: true });
+  const tempDir = mkdtempSync(join(tempParentDir, "case-"));
   const tempFilePath = join(tempDir, "sample.ts");
 
   writeFileSync(tempFilePath, sourceCode, "utf8");
@@ -61,6 +62,10 @@ const runSharedLintForCode = (sourceCode: string): LintRunResult => {
     output: `${result.stdout ?? ""}\n${result.stderr ?? ""}${processError}`,
   };
 };
+
+afterAll(() => {
+  rmSync(tempParentDir, { recursive: true, force: true });
+});
 
 describe("FPガードレール", () => {
   it("空のclassを禁止する", () => {
