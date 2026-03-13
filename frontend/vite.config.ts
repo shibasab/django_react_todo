@@ -1,17 +1,16 @@
-import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
-  plugins: [tailwindcss(), vue()],
+  plugins: [vue()],
   resolve: {
     extensions: ['.ts', '.vue', '.js', '.json'],
   },
   build: {
     outDir: '../backend/frontend/static/frontend',
     emptyOutDir: true,
-    rollupOptions: {
+    rolldownOptions: {
       input: 'src/main.ts',
       output: {
         entryFileNames: 'main.js',
