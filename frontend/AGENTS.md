@@ -6,7 +6,7 @@
 
 ### コア技術
 
-- **言語**: TypeScript（@typescript/native-preview 7系）
+- **言語**: TypeScript（型チェックは `vue-tsc`、`tsgo` は未使用）
 - **UIフレームワーク**: Vue 3
 - **ルーティング**: Vue Router 5
 - **状態管理**: Pinia
@@ -20,8 +20,8 @@
 ### 開発ツール
 
 - **フォーマッター**: oxfmt
-- **リンター**: oxlint
-- **型チェック**: vue-tsc
+- **リンター**: oxlint（非 type-aware）
+- **型チェック**: vue-tsc + TypeScript
 - **テストフレームワーク**: Vitest
 - **テストユーティリティ**: @testing-library/vue
 
