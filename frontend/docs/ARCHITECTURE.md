@@ -35,6 +35,11 @@ src/
 - Vue Router（Hash History）を利用。
 - 認証ガードは `router/index.ts` の `beforeEach` で実施する。
 
+## 型検査とLint
+
+- 型チェックは `vue-tsc` を利用する。
+- Lint は `oxlint` を利用し、frontend では `tsgo` / `oxlint-tsgolint` に依存しない。
+
 ## テスト戦略
 
 - Vitest + happy-dom + @testing-library/vue。
