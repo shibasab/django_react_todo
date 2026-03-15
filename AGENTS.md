@@ -65,9 +65,10 @@ DATABASE_URL="${DATABASE_URL:-file:./todo.db}" npm run prisma:db:push
 
 `DATABASE_URL` が未設定の場合は `file:./todo.db` を使用する。
 
-`backend` の `dev` / `lint` / `typecheck` / `test` 系スクリプトでは、
-Prisma Client 生成が自動実行される。`schema.prisma` を変更した直後のみ
-必要に応じて `npm run prisma:generate` を手動実行する。
+`backend` の `dev` / `start` / `lint` / `typecheck` / `test` /
+`test:coverage` では、Prisma Client 生成が自動実行される。
+`schema.prisma` を変更した直後のみ必要に応じて
+`npm run prisma:generate` を手動実行する。
 
 ## 開発サーバー起動
 
