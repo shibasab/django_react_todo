@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "postinstall": "npm run prisma:generate",
+    "predev": "npm run prisma:generate",
     "dev": "bun --watch src/server.ts",
+    "prestart": "npm run prisma:generate",
     "start": "bun src/server.ts",
     "prelint": "npm run prisma:generate",
     "lint": "oxlint --type-aware -c ../configs/oxlint/node.json src",
@@ -15,13 +16,16 @@
     "format:check": "oxfmt --check src tests vitest.config.ts tsconfig.json package.json",
     "pretypecheck": "npm run prisma:generate",
     "typecheck": "tsgo",
+    "pretest": "npm run prisma:generate",
     "test": "vitest run",
+    "pretest:coverage": "npm run prisma:generate",
     "test:coverage": "vitest run --coverage",
     "prisma:generate": "prisma generate --schema prisma/schema.prisma",
     "prisma:db:push": "prisma db push --schema prisma/schema.prisma"
   },
   "dependencies": {
-    "@prisma/client": "^6.17.1",
+    "@prisma/adapter-libsql": "^7.5.0",
+    "@prisma/client": "^7.5.0",
     "@todoapp/shared": "file:../shared",
     "bcryptjs": "^3.0.3",
     "hono": "^4.12.8",
@@ -35,7 +39,7 @@
     "oxfmt": "^0.40.0",
     "oxlint": "^1.55.0",
     "oxlint-tsgolint": "^0.16.0",
-    "prisma": "^6.17.1",
+    "prisma": "^7.5.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
   },

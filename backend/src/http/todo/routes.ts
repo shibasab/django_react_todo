@@ -1,9 +1,9 @@
-import type { PrismaClient } from "@prisma/client";
 import type { DetailErrorResponse } from "@todoapp/shared";
 import { Hono } from "hono";
 import type { AuthConfig } from "../../domain/auth/types";
 import { createPrismaAuthUserRepoPort } from "../../infra/auth/prisma-auth-user-repo-port";
 import { jwtTokenPort } from "../../infra/auth/jwt-token-port";
+import type { PrismaClient } from "../../infra/prisma/client";
 import { createPrismaTodoRepoPort } from "../../infra/todo/prisma-todo-repo-port";
 import { systemClock } from "../../ports/clock-port";
 import { createAuthenticateUseCase } from "../../usecases/auth/authenticate";

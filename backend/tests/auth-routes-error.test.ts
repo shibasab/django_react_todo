@@ -1,8 +1,8 @@
-import type { PrismaClient } from "@prisma/client";
 import { err } from "@todoapp/shared";
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
 import { createAuthRoutes } from "../src/http/auth/routes";
+import type { PrismaClient } from "../src/infra/prisma/client";
 import type { AuthUseCaseError } from "../src/usecases/auth/errors";
 import type { AuthUseCases } from "../src/usecases/auth/types";
 

@@ -6,8 +6,14 @@ import {
   createTemporarySqliteDatabase,
   ensureSqliteSchema,
 } from "../src/infra/prisma/testing";
+import { resolveDatabaseUrl } from "../src/infra/prisma/client";
 
 describe("Prisma testing utilities", () => {
+  it("DATABASE_URL未設定時は既定のSQLite URLを使う", () => {
+    expect(resolveDatabaseUrl(undefined)).toBe("file:./todo.db");
+    expect(resolveDatabaseUrl("")).toBe("file:./todo.db");
+  });
+
   it("不正なDATABASE_URLではスキーマ適用で失敗する", async () => {
     const result = await ensureSqliteSchema("not-a-valid-sqlite-url");
 
@@ -98,6 +104,65 @@ describe("Prisma testing utilities", () => {
       }
     } finally {
       await sourceDatabase.cleanup();
+    }
+  });
+
+  it("unixepoch-ms 形式のSQLite日時をPrisma 7で読める", async () => {
+    const testDatabase = await createTemporarySqliteDatabase();
+
+    try {
+      const schemaResult = await ensureSqliteSchema(testDatabase.databaseUrl);
+      if (!schemaResult.ok) {
+        throw new Error(JSON.stringify(schemaResult.error));
+      }
+
+      const prisma = createPrismaClient(testDatabase.databaseUrl);
+      const createdAt = new Date("2025-02-01T03:04:05.678Z");
+      const dueDate = new Date("2025-02-10T12:00:00.000Z");
+
+      try {
+        const user = await prisma.user.create({
+          data: {
+            username: "timestamp-user",
+            email: "timestamp@example.com",
+            hashedPassword: "hashed",
+            isActive: true,
+          },
+        });
+
+        await prisma.$executeRaw`
+          INSERT INTO todos (
+            name,
+            detail,
+            created_at,
+            owner_id,
+            due_date,
+            progress_status,
+            recurrence_type
+          ) VALUES (
+            ${"timestamp-todo"},
+            ${""},
+            ${createdAt.getTime()},
+            ${user.id},
+            ${dueDate.getTime()},
+            ${"not_started"},
+            ${"none"}
+          )
+        `;
+
+        const storedTodo = await prisma.todo.findFirst({
+          where: {
+            name: "timestamp-todo",
+          },
+        });
+
+        expect(storedTodo?.createdAt.toISOString()).toBe(createdAt.toISOString());
+        expect(storedTodo?.dueDate?.toISOString()).toBe(dueDate.toISOString());
+      } finally {
+        await prisma.$disconnect();
+      }
+    } finally {
+      await testDatabase.cleanup();
     }
   });
 });

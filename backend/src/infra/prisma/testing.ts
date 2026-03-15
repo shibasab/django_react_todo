@@ -51,7 +51,8 @@ const runPrismaDbPush = (
   databaseUrl: string,
   schemaPath: string,
 ): SpawnSyncReturns<string> =>
-  spawnSync(prismaCommand, ["db", "push", "--skip-generate", "--schema", schemaPath], {
+  spawnSync(prismaCommand, ["db", "push", "--schema", schemaPath], {
+    cwd: getBackendRoot(),
     env: {
       ...process.env,
       DATABASE_URL: databaseUrl,

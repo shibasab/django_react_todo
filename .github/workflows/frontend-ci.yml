@@ -65,7 +65,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.changes.outputs.should_run == 'true'
-        run: npm ci
+        run: npm ci --workspace frontend --workspace shared --include-workspace-root false
 
       - name: Lint check
         if: steps.changes.outputs.should_run == 'true'

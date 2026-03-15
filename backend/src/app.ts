@@ -1,10 +1,10 @@
 import { Hono } from "hono";
 import type { HealthResponse } from "@todoapp/shared";
-import type { PrismaClient } from "@prisma/client";
 import type { AuthConfig } from "./domain/auth/types";
 import { createAuthRoutes } from "./http/auth/routes";
 import { createTodoHttpRoutes } from "./http/todo/routes";
 import { createPrismaClient, resolveDatabaseUrl } from "./infra/prisma/client";
+import type { PrismaClient } from "./infra/prisma/client";
 
 const buildHealthResponse = (): HealthResponse => ({
   status: "ok",
