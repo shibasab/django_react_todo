@@ -9,7 +9,6 @@ import type {
   PostEndpoint,
   PutEndpoint,
 } from '@todoapp/shared'
-
 import axios, { isAxiosError, type AxiosInstance } from 'axios'
 
 import config from '../config'

@@ -5,14 +5,12 @@ import type {
   Todo,
   ValidationErrorResponse,
 } from '@todoapp/shared'
-
 import { todoPath } from '@todoapp/shared'
 import axios from 'axios'
 import AxiosMockAdapter from 'axios-mock-adapter'
 import { describe, expect, it } from 'vitest'
 
 import type { Result } from '../../src/models/result'
-
 import { createApiClient } from '../../src/services/api'
 
 type IsEqual<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false

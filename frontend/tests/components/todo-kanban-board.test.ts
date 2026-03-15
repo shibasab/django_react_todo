@@ -1,9 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
 
-import type { Todo, TodoProgressStatus } from '../../src/models/todo'
-
 import TodoKanbanBoard from '../../src/components/todo/todo-kanban-board.vue'
+import type { Todo, TodoProgressStatus } from '../../src/models/todo'
 
 const TODO_LIST: readonly Todo[] = [
   {

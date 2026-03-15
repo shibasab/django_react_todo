@@ -25,7 +25,6 @@
 import { ref } from 'vue'
 
 import type { ValidationError } from '../models/error'
-
 import FieldError from './field-error.vue'
 
 const props = defineProps<{

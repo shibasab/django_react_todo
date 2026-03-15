@@ -43,10 +43,9 @@
 </template>
 
 <script setup lang="ts">
+import { DEFAULT_TODO_SEARCH_STATE, type TodoSearchState } from '../../composables/todoSearch'
 import type { TodoDueDateFilter, TodoStatusFilter } from '../../models/todo'
 import type { SelectOption } from '../select-box.vue'
-
-import { DEFAULT_TODO_SEARCH_STATE, type TodoSearchState } from '../../composables/todoSearch'
 import SelectBox from '../select-box.vue'
 
 const STATUS_OPTIONS = [

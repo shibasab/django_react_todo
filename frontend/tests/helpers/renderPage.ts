@@ -3,9 +3,8 @@ import { createPinia, setActivePinia } from 'pinia'
 import { type Component, defineComponent, h, onMounted } from 'vue'
 import { createRouter, createMemoryHistory, RouterView } from 'vue-router'
 
-import type { ApiClient } from '../../src/services/api'
-
 import Header from '../../src/layouts/header.vue'
+import type { ApiClient } from '../../src/services/api'
 import { _setApiClientFactoryForTesting, _clearApiClientFactoryForTesting } from '../../src/stores/api'
 import { useAuthStore } from '../../src/stores/auth'
 

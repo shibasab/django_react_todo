@@ -1,15 +1,13 @@
 import type { ApiError } from '@todoapp/shared'
-
 import { todoPath } from '@todoapp/shared'
 import { ref } from 'vue'
 
-import type { CreateTodoInput, Todo, TodoRecurrenceType } from '../models/todo'
-import type { TodoSearchParams, TodoSearchState } from './todoSearch'
-
 import { toValidationErrors, type ValidationError } from '../models/error'
+import type { CreateTodoInput, Todo, TodoRecurrenceType } from '../models/todo'
 import { toCreateTodoRequest, toTodoViewModels, toUpdateTodoRequest } from '../services/todoApi'
 import { validateRequired, validateMaxLength } from '../services/validation'
 import { useApiStore } from '../stores/api'
+import type { TodoSearchParams, TodoSearchState } from './todoSearch'
 
 export const TODO_NAME_MAX_LENGTH = 100
 export const TODO_DETAIL_MAX_LENGTH = 500

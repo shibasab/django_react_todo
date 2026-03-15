@@ -1,9 +1,7 @@
 import type { Todo as ApiTodo } from '@todoapp/shared'
-
 import { describe, expect, it } from 'vitest'
 
 import type { CreateTodoInput, Todo } from '../../src/models/todo'
-
 import { toCreateTodoRequest, toTodoViewModels, toUpdateTodoRequest } from '../../src/services/todoApi'
 
 describe('todoApi', () => {
