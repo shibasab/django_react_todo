@@ -1,9 +1,8 @@
 import { render } from '@testing-library/vue'
 import { describe, expect, it } from 'vitest'
 
-import type { ValidationError } from '../../src/models/error'
-
 import FieldError from '../../src/components/field-error.vue'
+import type { ValidationError } from '../../src/models/error'
 import { summarizeText } from '../helpers/domSnapshot'
 
 const ALL_ERRORS: readonly ValidationError[] = [

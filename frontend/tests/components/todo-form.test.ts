@@ -1,10 +1,9 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
 
+import TodoForm from '../../src/components/todo/todo-form.vue'
 import type { ValidationError } from '../../src/models/error'
 import type { CreateTodoInput } from '../../src/models/todo'
-
-import TodoForm from '../../src/components/todo/todo-form.vue'
 import { summarizeFormControls } from '../helpers/domSnapshot'
 
 describe('TodoForm', () => {

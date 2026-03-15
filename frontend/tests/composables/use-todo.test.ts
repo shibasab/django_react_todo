@@ -2,9 +2,8 @@ import { todoPath } from '@todoapp/shared'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ref } from 'vue'
 
-import type { CreateTodoInput, Todo } from '../../src/models/todo'
-
 import { useTodo } from '../../src/composables/useTodo'
+import type { CreateTodoInput, Todo } from '../../src/models/todo'
 
 const apiClientMock = {
   get: vi.fn(),

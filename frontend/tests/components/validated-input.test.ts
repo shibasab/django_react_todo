@@ -1,9 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
 
-import type { ValidationError } from '../../src/models/error'
-
 import ValidatedInput from '../../src/components/validated-input.vue'
+import type { ValidationError } from '../../src/models/error'
 import { summarizeFormControls, summarizeText } from '../helpers/domSnapshot'
 
 describe('ValidatedInput', () => {
