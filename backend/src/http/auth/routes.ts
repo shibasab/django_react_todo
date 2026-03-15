@@ -1,4 +1,3 @@
-import type { PrismaClient } from "@prisma/client";
 import type { DetailErrorResponse } from "@todoapp/shared";
 import { Hono } from "hono";
 import { toAuthInvalidFormatError } from "../../domain/auth/errors";
@@ -6,6 +5,7 @@ import type { AuthConfig } from "../../domain/auth/types";
 import { bcryptPasswordPort } from "../../infra/auth/bcrypt-password-port";
 import { jwtTokenPort } from "../../infra/auth/jwt-token-port";
 import { createPrismaAuthUserRepoPort } from "../../infra/auth/prisma-auth-user-repo-port";
+import type { PrismaClient } from "../../infra/prisma/client";
 import { createAuthenticateUseCase } from "../../usecases/auth/authenticate";
 import { toAuthValidationError, type AuthUseCaseError } from "../../usecases/auth/errors";
 import { createLoginUseCase, createRegisterUseCase } from "../../usecases/auth/register-login";

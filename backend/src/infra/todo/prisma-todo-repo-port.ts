@@ -1,8 +1,8 @@
-import type { Prisma, PrismaClient, Todo } from "@prisma/client";
 import { err, ok } from "@todoapp/shared";
 import { toTodoProgressStatus, toTodoRecurrenceType } from "../../domain/todo/normalization";
 import type { TodoItem } from "../../domain/todo/types";
 import type { TodoQuery, TodoRepoPort } from "../../ports/todo-repo-port";
+import type { Prisma, PrismaClient, Todo } from "../prisma/client";
 
 type PrismaTodoClient = Readonly<{
   todo: PrismaClient["todo"];

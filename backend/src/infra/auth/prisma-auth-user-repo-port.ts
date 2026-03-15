@@ -1,4 +1,3 @@
-import type { PrismaClient } from "@prisma/client";
 import { fromPromise } from "@todoapp/shared";
 import type { AuthUserRecord } from "../../domain/auth/types";
 import type {
@@ -6,6 +5,7 @@ import type {
   AuthUserRepoPort,
   CreateAuthUserInput,
 } from "../../ports/auth-user-repo-port";
+import type { PrismaClient } from "../prisma/client";
 
 const toAuthUserRecord = (
   user: Readonly<{
