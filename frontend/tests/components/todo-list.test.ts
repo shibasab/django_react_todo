@@ -1,9 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
 
-import type { Todo } from '../../src/models/todo'
-
 import TodoList from '../../src/components/todo/todo-list.vue'
+import type { Todo } from '../../src/models/todo'
 import { summarizeText } from '../helpers/domSnapshot'
 
 const BASE_TODO: Todo = {

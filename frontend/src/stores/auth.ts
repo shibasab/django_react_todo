@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 import type { User } from '../models/user'
-
 import { authToken } from '../services/authToken'
 import { useApiStore } from './api'
 

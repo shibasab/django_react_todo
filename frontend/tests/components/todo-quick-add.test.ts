@@ -1,10 +1,9 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { describe, expect, it, vi } from 'vitest'
 
+import TodoQuickAdd from '../../src/components/todo/todo-quick-add.vue'
 import type { ValidationError } from '../../src/models/error'
 import type { CreateTodoInput } from '../../src/models/todo'
-
-import TodoQuickAdd from '../../src/components/todo/todo-quick-add.vue'
 
 describe('TodoQuickAdd', () => {
   it('空入力で送信するとエラーを表示する', async () => {

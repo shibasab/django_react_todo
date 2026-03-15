@@ -57,10 +57,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
 import { watchDebounced } from '@vueuse/core'
-
-import type { Todo, TodoProgressStatus } from '../models/todo'
+import { ref, watch } from 'vue'
 
 import TodoForm from '../components/todo/todo-form.vue'
 import TodoKanbanBoard from '../components/todo/todo-kanban-board.vue'
@@ -69,6 +67,7 @@ import TodoQuickAdd from '../components/todo/todo-quick-add.vue'
 import TodoSearchControls from '../components/todo/todo-search-controls.vue'
 import { DEFAULT_TODO_SEARCH_STATE, hasSearchCriteria, type TodoSearchState } from '../composables/todoSearch'
 import { useTodo } from '../composables/useTodo'
+import type { Todo, TodoProgressStatus } from '../models/todo'
 
 const { todos, isLoading, fetchTodos, addTodo, updateTodo, removeTodo, toggleTodoCompletion } = useTodo()
 const searchState = ref<TodoSearchState>(DEFAULT_TODO_SEARCH_STATE)

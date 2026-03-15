@@ -35,10 +35,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+import { TODO_NAME_MAX_LENGTH } from '../../composables/useTodo'
 import type { ValidationError } from '../../models/error'
 import type { CreateTodoInput } from '../../models/todo'
-
-import { TODO_NAME_MAX_LENGTH } from '../../composables/useTodo'
 import { parseTodoQuickAddInput } from '../../services/todoQuickAddParser'
 import { mergeValidationErrors } from '../../services/validation'
 import FieldError from '../field-error.vue'

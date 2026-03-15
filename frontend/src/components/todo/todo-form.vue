@@ -66,10 +66,9 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 
+import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH, useTodoFieldValidation } from '../../composables/useTodo'
 import type { ValidationError } from '../../models/error'
 import type { CreateTodoInput, TodoRecurrenceType } from '../../models/todo'
-
-import { TODO_NAME_MAX_LENGTH, TODO_DETAIL_MAX_LENGTH, useTodoFieldValidation } from '../../composables/useTodo'
 import { mergeValidationErrors } from '../../services/validation'
 import FieldError from '../field-error.vue'
 import ValidatedInput from '../validated-input.vue'
