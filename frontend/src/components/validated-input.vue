@@ -40,17 +40,21 @@ const props = defineProps<{
   className?: string
 }>()
 
+
 const emit = defineEmits<{
   'update:modelValue': [value: string]
 }>()
 
+
 const touched = ref(false)
+
 
 const handleBlur = (event: Event) => {
   const target = event.target as HTMLInputElement
   touched.value = true
   props.validate(target.value)
 }
+
 
 const handleInput = (event: Event) => {
   const target = event.target as HTMLInputElement
@@ -59,6 +63,7 @@ const handleInput = (event: Event) => {
     props.validate(target.value)
   }
 }
+
 
 const hasError = () => props.errors.some((e) => e.field === props.name)
 </script>
