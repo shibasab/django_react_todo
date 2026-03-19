@@ -77,6 +77,7 @@ const props = defineProps<{
   onSubmit: (todo: CreateTodoInput) => Promise<readonly ValidationError[] | undefined>
 }>()
 
+
 const formState = reactive({
   name: '',
   detail: '',
@@ -84,13 +85,17 @@ const formState = reactive({
   recurrenceType: 'none' as TodoRecurrenceType,
 })
 
+
 const errors = ref<readonly ValidationError[]>([])
+
 
 const setErrors = (update: (prev: readonly ValidationError[]) => readonly ValidationError[]) => {
   errors.value = update(errors.value)
 }
 
+
 const { validateName, validateDetail } = useTodoFieldValidation(setErrors)
+
 
 const handleSubmit = async () => {
   const dueDate = formState.dueDate === '' ? null : formState.dueDate
