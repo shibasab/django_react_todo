@@ -25,6 +25,7 @@ jobs:
             const patterns = [
               /^backend\//,
               /^shared\//,
+              /^configs\/oxfmt\/base\.json$/,
               /^configs\/oxlint\/base\.json$/,
               /^configs\/oxlint\/node\.json$/,
               /^package\.json$/,
