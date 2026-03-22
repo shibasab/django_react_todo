@@ -34,15 +34,10 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/vue": "^8.1.0",
     "@vitejs/plugin-vue": "^6.0.5",
-    "@vitest/coverage-v8": "^4.1.0",
     "axios-mock-adapter": "^2.1.0",
     "happy-dom": "^20.8.4",
-    "oxfmt": "^0.41.0",
-    "oxlint": "^1.56.0",
     "postcss": "^8.5.8",
-    "typescript": "^5.9.3",
     "vite": "^8.0.0",
-    "vitest": "^4.1.0",
     "vue-tsc": "^3.2.6"
   },
   "engines": {
