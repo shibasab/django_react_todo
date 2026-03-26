@@ -26,7 +26,7 @@
     "@vitest/coverage-v8": "^4.1.1",
     "oxfmt": "^0.41.0",
     "oxlint": "^1.57.0",
-    "oxlint-tsgolint": "^0.17.1",
+    "oxlint-tsgolint": "^0.17.4",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
   }
