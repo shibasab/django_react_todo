@@ -37,7 +37,7 @@
     "axios-mock-adapter": "^2.1.0",
     "happy-dom": "^20.8.9",
     "postcss": "^8.5.8",
-    "vite": "^8.0.2",
+    "vite": "^8.0.3",
     "vue-tsc": "^3.2.6"
   },
   "engines": {
