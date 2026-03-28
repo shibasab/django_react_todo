@@ -42,7 +42,7 @@
 ## 2. 実装コンテキスト
 
 - BackendはTypeScript + Hono + Prisma + SQLiteでレイヤード構成（http -> usecases -> ports/infra）。
-- FrontendはReact + TypeScriptで、`models`（ドメイン）と`services`（外部連携）を分離する構成。
+- FrontendはVue + TypeScriptで、`pages` / `components` / `composables` / `stores` を組み合わせつつ、`models`（ドメイン）と`services`（外部連携）を分離する構成。
 - 現状Todoは単体完了制御のみで、親子関連を持たない。
 
 ## 3. 設計方針比較

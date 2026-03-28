@@ -2,7 +2,7 @@
   "oxc.enable": true,
   "oxc.configPath": "./frontend/.oxlintrc.json",
   "oxc.fmt.configPath": "./configs/oxfmt/base.json",
-  "[json][jsonc][typescript][typescriptreact][javascript][javascriptreact][vue]": {
+  "[json][jsonc][typescript][javascript][vue]": {
     "editor.defaultFormatter": "oxc.oxc-vscode",
     "editor.formatOnSave": true,
   },

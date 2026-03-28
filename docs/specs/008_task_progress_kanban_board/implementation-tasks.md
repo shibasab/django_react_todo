@@ -94,7 +94,7 @@
 
 - 対象ファイル:
   - `frontend/src/models/todo.ts`
-  - `frontend/src/hooks/useTodo.ts`
+  - `frontend/src/composables/useTodo.ts`
 - 実装内容:
   - `isCompleted` を削除
   - `progressStatus` を追加
@@ -106,10 +106,10 @@
 ### F-2: 一覧/カンバンUI更新
 
 - 対象ファイル:
-  - `frontend/src/pages/DashboardPage.tsx`
-  - `frontend/src/components/todo/TodoList.tsx`
-  - `frontend/src/components/todo/TodoKanbanBoard.tsx`（新規）
-  - `frontend/src/components/todo/TodoSearchControls.tsx`
+  - `frontend/src/pages/dashboard-page.vue`
+  - `frontend/src/components/todo/todo-list.vue`
+  - `frontend/src/components/todo/todo-kanban-board.vue`（新規）
+  - `frontend/src/components/todo/todo-search-controls.vue`
 - 実装内容:
   - 一覧/カンバン切替UI
   - 一覧編集フォームに `progressStatus` 入力
@@ -122,9 +122,9 @@
 ### F-3: Frontendテスト/fixture更新
 
 - 対象ファイル:
-  - `frontend/tests/pages/DashboardPage.test.tsx`
-  - `frontend/tests/pages/DashboardPage.kanban.test.tsx`（新規）
-  - `frontend/tests/components/TodoKanbanBoard.test.tsx`（新規）
+  - `frontend/tests/pages/dashboard-page.test.ts`
+  - `frontend/tests/pages/dashboard-page.kanban.test.ts`（新規）
+  - `frontend/tests/components/todo-kanban-board.test.ts`（新規）
   - `frontend/tests/fixtures/api/todo/*.json`
 - 実装内容:
   - `progressStatus` 前提のfixtureへ更新
@@ -246,10 +246,10 @@
   - 新規:
     - なし（このPRは既存一覧系テスト更新でカバー）
   - 既存更新:
-    - `frontend/tests/pages/DashboardPage.test.tsx`
+    - `frontend/tests/pages/dashboard-page.test.ts`
     - `frontend/tests/fixtures/api/todo/*.json`
 - 検証コマンド:
-  - `cd frontend && npm run test -- tests/pages/DashboardPage.test.tsx`
+  - `cd frontend && npm run test -- tests/pages/dashboard-page.test.ts`
   - `cd frontend && npm run typecheck`
 
 ### PR-3: カンバンUI実装と一覧連動
@@ -263,12 +263,12 @@
   - 一覧/カンバンを同一状態ソースで連動
 - 自動テスト:
   - 新規:
-    - `frontend/tests/components/TodoKanbanBoard.test.tsx`
-    - `frontend/tests/pages/DashboardPage.kanban.test.tsx`
+    - `frontend/tests/components/todo-kanban-board.test.ts`
+    - `frontend/tests/pages/dashboard-page.kanban.test.ts`
   - 既存更新:
-    - `frontend/tests/pages/DashboardPage.test.tsx`（回帰確認分）
+    - `frontend/tests/pages/dashboard-page.test.ts`（回帰確認分）
 - 検証コマンド:
-  - `cd frontend && npm run test -- tests/components/TodoKanbanBoard.test.tsx tests/pages/DashboardPage.kanban.test.tsx tests/pages/DashboardPage.test.tsx`
+  - `cd frontend && npm run test -- tests/components/todo-kanban-board.test.ts tests/pages/dashboard-page.kanban.test.ts tests/pages/dashboard-page.test.ts`
 
 ### PR-4: DB migration実装 + 運用ドキュメント + migration自動テスト
 

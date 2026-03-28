@@ -6,13 +6,8 @@ backend/generated/
 
 *.log
 *.pot
-*.pyc
-__pycache__/
-.venv/
 *.db
 *.sqlite3
-local_settings.py
-*.py[cod]
 .env
 
 # frontend build の生成物は管理対象外

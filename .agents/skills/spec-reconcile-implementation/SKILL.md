@@ -66,7 +66,7 @@ description: 実装完了後に対象Specと現在実装を照合し、差分を
 - 実装とテストを同一変更セットで更新する
 - 影響範囲に応じて最小限+関連のテストを実行する
 - 必要に応じて以下を実行する
-  - backend: `uv run pytest`, `uv run ruff format`, `uv run ruff check`, `uv run pyrefly check`
+  - backend: `npm run test`, `npm run format`, `npm run lint`, `npm run typecheck`
   - frontend: `npm run test`, `npm run format`, `npm run lint`, `npm run typecheck`
 
 ### 6. 仕様修正がある場合
