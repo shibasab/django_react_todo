@@ -118,7 +118,7 @@
 - 対象ファイル（予定）
   - `frontend/src/pages/*`
   - `frontend/src/components/todo/*`
-  - `frontend/tests/pages/*subtask*.test.tsx`（新規）
+  - `frontend/tests/pages/*subtask*.test.ts`（新規）
 - 変更
   - 追加フォーム・一覧・進捗表示
 - 先行テスト（Red）
@@ -132,7 +132,7 @@
 
 - 対象ファイル（予定）
   - `frontend/src/pages/*`
-  - `frontend/tests/pages/*subtask*.test.tsx`
+  - `frontend/tests/pages/*subtask*.test.ts`
 - 変更
   - 409受信時の拒否理由表示
 - 先行テスト（Red）
@@ -209,7 +209,7 @@
   - 既存更新: API client test
   - 新規: subtask UI test
 - 検証コマンド
-  - `cd frontend && npm run test -- tests/services/todoApi.test.ts tests/pages/*subtask*.test.tsx`
+  - `cd frontend && npm run test -- tests/services/todoApi.test.ts tests/pages/*subtask*.test.ts`
   - `cd frontend && npm run typecheck`
 
 ### PR-4: 全体品質ゲート + 受け入れ確認

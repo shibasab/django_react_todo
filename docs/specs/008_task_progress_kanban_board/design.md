@@ -243,16 +243,16 @@ sequenceDiagram
 ### 7.3 Frontend（変更）
 
 - `frontend/src/models/todo.ts`
-- `frontend/src/hooks/useTodo.ts`
-- `frontend/src/pages/DashboardPage.tsx`
-- `frontend/src/components/todo/TodoList.tsx`
-- `frontend/src/components/todo/TodoSearchControls.tsx`
+- `frontend/src/composables/useTodo.ts`
+- `frontend/src/pages/dashboard-page.vue`
+- `frontend/src/components/todo/todo-list.vue`
+- `frontend/src/components/todo/todo-search-controls.vue`
 
 ### 7.4 Frontend（追加）
 
-- `frontend/src/components/todo/TodoKanbanBoard.tsx`
-- `frontend/tests/components/TodoKanbanBoard.test.tsx`
-- `frontend/tests/pages/DashboardPage.kanban.test.tsx`
+- `frontend/src/components/todo/todo-kanban-board.vue`
+- `frontend/tests/components/todo-kanban-board.test.ts`
+- `frontend/tests/pages/dashboard-page.kanban.test.ts`
 - `frontend/tests/fixtures/api/todo/*.json`
 
 ## 8. テスト設計
@@ -302,4 +302,3 @@ sequenceDiagram
 | FR-006 | 済 | 確定 |
 | NFR-001 | 済 | 確定 |
 | NFR-002 | 済 | 確定 |
-

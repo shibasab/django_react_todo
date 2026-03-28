@@ -1,11 +1,11 @@
 # todoapp
 
-TypeScript（Bun/Hono/Prisma） + React（Vite）で構成された Todo アプリケーションです。
+TypeScript（Bun/Hono/Prisma） + Vue（Vite）で構成された Todo アプリケーションです。
 
 ## 技術スタック
 
 - backend: TypeScript, Bun, Hono, Prisma, SQLite
-- frontend: React, TypeScript, Vite
+- frontend: Vue, TypeScript, Vite
 - shared: TypeScript（契約型・FPユーティリティ）
 
 ## バックエンドアーキテクチャ
