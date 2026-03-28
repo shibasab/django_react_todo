@@ -22,7 +22,6 @@ export type SelectOption<T extends string> = Readonly<{
   label: string
 }>
 
-
 const props = defineProps<{
   id: string
   label: string
@@ -31,11 +30,9 @@ const props = defineProps<{
   wrapperClassName?: string
 }>()
 
-
 const emit = defineEmits<{
   'update:modelValue': [value: TValue]
 }>()
-
 
 const handleChange = (event: Event) => {
   const target = event.target as HTMLSelectElement

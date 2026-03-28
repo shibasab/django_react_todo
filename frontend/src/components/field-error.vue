@@ -15,7 +15,6 @@ const props = defineProps<{
   fieldLabel: string
 }>()
 
-
 const toErrorMessage = (error: ValidationError, fieldLabel: string): string => {
   const reason = error.reason
   switch (reason) {
@@ -37,7 +36,6 @@ const toErrorMessage = (error: ValidationError, fieldLabel: string): string => {
       return `${fieldLabel}の入力内容を確認してください`
   }
 }
-
 
 const fieldErrors = () => props.errors.filter((error) => error.field === props.fieldName)
 </script>

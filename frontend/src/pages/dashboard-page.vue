@@ -75,7 +75,6 @@ const isDetailFormOpen = ref(false)
 const viewMode = ref<'list' | 'kanban'>('list')
 const searchHasCriteria = ref(false)
 
-
 watch(
   searchState,
   (state) => {
@@ -84,7 +83,6 @@ watch(
   { immediate: true, deep: true },
 )
 
-
 watchDebounced(
   searchState,
   (state) => {
@@ -92,7 +90,6 @@ watchDebounced(
   },
   { debounce: 300, immediate: true, deep: true },
 )
-
 
 const handleKanbanMove = async (todo: Todo, nextStatus: TodoProgressStatus) => {
   const validationErrors = await updateTodo({

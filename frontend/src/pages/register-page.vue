@@ -6,14 +6,12 @@ import { useAuthStore } from '../stores/auth'
 
 const authStore = useAuthStore()
 
-
 const formState = reactive({
   username: '',
   email: '',
   password: '',
   password2: '',
 })
-
 
 const handleSubmit = async () => {
   if (formState.password !== formState.password2) {

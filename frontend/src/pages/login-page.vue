@@ -50,12 +50,10 @@ import { useAuthStore } from '../stores/auth'
 
 const authStore = useAuthStore()
 
-
 const formState = reactive({
   username: '',
   password: '',
 })
-
 
 const handleSubmit = async () => {
   await authStore.login(formState.username, formState.password)

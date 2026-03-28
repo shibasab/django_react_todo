@@ -13,7 +13,6 @@ import { useAuthStore } from './stores/auth'
 
 const authStore = useAuthStore()
 
-
 onMounted(() => {
   void authStore.loadUser()
 })

@@ -51,13 +51,11 @@ type TodoColumn = Readonly<{
   emptyMessage: string
 }>
 
-
 const TODO_COLUMNS = [
   { status: 'not_started', title: '着手前', emptyMessage: '着手前のタスクはありません' },
   { status: 'in_progress', title: '進行中', emptyMessage: '進行中のタスクはありません' },
   { status: 'completed', title: '完了', emptyMessage: '完了タスクはありません' },
 ] as const satisfies readonly TodoColumn[]
-
 
 const props = defineProps<{
   todos: readonly Todo[]
@@ -65,10 +63,8 @@ const props = defineProps<{
   onMoveTodo: (todo: Todo, nextStatus: TodoProgressStatus) => Promise<void>
 }>()
 
-
 const draggingTodoId = ref<number | null>(null)
 const isMoving = ref(false)
-
 
 const groupedTodos = computed(() =>
   TODO_COLUMNS.map((column) => ({
@@ -76,7 +72,6 @@ const groupedTodos = computed(() =>
     todos: props.todos.filter((todo) => todo.progressStatus === column.status),
   })),
 )
-
 
 const handleDragStart = (event: DragEvent, todo: Todo) => {
   draggingTodoId.value = todo.id
@@ -86,18 +81,15 @@ const handleDragStart = (event: DragEvent, todo: Todo) => {
   }
 }
 
-
 const handleDrop = async (nextStatus: TodoProgressStatus) => {
   const todoId = draggingTodoId.value
   draggingTodoId.value = null
   if (todoId == null) return
 
-
   const target = props.todos.find((todo) => todo.id === todoId)
   if (target == null || target.progressStatus === nextStatus || isMoving.value) {
     return
   }
-
 
   isMoving.value = true
   try {

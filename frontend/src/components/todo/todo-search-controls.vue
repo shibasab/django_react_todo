@@ -55,7 +55,6 @@ const STATUS_OPTIONS = [
   { value: 'completed', label: '完了' },
 ] as const satisfies readonly SelectOption<TodoStatusFilter>[]
 
-
 const DUE_DATE_OPTIONS = [
   { value: 'all', label: 'すべて' },
   { value: 'today', label: '今日' },
@@ -64,32 +63,26 @@ const DUE_DATE_OPTIONS = [
   { value: 'none', label: '期限なし' },
 ] as const satisfies readonly SelectOption<TodoDueDateFilter>[]
 
-
 const props = defineProps<{
   modelValue: TodoSearchState
 }>()
 
-
 const emit = defineEmits<{
   'update:modelValue': [value: TodoSearchState]
 }>()
-
 
 const handleKeywordChange = (event: Event) => {
   const target = event.target as HTMLInputElement
   emit('update:modelValue', { ...props.modelValue, keyword: target.value })
 }
 
-
 const handleStatusChange = (status: TodoStatusFilter) => {
   emit('update:modelValue', { ...props.modelValue, status })
 }
 
-
 const handleDueDateChange = (dueDate: TodoDueDateFilter) => {
   emit('update:modelValue', { ...props.modelValue, dueDate })
 }
-
 
 const handleClear = () => {
   emit('update:modelValue', DEFAULT_TODO_SEARCH_STATE)
