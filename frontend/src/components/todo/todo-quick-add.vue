@@ -46,10 +46,8 @@ const props = defineProps<{
   onSubmit: (todo: CreateTodoInput) => Promise<readonly ValidationError[] | undefined>
 }>()
 
-
 const input = ref('')
 const errors = ref<readonly ValidationError[]>([])
-
 
 const handleInput = (event: Event) => {
   const target = event.target as HTMLInputElement
@@ -57,14 +55,12 @@ const handleInput = (event: Event) => {
   errors.value = errors.value.filter((error) => error.field !== 'name' && error.field !== 'dueDate')
 }
 
-
 const handleSubmit = async () => {
   const trimmedInput = input.value.trim()
   if (trimmedInput === '') {
     errors.value = [{ field: 'name', reason: 'required' }]
     return
   }
-
 
   const parsed = parseTodoQuickAddInput(trimmedInput)
   const validationErrors = await props.onSubmit({
@@ -79,7 +75,6 @@ const handleSubmit = async () => {
     errors.value = mergeValidationErrors(errors.value, validationErrors)
     return
   }
-
 
   input.value = ''
   errors.value = []
