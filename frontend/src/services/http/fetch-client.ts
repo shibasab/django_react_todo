@@ -15,15 +15,33 @@ export type CreateFetchClientOptions = Readonly<{
   fetchImpl?: typeof fetch
 }>
 
-export class FetchHttpError extends Error {
+export const parseJsonSafely = async (response: Response): Promise<unknown> => {
+  const text = await response.text()
+  if (text.trim() === '') {
+    return undefined
+  }
+
+  try {
+    return JSON.parse(text)
+  } catch {
+    return text
+  }
+}
+
+export class HttpError extends Error {
   readonly kind = 'http'
 
   constructor(
     readonly status: number,
     readonly statusText: string,
-    readonly data: unknown,
+    readonly body: unknown,
+    readonly headers: Headers,
   ) {
     super(`HTTP ${status} ${statusText}`)
+  }
+
+  get data(): unknown {
+    return this.body
   }
 }
 
@@ -93,24 +111,6 @@ const joinUrl = (baseURL: string | undefined, url: string): string => {
   return new URL(url, resolveBaseURL(baseURL)).toString()
 }
 
-const parseResponseBody = async (response: Response): Promise<unknown> => {
-  const contentType = response.headers.get('content-type')
-  if (contentType?.includes('application/json')) {
-    return response.json()
-  }
-
-  const text = await response.text()
-  if (text.trim() === '') {
-    return undefined
-  }
-
-  try {
-    return JSON.parse(text)
-  } catch {
-    return text
-  }
-}
-
 export const createFetchClient = ({
   baseURL,
   headers: defaultHeaders,
@@ -130,15 +130,15 @@ export const createFetchClient = ({
         ...(body === undefined ? {} : { body: JSON.stringify(body) }),
       })
 
-      const responseBody = await parseResponseBody(response)
+      const responseBody = await parseJsonSafely(response)
 
       if (!response.ok) {
-        throw new FetchHttpError(response.status, response.statusText, responseBody)
+        throw new HttpError(response.status, response.statusText, responseBody, response.headers)
       }
 
       return responseBody as T
     } catch (error) {
-      if (error instanceof FetchHttpError) {
+      if (error instanceof HttpError) {
         throw error
       }
       if (isAbortError(error)) {
@@ -151,4 +151,5 @@ export const createFetchClient = ({
   return { request }
 }
 
-export const isFetchHttpError = (error: unknown): error is FetchHttpError => error instanceof FetchHttpError
+export const FetchHttpError = HttpError
+export const isFetchHttpError = (error: unknown): error is HttpError => error instanceof HttpError
