@@ -16,7 +16,7 @@ describe('useApiStore loading behavior', () => {
 
   it('createApiClientへ渡したcallbacksでisLoadingが増減する', async () => {
     let callbacks: ApiClientCallbacks | undefined
-    createApiClientMock.mockImplementation((_, c: ApiClientCallbacks) => {
+    createApiClientMock.mockImplementation((_options: unknown, c: ApiClientCallbacks) => {
       callbacks = c
       return {
         get: vi.fn(),

@@ -1,6 +1,4 @@
-import axios from 'axios'
-import AxiosMockAdapter from 'axios-mock-adapter'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { createApiClient } from '../../src/services/api'
 
@@ -8,18 +6,28 @@ const noop = () => {}
 
 describe('ApiClient runtime error handling', () => {
   it('PUT /todo/:id で409をResult.errとして返す', async () => {
-    const axiosInstance = axios.create()
-    const mock = new AxiosMockAdapter(axiosInstance)
-    mock.onPut('/todo/20/').reply(409, {
-      status: 409,
-      type: 'conflict_error',
-      detail: '未完了のサブタスクがあるため完了できません',
-    })
+    const fetchImpl: typeof fetch = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            status: 409,
+            type: 'conflict_error',
+            detail: '未完了のサブタスクがあるため完了できません',
+          }),
+          {
+            status: 409,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        ),
+    )
 
-    const apiClient = createApiClient(axiosInstance, {
-      onRequestStart: noop,
-      onRequestEnd: noop,
-    })
+    const apiClient = createApiClient(
+      { fetchImpl },
+      {
+        onRequestStart: noop,
+        onRequestEnd: noop,
+      },
+    )
 
     const result = await apiClient.put('/todo/20/', {
       dueDate: undefined,
@@ -34,22 +42,31 @@ describe('ApiClient runtime error handling', () => {
         detail: '未完了のサブタスクがあるため完了できません',
       })
     }
-    mock.restore()
   })
 
   it('POST /auth/register で409をResult.errとして返す', async () => {
-    const axiosInstance = axios.create()
-    const mock = new AxiosMockAdapter(axiosInstance)
-    mock.onPost('/auth/register').reply(409, {
-      status: 409,
-      type: 'conflict_error',
-      detail: 'Username already registered',
-    })
+    const fetchImpl: typeof fetch = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            status: 409,
+            type: 'conflict_error',
+            detail: 'Username already registered',
+          }),
+          {
+            status: 409,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        ),
+    )
 
-    const apiClient = createApiClient(axiosInstance, {
-      onRequestStart: noop,
-      onRequestEnd: noop,
-    })
+    const apiClient = createApiClient(
+      { fetchImpl },
+      {
+        onRequestStart: noop,
+        onRequestEnd: noop,
+      },
+    )
 
     const result = await apiClient.post('/auth/register', {
       username: 'taken',
@@ -65,6 +82,5 @@ describe('ApiClient runtime error handling', () => {
         detail: 'Username already registered',
       })
     }
-    mock.restore()
   })
 })

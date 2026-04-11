@@ -1,6 +1,3 @@
-import axios, { type AxiosRequestConfig } from 'axios'
-import AxiosMockAdapter from 'axios-mock-adapter'
-
 import { createApiClient, type ApiClient } from '../../src/services/api'
 import { loadFixture } from './fixtures'
 
@@ -101,42 +98,16 @@ const parseBody = (data: unknown): unknown => {
   }
 }
 
-const toHttpMethod = (method: string | undefined): HttpMethod => {
-  const normalized = method?.toUpperCase()
-
-  if (normalized === 'POST') {
-    return 'POST'
-  }
-  if (normalized === 'PUT') {
-    return 'PUT'
-  }
-  if (normalized === 'DELETE') {
-    return 'DELETE'
-  }
-  return 'GET'
-}
-
-type RequestSource = Readonly<Pick<AxiosRequestConfig, 'method' | 'url' | 'params' | 'data'>>
-
-const normalizeRequest = (config: RequestSource): RequestLogEntry => {
-  const method = toHttpMethod(config.method)
-  const parsedUrl = new URL(config.url ?? '/', 'http://localhost')
-  const url = parsedUrl.pathname
-
-  const queryFromUrl = parsedUrl.search === '' ? undefined : toQueryRecord(parsedUrl.searchParams)
-  const queryCandidate =
-    config.params instanceof URLSearchParams
-      ? toQueryRecord(config.params)
-      : config.params == null
-        ? queryFromUrl
-        : config.params
-  const query = toSortedValue(queryCandidate)
-  const body = toSortedValue(parseBody(config.data))
+const normalizeRequest = (input: string, init?: RequestInit): RequestLogEntry => {
+  const method = (init?.method?.toUpperCase() ?? 'GET') as HttpMethod
+  const parsedUrl = new URL(input)
+  const query = toSortedValue(toQueryRecord(parsedUrl.searchParams))
+  const body = toSortedValue(parseBody(init?.body))
 
   return {
     method,
-    url,
-    ...(query == null || (isPlainObject(query) && Object.keys(query).length === 0) ? {} : { query }),
+    url: parsedUrl.pathname,
+    ...(isPlainObject(query) && Object.keys(query).length === 0 ? {} : { query }),
     ...(body === undefined ? {} : { body }),
   }
 }
@@ -164,86 +135,56 @@ const resolveRouteBody = (route: FixtureRoute): unknown => {
   return null
 }
 
-const registerRoute = (mock: AxiosMockAdapter, route: FixtureRoute, requestLog: RequestLogEntry[]) => {
-  const reply = (config: AxiosRequestConfig): [number, unknown] => {
-    requestLog.push(normalizeRequest(config))
-    return [route.status ?? 200, resolveRouteBody(route)]
-  }
-
-  switch (route.method) {
-    case 'GET':
-      if (route.once) {
-        mock.onGet(route.url).replyOnce(reply)
-      } else {
-        mock.onGet(route.url).reply(reply)
-      }
-      return
-    case 'POST':
-      if (route.once) {
-        mock.onPost(route.url).replyOnce(reply)
-      } else {
-        mock.onPost(route.url).reply(reply)
-      }
-      return
-    case 'PUT':
-      if (route.once) {
-        mock.onPut(route.url).replyOnce(reply)
-      } else {
-        mock.onPut(route.url).reply(reply)
-      }
-      return
-    case 'DELETE':
-      if (route.once) {
-        mock.onDelete(route.url).replyOnce(reply)
-      } else {
-        mock.onDelete(route.url).reply(reply)
-      }
-      return
-  }
-}
-
 export const setupHttpFixtureTest = ({
   routes = [],
   scenarioFixture,
   strictUnhandled = true,
 }: SetupHttpFixtureTestOptions = {}) => {
   const requestLog: RequestLogEntry[] = []
-  const axiosInstance = axios.create({
-    baseURL: 'http://localhost/api',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-  const mock = new AxiosMockAdapter(axiosInstance)
-
   const allRoutes = [...resolveScenarioRoutes(scenarioFixture), ...routes]
-  for (const route of allRoutes) {
-    registerRoute(mock, route, requestLog)
-  }
 
-  if (strictUnhandled) {
-    mock.onAny().reply((config) => {
-      const request = normalizeRequest(config)
-      requestLog.push(request)
-      throw new Error(`Unhandled mock request: ${request.method} ${request.url}`)
+  const fetchImpl: typeof fetch = async (input, init) => {
+    const request = normalizeRequest(String(input), init)
+    requestLog.push(request)
+
+    const routeIndex = allRoutes.findIndex((route) => route.method === request.method && route.url === request.url)
+    if (routeIndex < 0) {
+      if (strictUnhandled) {
+        throw new Error(`Unhandled mock request: ${request.method} ${request.url}`)
+      }
+
+      return new Response(JSON.stringify(null), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const route = allRoutes[routeIndex]
+    if (route?.once) {
+      allRoutes.splice(routeIndex, 1)
+    }
+
+    return new Response(JSON.stringify(resolveRouteBody(route)), {
+      status: route?.status ?? 200,
+      headers: { 'Content-Type': 'application/json' },
     })
   }
 
   const noop = () => {}
-  const apiClient: ApiClient = createApiClient(axiosInstance, {
-    onRequestStart: noop,
-    onRequestEnd: noop,
-  })
+  const apiClient: ApiClient = createApiClient(
+    { fetchImpl },
+    {
+      onRequestStart: noop,
+      onRequestEnd: noop,
+    },
+  )
 
   return {
     apiClient,
     requestLog,
     clearRequests: () => {
       requestLog.length = 0
-      mock.resetHistory()
     },
-    restore: () => {
-      mock.restore()
-    },
+    restore: () => {},
   } as const
 }
