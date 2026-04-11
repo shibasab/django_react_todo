@@ -139,7 +139,7 @@ export const createApiClient = (options: ApiClientOptions = {}, callbacks: ApiCl
       return null
     }
 
-    return error.data as ApiError<M, E>
+    return error.body as ApiError<M, E>
   }
 
   return {

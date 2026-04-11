@@ -2,9 +2,10 @@ import { describe, expect, it, vi } from 'vitest'
 
 import {
   FetchAbortError,
-  FetchHttpError,
   FetchNetworkError,
+  HttpError,
   createFetchClient,
+  parseJsonSafely,
 } from '../../src/services/http/fetch-client'
 
 describe('fetchClient', () => {
@@ -43,7 +44,7 @@ describe('fetchClient', () => {
 
     const client = createFetchClient({ fetchImpl })
 
-    await expect(client.request({ method: 'GET', url: '/todo/' })).rejects.toBeInstanceOf(FetchHttpError)
+    await expect(client.request({ method: 'GET', url: '/todo/' })).rejects.toBeInstanceOf(HttpError)
   })
 
   it('ネットワークエラーを区別できる', async () => {
@@ -64,5 +65,14 @@ describe('fetchClient', () => {
     const client = createFetchClient({ fetchImpl })
 
     await expect(client.request({ method: 'GET', url: '/todo/' })).rejects.toBeInstanceOf(FetchAbortError)
+  })
+
+  it('parseJsonSafely はJSONでないレスポンス本文を文字列として返す', async () => {
+    const response = new Response('plain-text', {
+      status: 200,
+      headers: { 'Content-Type': 'text/plain' },
+    })
+
+    await expect(parseJsonSafely(response)).resolves.toBe('plain-text')
   })
 })
