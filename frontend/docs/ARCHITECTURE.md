@@ -35,6 +35,11 @@ src/
 - Vue Router（Hash History）を利用。
 - 認証ガードは `router/index.ts` の `beforeEach` で実施する。
 
+## HTTP層
+
+- HTTP 通信は `src/services/http/fetch-client.ts` の Fetch API ラッパーで統一する。
+- API クライアントは `src/services/api-client.ts` からラッパーを利用し、呼び出し側へはドメインに沿ったインターフェースのみ公開する。
+
 ## 型検査とLint
 
 - 型チェックは `vue-tsc` を利用する。

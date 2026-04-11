@@ -11,7 +11,7 @@
 - **ルーティング**: Vue Router 5
 - **状態管理**: Pinia
 - **ビルドツール**: Vite 8系
-- **HTTPクライアント**: Axios
+- **HTTPクライアント**: Fetch API（ラッパー実装）
 - **スタイリング**: Tailwind CSS 4系
 - **パッケージ管理**: npm
 
