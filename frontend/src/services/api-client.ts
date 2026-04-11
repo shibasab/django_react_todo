@@ -13,7 +13,7 @@ import type {
 import config from '../config'
 import { type Result, err, ok } from '../models/result'
 import { authToken } from './authToken'
-import { createFetchClient, isFetchHttpError } from './http/fetch-client'
+import { createFetchClient, isFetchAbortError, isFetchHttpError } from './http/fetch-client'
 
 type ApiGetOptions = Readonly<{
   key?: string
@@ -73,7 +73,7 @@ export type ApiClientOptions = Readonly<{
 
 export const createApiClient = (options: ApiClientOptions = {}, callbacks: ApiClientCallbacks): ApiClient => {
   const { onRequestStart, onRequestEnd } = callbacks
-  const latestOnlyRequests = new Map<string, { abort: () => void }>()
+  const abortControllers = new Map<string, { abort: () => void }>()
 
   const fetchClient = createFetchClient({
     baseURL: config.API_BASE_URL,
@@ -153,31 +153,38 @@ export const createApiClient = (options: ApiClientOptions = {}, callbacks: ApiCl
         let abortCurrent: (() => void) | undefined
 
         if (shouldAbortPrevious && requestKey) {
-          latestOnlyRequests.get(requestKey)?.abort()
+          abortControllers.get(requestKey)?.abort()
 
           abortController = new AbortController()
           abortCurrent = () => {
             abortController?.abort()
           }
-          latestOnlyRequests.set(requestKey, { abort: abortCurrent })
+          abortControllers.set(requestKey, { abort: abortCurrent })
         }
 
         try {
-          return fetchClient.request<ApiResponse<'get', E>>({
+          return await fetchClient.request<ApiResponse<'get', E>>({
             method: 'GET',
             url,
             query: resolvedParams,
             signal: abortController?.signal,
             headers: toAuthorizationHeaders(),
           })
+        } catch (error) {
+          if (isFetchAbortError(error)) {
+            // latestOnly による中断は FetchAbortError として上位へ再送出して扱いを明確化する。
+            throw error
+          }
+
+          throw error
         } finally {
           if (
             shouldAbortPrevious &&
             requestKey &&
             abortCurrent &&
-            latestOnlyRequests.get(requestKey)?.abort === abortCurrent
+            abortControllers.get(requestKey)?.abort === abortCurrent
           ) {
-            latestOnlyRequests.delete(requestKey)
+            abortControllers.delete(requestKey)
           }
         }
       }),

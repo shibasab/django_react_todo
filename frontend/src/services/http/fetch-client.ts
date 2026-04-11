@@ -61,6 +61,8 @@ export class FetchAbortError extends Error {
   }
 }
 
+export const isFetchAbortError = (error: unknown): error is FetchAbortError => error instanceof FetchAbortError
+
 const isAbortError = (error: unknown): boolean => error instanceof Error && error.name === 'AbortError'
 
 const appendQuery = (searchParams: URLSearchParams, key: string, value: unknown): void => {
