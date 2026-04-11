@@ -1,33 +1,23 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import { createApiClient } from '../../src/services/api'
-
-const noop = () => {}
+import { setupHttpFixtureTest } from '../helpers/httpMock'
 
 describe('ApiClient runtime error handling', () => {
   it('POST /auth/register で422をResult.errとして返す', async () => {
-    const fetchImpl: typeof fetch = vi.fn(
-      async () =>
-        new Response(
-          JSON.stringify({
+    const { apiClient, restore } = setupHttpFixtureTest({
+      routes: [
+        {
+          method: 'POST',
+          url: '/auth/register',
+          status: 422,
+          response: {
             status: 422,
             type: 'validation_error',
             detail: 'email is invalid',
-          }),
-          {
-            status: 422,
-            headers: { 'Content-Type': 'application/json' },
           },
-        ),
-    )
-
-    const apiClient = createApiClient(
-      { fetchImpl },
-      {
-        onRequestStart: noop,
-        onRequestEnd: noop,
-      },
-    )
+        },
+      ],
+    })
 
     const result = await apiClient.post('/auth/register', {
       username: 'user',
@@ -43,31 +33,24 @@ describe('ApiClient runtime error handling', () => {
         detail: 'email is invalid',
       })
     }
+    restore()
   })
 
   it('PUT /todo/:id で409をResult.errとして返す', async () => {
-    const fetchImpl: typeof fetch = vi.fn(
-      async () =>
-        new Response(
-          JSON.stringify({
+    const { apiClient, restore } = setupHttpFixtureTest({
+      routes: [
+        {
+          method: 'PUT',
+          url: '/todo/20/',
+          status: 409,
+          response: {
             status: 409,
             type: 'conflict_error',
             detail: '未完了のサブタスクがあるため完了できません',
-          }),
-          {
-            status: 409,
-            headers: { 'Content-Type': 'application/json' },
           },
-        ),
-    )
-
-    const apiClient = createApiClient(
-      { fetchImpl },
-      {
-        onRequestStart: noop,
-        onRequestEnd: noop,
-      },
-    )
+        },
+      ],
+    })
 
     const result = await apiClient.put('/todo/20/', {
       dueDate: undefined,
@@ -82,31 +65,24 @@ describe('ApiClient runtime error handling', () => {
         detail: '未完了のサブタスクがあるため完了できません',
       })
     }
+    restore()
   })
 
   it('POST /auth/register で409をResult.errとして返す', async () => {
-    const fetchImpl: typeof fetch = vi.fn(
-      async () =>
-        new Response(
-          JSON.stringify({
+    const { apiClient, restore } = setupHttpFixtureTest({
+      routes: [
+        {
+          method: 'POST',
+          url: '/auth/register',
+          status: 409,
+          response: {
             status: 409,
             type: 'conflict_error',
             detail: 'Username already registered',
-          }),
-          {
-            status: 409,
-            headers: { 'Content-Type': 'application/json' },
           },
-        ),
-    )
-
-    const apiClient = createApiClient(
-      { fetchImpl },
-      {
-        onRequestStart: noop,
-        onRequestEnd: noop,
-      },
-    )
+        },
+      ],
+    })
 
     const result = await apiClient.post('/auth/register', {
       username: 'taken',
@@ -122,25 +98,20 @@ describe('ApiClient runtime error handling', () => {
         detail: 'Username already registered',
       })
     }
+    restore()
   })
 
   it('PUT /todo/:id で500は例外送出する', async () => {
-    const fetchImpl: typeof fetch = vi.fn(
-      async () =>
-        new Response(JSON.stringify({ detail: 'internal error' }), {
+    const { apiClient, restore } = setupHttpFixtureTest({
+      routes: [
+        {
+          method: 'PUT',
+          url: '/todo/20/',
           status: 500,
-          statusText: 'Internal Server Error',
-          headers: { 'Content-Type': 'application/json' },
-        }),
-    )
-
-    const apiClient = createApiClient(
-      { fetchImpl },
-      {
-        onRequestStart: noop,
-        onRequestEnd: noop,
-      },
-    )
+          response: { detail: 'internal error' },
+        },
+      ],
+    })
 
     await expect(
       apiClient.put('/todo/20/', {
@@ -148,5 +119,6 @@ describe('ApiClient runtime error handling', () => {
         progressStatus: 'completed',
       }),
     ).rejects.toMatchObject({ status: 500 })
+    restore()
   })
 })
