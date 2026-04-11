@@ -1,91 +1,58 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
-import { createApiClient } from '../../src/services/api'
-
-type FetchCall = Readonly<{
-  url: string
-  init?: RequestInit
-}>
+import { setupHttpFixtureTest } from '../helpers/httpMock'
 
 describe('ApiClient behavior', () => {
-  let fetchCalls: FetchCall[] = []
-
-  beforeEach(() => {
-    fetchCalls = []
-  })
-
   it('GETはparamsをそのままクエリに変換する', async () => {
-    const fetchImpl: typeof fetch = vi.fn(async (input, init) => {
-      fetchCalls.push({ url: String(input), init })
-      return new Response(JSON.stringify([]), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      })
+    const { apiClient, requestLog, restore } = setupHttpFixtureTest({
+      routes: [{ method: 'GET', url: '/todo/', status: 200, response: [] }],
     })
-
-    const apiClient = createApiClient(
-      { fetchImpl },
-      {
-        onRequestStart: () => {},
-        onRequestEnd: () => {},
-      },
-    )
 
     await apiClient.get('/todo/', { keyword: 'abc' })
 
-    expect(fetchCalls).toHaveLength(1)
-    expect(fetchCalls[0]?.url).toContain('/todo/?keyword=abc')
+    expect(requestLog).toHaveLength(1)
+    expect(requestLog[0]).toMatchObject({
+      method: 'GET',
+      url: '/todo/',
+      query: { keyword: 'abc' },
+    })
+    restore()
   })
 
   it('GETはconfig形式でもparamsを解釈する', async () => {
-    const fetchImpl: typeof fetch = vi.fn(async (input, init) => {
-      fetchCalls.push({ url: String(input), init })
-      return new Response(JSON.stringify([]), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      })
+    const { apiClient, requestLog, restore } = setupHttpFixtureTest({
+      routes: [{ method: 'GET', url: '/todo/', status: 200, response: [] }],
     })
-
-    const apiClient = createApiClient(
-      { fetchImpl },
-      {
-        onRequestStart: () => {},
-        onRequestEnd: () => {},
-      },
-    )
 
     await apiClient.get('/todo/', {
       params: { progressStatus: 'completed' },
       options: { key: 'todo-search', mode: 'latestOnly' },
     })
 
-    expect(fetchCalls).toHaveLength(1)
-    expect(fetchCalls[0]?.url).toContain('/todo/?progressStatus=completed')
+    expect(requestLog).toHaveLength(1)
+    expect(requestLog[0]).toMatchObject({
+      method: 'GET',
+      url: '/todo/',
+      query: { progressStatus: 'completed' },
+    })
+    restore()
   })
 
   it('POSTの422はResult.errで返す', async () => {
-    const fetchImpl: typeof fetch = vi.fn(
-      async () =>
-        new Response(
-          JSON.stringify({
+    const { apiClient, restore } = setupHttpFixtureTest({
+      routes: [
+        {
+          method: 'POST',
+          url: '/todo/',
+          status: 422,
+          response: {
             status: 422,
             type: 'validation_error',
             errors: [{ field: 'name', reason: 'required' }],
-          }),
-          {
-            status: 422,
-            headers: { 'Content-Type': 'application/json' },
           },
-        ),
-    )
-
-    const apiClient = createApiClient(
-      { fetchImpl },
-      {
-        onRequestStart: () => {},
-        onRequestEnd: () => {},
-      },
-    )
+        },
+      ],
+    })
 
     const result = await apiClient.post('/todo/', {
       name: '',
@@ -100,27 +67,17 @@ describe('ApiClient behavior', () => {
     if (!result.ok) {
       expect(result.error.status).toBe(422)
     }
+    restore()
   })
 
   it('対象外ステータスのエラーはthrowしつつコールバックを完了させる', async () => {
-    const fetchImpl: typeof fetch = vi.fn(
-      async () =>
-        new Response(JSON.stringify({ detail: 'server error' }), {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' },
-        }),
-    )
-
     const onRequestStart = vi.fn()
     const onRequestEnd = vi.fn()
-
-    const apiClient = createApiClient(
-      { fetchImpl },
-      {
-        onRequestStart,
-        onRequestEnd,
-      },
-    )
+    const { apiClient, restore } = setupHttpFixtureTest({
+      routes: [{ method: 'POST', url: '/auth/register', status: 500, response: { detail: 'server error' } }],
+      onRequestStart,
+      onRequestEnd,
+    })
 
     await expect(
       apiClient.post('/auth/register', {
@@ -132,6 +89,7 @@ describe('ApiClient behavior', () => {
 
     expect(onRequestStart).toHaveBeenCalledTimes(1)
     expect(onRequestEnd).toHaveBeenCalledTimes(1)
+    restore()
   })
 
   it('latestOnlyでも後続リクエストは解決できる', async () => {
@@ -152,20 +110,13 @@ describe('ApiClient behavior', () => {
         })
       }
 
-      fetchCalls.push({ url: String(_input), init })
       return new Response(JSON.stringify([]), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       })
     })
 
-    const apiClient = createApiClient(
-      { fetchImpl },
-      {
-        onRequestStart: () => {},
-        onRequestEnd: () => {},
-      },
-    )
+    const { apiClient, restore } = setupHttpFixtureTest({ fetchImpl })
 
     const first = apiClient.get('/todo/', {
       params: {},
@@ -181,35 +132,30 @@ describe('ApiClient behavior', () => {
     await expect(firstResult).resolves.toMatchObject({ kind: 'abort' })
     expect(fetchImpl).toHaveBeenCalledTimes(2)
     expect(firstSignalState.aborted).toBe(true)
+    restore()
   })
 
   it('latestOnlyは別keyのGETを中断しない', async () => {
-    const fetchImpl: typeof fetch = vi.fn(async (_input, init) => {
-      fetchCalls.push({ url: String(_input), init })
-      return new Promise<Response>((resolve, reject) => {
-        init?.signal?.addEventListener('abort', () =>
-          reject(Object.assign(new Error('aborted'), { name: 'AbortError' })),
-        )
-        setTimeout(
-          () =>
-            resolve(
-              new Response(JSON.stringify([]), {
-                status: 200,
-                headers: { 'Content-Type': 'application/json' },
-              }),
-            ),
-          0,
-        )
-      })
-    })
-
-    const apiClient = createApiClient(
-      { fetchImpl },
-      {
-        onRequestStart: () => {},
-        onRequestEnd: () => {},
-      },
+    const fetchImpl: typeof fetch = vi.fn(
+      async (_input, init) =>
+        new Promise<Response>((resolve, reject) => {
+          init?.signal?.addEventListener('abort', () =>
+            reject(Object.assign(new Error('aborted'), { name: 'AbortError' })),
+          )
+          setTimeout(
+            () =>
+              resolve(
+                new Response(JSON.stringify([]), {
+                  status: 200,
+                  headers: { 'Content-Type': 'application/json' },
+                }),
+              ),
+            0,
+          )
+        }),
     )
+
+    const { apiClient, restore } = setupHttpFixtureTest({ fetchImpl })
 
     const first = apiClient.get('/todo/', {
       params: {},
@@ -223,7 +169,10 @@ describe('ApiClient behavior', () => {
     await expect(first).resolves.toEqual([])
     await expect(second).resolves.toEqual([])
     expect(fetchImpl).toHaveBeenCalledTimes(2)
-    expect(fetchCalls.every((call) => call.init?.signal?.aborted !== true)).toBe(true)
+    const [firstCall, secondCall] = vi.mocked(fetchImpl).mock.calls
+    expect(firstCall?.[1]?.signal?.aborted).toBe(false)
+    expect(secondCall?.[1]?.signal?.aborted).toBe(false)
+    restore()
   })
 
   it('中断後に同一keyで再実行してもcontrollerがリークしない', async () => {
@@ -248,13 +197,7 @@ describe('ApiClient behavior', () => {
       })
     })
 
-    const apiClient = createApiClient(
-      { fetchImpl },
-      {
-        onRequestStart: () => {},
-        onRequestEnd: () => {},
-      },
-    )
+    const { apiClient, restore } = setupHttpFixtureTest({ fetchImpl })
 
     const first = apiClient.get('/todo/', {
       params: {},
@@ -281,5 +224,6 @@ describe('ApiClient behavior', () => {
 
     expect(secondSignal?.aborted).toBe(false)
     expect(fetchImpl).toHaveBeenCalledTimes(3)
+    restore()
   })
 })

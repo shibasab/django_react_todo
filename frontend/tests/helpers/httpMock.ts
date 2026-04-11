@@ -20,6 +20,9 @@ type SetupHttpFixtureTestOptions = Readonly<{
   routes?: readonly FixtureRoute[]
   scenarioFixture?: string
   strictUnhandled?: boolean
+  fetchImpl?: typeof fetch
+  onRequestStart?: () => void
+  onRequestEnd?: () => void
 }>
 
 export type RequestLogEntry = Readonly<{
@@ -28,6 +31,8 @@ export type RequestLogEntry = Readonly<{
   query?: unknown
   body?: unknown
 }>
+
+const MOCK_BASE_URL = 'http://localhost'
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
   if (value == null || typeof value !== 'object') {
@@ -98,17 +103,24 @@ const parseBody = (data: unknown): unknown => {
   }
 }
 
-const normalizeRequest = (input: string, init?: RequestInit): RequestLogEntry => {
-  const method = (init?.method?.toUpperCase() ?? 'GET') as HttpMethod
-  const parsedUrl = new URL(input)
+const toRequest = (input: RequestInfo | URL, init?: RequestInit): Request => {
+  if (input instanceof Request) {
+    return new Request(input, init)
+  }
+
+  return new Request(input, init)
+}
+
+const normalizeRequest = (input: RequestInfo | URL, init?: RequestInit): RequestLogEntry => {
+  const request = toRequest(input, init)
+  const method = request.method.toUpperCase() as HttpMethod
+  const parsedUrl = new URL(request.url, MOCK_BASE_URL)
   const query = toSortedValue(toQueryRecord(parsedUrl.searchParams))
-  const body = toSortedValue(parseBody(init?.body))
 
   return {
     method,
     url: parsedUrl.pathname,
     ...(isPlainObject(query) && Object.keys(query).length === 0 ? {} : { query }),
-    ...(body === undefined ? {} : { body }),
   }
 }
 
@@ -139,13 +151,21 @@ export const setupHttpFixtureTest = ({
   routes = [],
   scenarioFixture,
   strictUnhandled = true,
+  fetchImpl: overrideFetchImpl,
+  onRequestStart,
+  onRequestEnd,
 }: SetupHttpFixtureTestOptions = {}) => {
   const requestLog: RequestLogEntry[] = []
   const allRoutes = [...resolveScenarioRoutes(scenarioFixture), ...routes]
+  const originalFetch = globalThis.fetch
 
-  const fetchImpl: typeof fetch = async (input, init) => {
-    const request = normalizeRequest(String(input), init)
-    requestLog.push(request)
+  const fixtureFetchImpl: typeof fetch = async (input, init) => {
+    const request = normalizeRequest(input, init)
+    const body = parseBody(await toRequest(input, init).text())
+    requestLog.push({
+      ...request,
+      ...(body === undefined ? {} : { body: toSortedValue(body) }),
+    })
 
     const routeIndex = allRoutes.findIndex((route) => route.method === request.method && route.url === request.url)
     if (routeIndex < 0) {
@@ -170,12 +190,14 @@ export const setupHttpFixtureTest = ({
     })
   }
 
+  globalThis.fetch = overrideFetchImpl ?? fixtureFetchImpl
+
   const noop = () => {}
   const apiClient: ApiClient = createApiClient(
-    { fetchImpl },
+    {},
     {
-      onRequestStart: noop,
-      onRequestEnd: noop,
+      onRequestStart: onRequestStart ?? noop,
+      onRequestEnd: onRequestEnd ?? noop,
     },
   )
 
@@ -185,6 +207,8 @@ export const setupHttpFixtureTest = ({
     clearRequests: () => {
       requestLog.length = 0
     },
-    restore: () => {},
+    restore: () => {
+      globalThis.fetch = originalFetch
+    },
   } as const
 }
