@@ -5,7 +5,7 @@ import {
   FetchHttpError,
   FetchNetworkError,
   createFetchClient,
-} from '../../src/services/http/fetchClient'
+} from '../../src/services/http/fetch-client'
 
 describe('fetchClient', () => {
   it('queryとJSONを扱える', async () => {

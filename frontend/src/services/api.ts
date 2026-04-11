@@ -1,2 +1,2 @@
-export type { ApiClient, ApiClientCallbacks, ApiClientOptions } from './apiClient'
-export { createApiClient } from './apiClient'
+export type { ApiClient, ApiClientCallbacks, ApiClientOptions } from './api-client'
+export { createApiClient } from './api-client'

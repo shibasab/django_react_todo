@@ -13,7 +13,7 @@ import type {
 import config from '../config'
 import { type Result, err, ok } from '../models/result'
 import { authToken } from './authToken'
-import { createFetchClient, isFetchHttpError } from './http/fetchClient'
+import { createFetchClient, isFetchHttpError } from './http/fetch-client'
 
 type ApiGetOptions = Readonly<{
   key?: string
