@@ -6,9 +6,7 @@ import type {
   ValidationErrorResponse,
 } from '@todoapp/shared'
 import { todoPath } from '@todoapp/shared'
-import axios from 'axios'
-import AxiosMockAdapter from 'axios-mock-adapter'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import type { Result } from '../../src/models/result'
 import { createApiClient } from '../../src/services/api'
@@ -23,26 +21,36 @@ const noop = () => {}
 
 describe('ApiClient typing', () => {
   it('todoPath経由のPUTで契約型が推論される', async () => {
-    const axiosInstance = axios.create()
-    const mock = new AxiosMockAdapter(axiosInstance)
-    mock.onPut('/todo/1/').reply(200, {
-      id: 1,
-      name: 'タスク更新',
-      detail: '',
-      dueDate: null,
-      createdAt: '2026-01-01T00:00:00.000Z',
-      progressStatus: 'not_started',
-      recurrenceType: 'none',
-      parentId: null,
-      completedSubtaskCount: 0,
-      totalSubtaskCount: 0,
-      subtaskProgressPercent: 0,
-    })
+    const fetchImpl: typeof fetch = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            id: 1,
+            name: 'タスク更新',
+            detail: '',
+            dueDate: null,
+            createdAt: '2026-01-01T00:00:00.000Z',
+            progressStatus: 'not_started',
+            recurrenceType: 'none',
+            parentId: null,
+            completedSubtaskCount: 0,
+            totalSubtaskCount: 0,
+            subtaskProgressPercent: 0,
+          }),
+          {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        ),
+    )
 
-    const apiClient = createApiClient(axiosInstance, {
-      onRequestStart: noop,
-      onRequestEnd: noop,
-    })
+    const apiClient = createApiClient(
+      { fetchImpl },
+      {
+        onRequestStart: noop,
+        onRequestEnd: noop,
+      },
+    )
 
     const resultPromise = apiClient.put(todoPath(1), {
       name: 'タスク更新',
@@ -58,20 +66,24 @@ describe('ApiClient typing', () => {
 
     const assertPut: _assertPut = true
     void assertPut
-    mock.restore()
   })
 
   it('POST /auth/logout はリクエストボディ不要で契約型が推論される', async () => {
-    const axiosInstance = axios.create()
-    const mock = new AxiosMockAdapter(axiosInstance)
-    mock.onPost('/auth/logout').reply(200, {
-      detail: 'Successfully logged out',
-    })
+    const fetchImpl: typeof fetch = vi.fn(
+      async () =>
+        new Response(JSON.stringify({ detail: 'Successfully logged out' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+    )
 
-    const apiClient = createApiClient(axiosInstance, {
-      onRequestStart: noop,
-      onRequestEnd: noop,
-    })
+    const apiClient = createApiClient(
+      { fetchImpl },
+      {
+        onRequestStart: noop,
+        onRequestEnd: noop,
+      },
+    )
 
     const resultPromise = apiClient.post('/auth/logout')
 
@@ -82,22 +94,31 @@ describe('ApiClient typing', () => {
 
     const assertLogout: _assertLogout = true
     void assertLogout
-    mock.restore()
   })
 
   it('POST /auth/register のエラー契約に409 conflictが含まれる', async () => {
-    const axiosInstance = axios.create()
-    const mock = new AxiosMockAdapter(axiosInstance)
-    mock.onPost('/auth/register').reply(409, {
-      status: 409,
-      type: 'conflict_error',
-      detail: 'Username already registered',
-    })
+    const fetchImpl: typeof fetch = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            status: 409,
+            type: 'conflict_error',
+            detail: 'Username already registered',
+          }),
+          {
+            status: 409,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        ),
+    )
 
-    const apiClient = createApiClient(axiosInstance, {
-      onRequestStart: noop,
-      onRequestEnd: noop,
-    })
+    const apiClient = createApiClient(
+      { fetchImpl },
+      {
+        onRequestStart: noop,
+        onRequestEnd: noop,
+      },
+    )
 
     const resultPromise = apiClient.post('/auth/register', {
       username: 'taken',
@@ -114,6 +135,5 @@ describe('ApiClient typing', () => {
 
     const assertRegister: _assertRegister = true
     void assertRegister
-    mock.restore()
   })
 })

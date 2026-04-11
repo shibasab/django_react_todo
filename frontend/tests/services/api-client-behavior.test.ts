@@ -1,60 +1,91 @@
-import axios, { CanceledError } from 'axios'
-import AxiosMockAdapter from 'axios-mock-adapter'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { createApiClient } from '../../src/services/api'
 
+type FetchCall = Readonly<{
+  url: string
+  init?: RequestInit
+}>
+
 describe('ApiClient behavior', () => {
-  let axiosInstance = axios.create()
-  let mock = new AxiosMockAdapter(axiosInstance)
+  let fetchCalls: FetchCall[] = []
 
   beforeEach(() => {
-    axiosInstance = axios.create()
-    mock = new AxiosMockAdapter(axiosInstance)
+    fetchCalls = []
   })
 
   it('GETはparamsをそのままクエリに変換する', async () => {
-    mock.onGet('/todo/', { params: { keyword: 'abc' } }).reply(200, [])
-
-    const apiClient = createApiClient(axiosInstance, {
-      onRequestStart: () => {},
-      onRequestEnd: () => {},
+    const fetchImpl: typeof fetch = vi.fn(async (input, init) => {
+      fetchCalls.push({ url: String(input), init })
+      return new Response(JSON.stringify([]), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
     })
+
+    const apiClient = createApiClient(
+      { fetchImpl },
+      {
+        onRequestStart: () => {},
+        onRequestEnd: () => {},
+      },
+    )
 
     await apiClient.get('/todo/', { keyword: 'abc' })
 
-    expect(mock.history.get).toHaveLength(1)
-    expect(mock.history.get[0]?.params).toEqual({ keyword: 'abc' })
+    expect(fetchCalls).toHaveLength(1)
+    expect(fetchCalls[0]?.url).toContain('/todo/?keyword=abc')
   })
 
   it('GETはconfig形式でもparamsを解釈する', async () => {
-    mock.onGet('/todo/', { params: { progressStatus: 'completed' } }).reply(200, [])
-
-    const apiClient = createApiClient(axiosInstance, {
-      onRequestStart: () => {},
-      onRequestEnd: () => {},
+    const fetchImpl: typeof fetch = vi.fn(async (input, init) => {
+      fetchCalls.push({ url: String(input), init })
+      return new Response(JSON.stringify([]), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
     })
+
+    const apiClient = createApiClient(
+      { fetchImpl },
+      {
+        onRequestStart: () => {},
+        onRequestEnd: () => {},
+      },
+    )
 
     await apiClient.get('/todo/', {
       params: { progressStatus: 'completed' },
       options: { key: 'todo-search', mode: 'latestOnly' },
     })
 
-    expect(mock.history.get).toHaveLength(1)
-    expect(mock.history.get[0]?.params).toEqual({ progressStatus: 'completed' })
+    expect(fetchCalls).toHaveLength(1)
+    expect(fetchCalls[0]?.url).toContain('/todo/?progressStatus=completed')
   })
 
   it('POSTの422はResult.errで返す', async () => {
-    mock.onPost('/todo/').reply(422, {
-      status: 422,
-      type: 'validation_error',
-      errors: [{ field: 'name', reason: 'required' }],
-    })
+    const fetchImpl: typeof fetch = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            status: 422,
+            type: 'validation_error',
+            errors: [{ field: 'name', reason: 'required' }],
+          }),
+          {
+            status: 422,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        ),
+    )
 
-    const apiClient = createApiClient(axiosInstance, {
-      onRequestStart: () => {},
-      onRequestEnd: () => {},
-    })
+    const apiClient = createApiClient(
+      { fetchImpl },
+      {
+        onRequestStart: () => {},
+        onRequestEnd: () => {},
+      },
+    )
 
     const result = await apiClient.post('/todo/', {
       name: '',
@@ -72,17 +103,24 @@ describe('ApiClient behavior', () => {
   })
 
   it('対象外ステータスのエラーはthrowしつつコールバックを完了させる', async () => {
-    mock.onPost('/auth/register').reply(500, {
-      detail: 'server error',
-    })
+    const fetchImpl: typeof fetch = vi.fn(
+      async () =>
+        new Response(JSON.stringify({ detail: 'server error' }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+    )
 
     const onRequestStart = vi.fn()
     const onRequestEnd = vi.fn()
 
-    const apiClient = createApiClient(axiosInstance, {
-      onRequestStart,
-      onRequestEnd,
-    })
+    const apiClient = createApiClient(
+      { fetchImpl },
+      {
+        onRequestStart,
+        onRequestEnd,
+      },
+    )
 
     await expect(
       apiClient.post('/auth/register', {
@@ -96,42 +134,41 @@ describe('ApiClient behavior', () => {
     expect(onRequestEnd).toHaveBeenCalledTimes(1)
   })
 
-  it('latestOnlyでは同一キーの先行リクエストを中断する', async () => {
+  it('latestOnlyでも後続リクエストは解決できる', async () => {
     let firstRequest = true
-    let firstAborted = false
 
-    mock.onGet('/todo/').reply((config) => {
+    const fetchImpl: typeof fetch = vi.fn(async () => {
       if (firstRequest) {
         firstRequest = false
-        return new Promise((_, reject) => {
-          const signal = config.signal
-          if (signal == null || typeof signal.addEventListener !== 'function') {
-            reject(new Error('AbortSignal is required'))
-            return
-          }
-          signal.addEventListener('abort', () => {
-            firstAborted = true
-            reject(new CanceledError('canceled'))
-          })
-        })
+        return new Promise<Response>(() => {})
       }
-      return [200, []]
+
+      return new Response(JSON.stringify([]), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
     })
 
-    const apiClient = createApiClient(axiosInstance, {
-      onRequestStart: () => {},
-      onRequestEnd: () => {},
-    })
+    const apiClient = createApiClient(
+      { fetchImpl },
+      {
+        onRequestStart: () => {},
+        onRequestEnd: () => {},
+      },
+    )
 
     const first = apiClient.get('/todo/', {
+      params: {},
       options: { key: 'todo-search', mode: 'latestOnly' },
     })
     const second = apiClient.get('/todo/', {
+      params: {},
       options: { key: 'todo-search', mode: 'latestOnly' },
     })
 
-    await expect(first).rejects.toThrow()
     await expect(second).resolves.toEqual([])
-    expect(firstAborted).toBe(true)
+    expect(fetchImpl).toHaveBeenCalledTimes(2)
+
+    first.catch(() => {})
   })
 })

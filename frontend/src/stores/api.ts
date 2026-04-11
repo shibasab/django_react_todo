@@ -27,7 +27,7 @@ export const useApiStore = defineStore('api', () => {
     },
   }
 
-  const apiClient: ApiClient = _clientFactory?.() ?? createApiClient(undefined, callbacks)
+  const apiClient: ApiClient = _clientFactory?.() ?? createApiClient({}, callbacks)
 
   return { apiClient, isLoading }
 })
