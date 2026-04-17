@@ -28,6 +28,6 @@
     "oxlint": "^1.59.0",
     "oxlint-tsgolint": "^0.20.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.4"
   }
 }
